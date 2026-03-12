@@ -1,20 +1,25 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { talents, Talent, filterTalent, ActiveFilters, FILTER_GROUPS, FilterKey } from '@/lib/talent';
+import { useState, useMemo, useEffect } from 'react';
+import { Talent, filterTalent, ActiveFilters, FILTER_GROUPS, FilterKey } from '@/lib/talent';
 import TalentCard from './TalentCard';
 import TalentModal from './TalentModal';
 import SuccessModal from './SuccessModal';
 import FilterSidebar from './FilterSidebar';
 
 export default function TalentRoster() {
+  const [allTalents, setAllTalents] = useState<Talent[]>([]);
   const [filters, setFilters] = useState<ActiveFilters>({});
   const [selectedTalent, setSelectedTalent] = useState<Talent | null>(null);
+
+  useEffect(() => {
+    fetch('/api/characters').then((r) => r.json()).then(setAllTalents);
+  }, []);
   const [purchasedTalent, setPurchasedTalent] = useState<Talent | null>(null);
   const [purchasedPriceIdx, setPurchasedPriceIdx] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const filtered = useMemo(() => filterTalent(talents, filters), [filters]);
+  const filtered = useMemo(() => filterTalent(allTalents, filters), [allTalents, filters]);
 
   const handlePurchase = (talent: Talent, priceIdx: number) => {
     setSelectedTalent(null);

@@ -17,6 +17,27 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Admin form utilities */
+.form-label {
+  @apply block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2;
+}
+
+.form-input {
+  @apply w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white;
+}
+
+.chip {
+  @apply text-xs font-medium px-3 py-1.5 rounded-full border transition-all cursor-pointer;
+}
+
+.chip-active {
+  @apply bg-indigo-500 text-white border-indigo-500;
+}
+
+.chip-inactive {
+  @apply bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-500;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

@@ -1,0 +1,450 @@
+'use client';
+
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Upload } from 'lucide-react';
+import {
+  Talent, TalentRole, TalentSex, TalentEthnicity, TalentAgeRange,
+  TalentBuild, TalentHeight, TalentGenre,
+  ROLE_LABELS, SEX_LABELS, ETHNICITY_LABELS, AGE_LABELS,
+  BUILD_LABELS, HEIGHT_LABELS, GENRE_LABELS,
+} from '@/lib/talent';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ToggleTag } from '@/components/ui/toggle-tag';
+import { cn } from '@/lib/utils';
+
+interface Props {
+  open: boolean;
+  character: Talent | null;
+  onClose: () => void;
+  onSave: (data: Omit<Talent, 'id'> & { id?: number }) => Promise<void>;
+}
+
+const blank = (): Omit<Talent, 'id'> => ({
+  name: '', slug: '', vibe: '', img: '',
+  roles: [], sex: 'female', ethnicities: [], ageRange: '30s',
+  build: 'average', height: 'average', genres: [], languages: [],
+  prices: [
+    { name: 'Single Project', price: '$299', amount: 299 },
+    { name: 'Unlimited', price: '$799', amount: 799 },
+  ],
+});
+
+function toSlug(name: string) {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+// ─── Section wrapper ────────────────────────────────────────────────────────
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="px-6 py-5 space-y-4 border-b border-gray-100">
+      <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+// ─── Field wrapper ───────────────────────────────────────────────────────────
+function Field({ label, hint, children, required }: { label: string; hint?: string; children: React.ReactNode; required?: boolean }) {
+  return (
+    <div className="space-y-1.5">
+      <Label>
+        {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+        {hint && <span className="ml-1.5 font-normal normal-case tracking-normal text-gray-400 text-[11px]">{hint}</span>}
+      </Label>
+      {children}
+    </div>
+  );
+}
+
+// ─── Language tags ────────────────────────────────────────────────────────────
+function LanguageInput({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+  const [input, setInput] = useState('');
+  const add = () => {
+    const t = input.trim().toUpperCase();
+    if (t && !value.includes(t)) onChange([...value, t]);
+    setInput('');
+  };
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2 min-h-[32px]">
+        {value.length === 0 && <span className="text-xs text-gray-400 italic">No languages added yet</span>}
+        {value.map((lang) => (
+          <span key={lang} className="inline-flex items-center gap-1 text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full">
+            {lang}
+            <button type="button" onClick={() => onChange(value.filter((l) => l !== lang))}
+              className="hover:text-indigo-900 transition-colors ml-0.5 text-indigo-400">×</button>
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
+          placeholder="e.g. EN, FR, JA — press Enter to add"
+          maxLength={6}
+          className="flex-1"
+        />
+        <button type="button" onClick={add}
+          className="px-4 py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 whitespace-nowrap">
+          Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Price input ────────────────────────────────────────────────────────────
+function PriceField({ label, value, onChange }: { label: string; value: string; onChange: (price: string, amount: number) => void }) {
+  return (
+    <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
+      <div className="flex-1">
+        <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{label}</div>
+        <div className="flex items-center gap-2">
+          <span className="text-gray-400 font-bold text-sm">$</span>
+          <Input
+            type="number"
+            min={0}
+            value={value.replace(/\D/g, '')}
+            onChange={(e) => {
+              const n = parseInt(e.target.value) || 0;
+              onChange(`$${n}`, n);
+            }}
+            className="w-28 text-base font-black h-9"
+            placeholder="299"
+          />
+          <span className="text-xs text-gray-400">USD · one-time</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main component ──────────────────────────────────────────────────────────
+export default function CharacterForm({ open, character, onClose, onSave }: Props) {
+  const [form, setForm] = useState<Omit<Talent, 'id'> & { id?: number }>(blank());
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // Snapshot used to detect dirty state
+  const [snapshot, setSnapshot] = useState('');
+
+  useEffect(() => {
+    const initial = character ?? blank();
+    setForm(initial);
+    setSnapshot(JSON.stringify(initial));
+  }, [character, open]);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
+  const isDirty = useMemo(() => JSON.stringify(form) !== snapshot, [form, snapshot]);
+
+  const set = <K extends keyof typeof form>(key: K, val: (typeof form)[K]) =>
+    setForm((prev) => ({ ...prev, [key]: val }));
+
+  const toggleArr = <T extends string>(key: keyof typeof form, val: T) => {
+    const arr = (form[key] as T[]) ?? [];
+    const next = arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
+    set(key as keyof typeof form, next as (typeof form)[typeof key]);
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const { url } = await res.json();
+    set('img', url);
+    setUploading(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isDirty && character) return;
+    setSaving(true);
+    await onSave(form);
+    setSaving(false);
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex">
+      {/* Backdrop */}
+      <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Slide-in panel */}
+      <div className="w-full max-w-[520px] bg-white h-full flex flex-col shadow-2xl">
+
+        {/* ── Header ────────────────────────────────── */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
+          <div>
+            <h2 className="text-base font-bold text-gray-900">
+              {character ? `Editing: ${character.name}` : 'Add New Character'}
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {isDirty ? (
+                <span className="text-amber-500 font-medium">● Unsaved changes</span>
+              ) : (
+                'All fields marked * are required'
+              )}
+            </p>
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors text-xl leading-none">
+            ×
+          </button>
+        </div>
+
+        {/* ── Scrollable body ────────────────────────── */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+
+          {/* IMAGE */}
+          <Section title="Character Image">
+            <div
+              onClick={() => fileRef.current?.click()}
+              className={cn(
+                'relative w-full rounded-2xl overflow-hidden cursor-pointer border-2 border-dashed transition-colors group bg-gray-50',
+                'hover:border-indigo-400',
+                form.img ? 'border-gray-200' : 'border-gray-300'
+              )}
+              style={{ aspectRatio: '3/2' }}
+            >
+              {form.img ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={form.img} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 group-hover:text-indigo-500 transition-colors gap-2">
+                  <Upload size={28} strokeWidth={1.5} />
+                  <div className="text-sm font-medium">Click to upload image</div>
+                  <div className="text-xs text-gray-400">JPG, PNG, WebP</div>
+                </div>
+              )}
+              {uploading && (
+                <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                  <div className="text-sm font-semibold text-indigo-500 animate-pulse">Uploading...</div>
+                </div>
+              )}
+              {form.img && !uploading && (
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <span className="opacity-0 group-hover:opacity-100 text-white text-sm font-bold transition-opacity bg-black/50 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <Upload size={14} /> Change Image
+                  </span>
+                </div>
+              )}
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+            <Field label="Or paste an image URL">
+              <Input
+                type="text"
+                value={form.img}
+                onChange={(e) => set('img', e.target.value)}
+                placeholder="https://images.unsplash.com/..."
+              />
+            </Field>
+          </Section>
+
+          {/* IDENTITY */}
+          <Section title="Identity">
+            <Field label="Character Name" required>
+              <Input
+                required
+                value={form.name}
+                onChange={(e) => {
+                  set('name', e.target.value);
+                  if (!character) set('slug', toSlug(e.target.value));
+                }}
+                placeholder="e.g. Elara Voss"
+              />
+            </Field>
+
+            <Field label="Slug" required hint="(auto-generated, URL-safe path — e.g. elara-voss)">
+              <Input
+                required
+                value={form.slug}
+                onChange={(e) => set('slug', toSlug(e.target.value))}
+                placeholder="elara-voss"
+                className="font-mono text-xs"
+              />
+            </Field>
+
+            <Field label="Description / Vibe" required>
+              <Textarea
+                required
+                value={form.vibe}
+                onChange={(e) => set('vibe', e.target.value)}
+                placeholder="Describe their personality, look, aesthetic, and energy..."
+                rows={4}
+              />
+              <p className={cn(
+                'text-xs mt-1 text-right transition-colors',
+                form.vibe.length > 120 ? 'text-amber-500' : 'text-gray-400'
+              )}>
+                {form.vibe.length} / 120 chars recommended
+              </p>
+            </Field>
+          </Section>
+
+          {/* ROLES & GENRES */}
+          <Section title="Roles & Genres">
+            <Field label="Roles" required hint="(select all that apply)">
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(ROLE_LABELS) as [TalentRole, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.roles.includes(val)}
+                    onClick={() => toggleArr('roles', val)}
+                  />
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Genres" required hint="(select all that apply)">
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(GENRE_LABELS) as [TalentGenre, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.genres.includes(val)}
+                    onClick={() => toggleArr('genres', val)}
+                  />
+                ))}
+              </div>
+            </Field>
+          </Section>
+
+          {/* PHYSICAL ATTRIBUTES */}
+          <Section title="Physical Attributes">
+            <Field label="Sex" required>
+              <RadioGroup
+                value={form.sex}
+                onValueChange={(val) => set('sex', val as TalentSex)}
+                className="flex flex-wrap gap-2 pt-0.5"
+              >
+                {(Object.entries(SEX_LABELS) as [TalentSex, string][]).map(([val, label]) => (
+                  <RadioGroupItem key={val} value={val} label={label} id={`sex-${val}`} />
+                ))}
+              </RadioGroup>
+            </Field>
+
+            <Field label="Ethnicity" required hint="(select all that apply)">
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(ETHNICITY_LABELS) as [TalentEthnicity, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.ethnicities.includes(val)}
+                    onClick={() => toggleArr('ethnicities', val)}
+                  />
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Age Range" required>
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(AGE_LABELS) as [TalentAgeRange, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.ageRange === val}
+                    onClick={() => set('ageRange', val)}
+                  />
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Build" required>
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(BUILD_LABELS) as [TalentBuild, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.build === val}
+                    onClick={() => set('build', val)}
+                  />
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Height" required>
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(HEIGHT_LABELS) as [TalentHeight, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.height === val}
+                    onClick={() => set('height', val)}
+                  />
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Languages">
+              <LanguageInput value={form.languages} onChange={(v) => set('languages', v)} />
+            </Field>
+          </Section>
+
+          {/* PRICING */}
+          <Section title="Licensing & Pricing">
+            <PriceField
+              label="Single Project License"
+              value={form.prices[0].price}
+              onChange={(price, amount) => {
+                const prices = [...form.prices];
+                prices[0] = { ...prices[0], price, amount };
+                set('prices', prices);
+              }}
+            />
+            <PriceField
+              label="Unlimited License"
+              value={form.prices[1].price}
+              onChange={(price, amount) => {
+                const prices = [...form.prices];
+                prices[1] = { ...prices[1], price, amount };
+                set('prices', prices);
+              }}
+            />
+          </Section>
+
+          {/* Spacer so sticky footer doesn't cover last field */}
+          <div className="h-4" />
+        </form>
+
+        {/* ── Sticky footer ─────────────────────────── */}
+        <div className="px-6 py-4 border-t border-gray-100 bg-white flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 border border-gray-200 text-gray-700 font-semibold py-2.5 rounded-xl hover:border-gray-400 transition-colors text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form=""
+            onClick={handleSubmit}
+            disabled={saving || uploading || (!!character && !isDirty)}
+            className={cn(
+              'flex-1 font-bold py-2.5 rounded-xl text-sm transition-all',
+              isDirty || !character
+                ? 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-sm shadow-indigo-200'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            )}
+          >
+            {saving ? 'Saving...' : character ? 'Save Changes' : 'Add Character'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
