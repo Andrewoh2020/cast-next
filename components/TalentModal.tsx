@@ -174,16 +174,16 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
         </div>
 
         {/* ── CENTER COLUMN — main image ───────────────── */}
-        <div className="flex-1 relative bg-gray-100 order-1 sm:order-2 min-h-[240px]">
+        <div className="flex-1 overflow-y-auto bg-gray-100 order-1 sm:order-2 min-h-[240px]">
           {activeImg ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={activeImg}
               alt={talent.name}
-              className="absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-300"
+              className="w-full h-auto block transition-opacity duration-300"
             />
           ) : (
-            <div className="absolute inset-0 bg-gray-200" />
+            <div className="w-full h-full bg-gray-200" />
           )}
         </div>
 
