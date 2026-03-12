@@ -19,15 +19,18 @@ async function getBlobUrl(): Promise<string | null> {
 export async function readCharacters(): Promise<Talent[]> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
 
-  const url = await getBlobUrl();
-  if (!url) {
-    // First run: seed from local JSON
-    const seed = readLocalJson();
-    await writeCharacters(seed);
-    return seed;
+  try {
+    const url = await getBlobUrl();
+    if (!url) {
+      const seed = readLocalJson();
+      await writeCharacters(seed);
+      return seed;
+    }
+    const res = await fetch(url, { cache: 'no-store' });
+    return res.json() as Promise<Talent[]>;
+  } catch {
+    return readLocalJson();
   }
-  const res = await fetch(url, { cache: 'no-store' });
-  return res.json() as Promise<Talent[]>;
 }
 
 export async function writeCharacters(characters: Talent[]): Promise<void> {

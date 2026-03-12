@@ -29,14 +29,18 @@ async function getBlobUrl(): Promise<string | null> {
 export async function readSeo(): Promise<SeoSettings> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
 
-  const url = await getBlobUrl();
-  if (!url) {
-    const seed = readLocalJson();
-    await writeSeo(seed);
-    return seed;
+  try {
+    const url = await getBlobUrl();
+    if (!url) {
+      const seed = readLocalJson();
+      await writeSeo(seed);
+      return seed;
+    }
+    const res = await fetch(url, { cache: 'no-store' });
+    return res.json() as Promise<SeoSettings>;
+  } catch {
+    return readLocalJson();
   }
-  const res = await fetch(url, { cache: 'no-store' });
-  return res.json() as Promise<SeoSettings>;
 }
 
 export async function writeSeo(settings: SeoSettings): Promise<void> {
