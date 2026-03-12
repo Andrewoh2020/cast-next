@@ -1,9 +1,9 @@
-import { kv } from '@vercel/kv';
+import { put, list, del } from '@vercel/blob';
 import fs from 'fs';
 import path from 'path';
 import { Talent } from './talent';
 
-const KV_KEY = 'characters';
+const BLOB_KEY = 'characters.json';
 const JSON_FALLBACK = path.join(process.cwd(), 'data', 'characters.json');
 
 function readLocalJson(): Talent[] {
@@ -11,27 +11,39 @@ function readLocalJson(): Talent[] {
   return JSON.parse(raw) as Talent[];
 }
 
+async function getBlobUrl(): Promise<string | null> {
+  const { blobs } = await list({ prefix: BLOB_KEY });
+  return blobs[0]?.url ?? null;
+}
+
 export async function readCharacters(): Promise<Talent[]> {
-  // In local dev without KV configured, fall back to JSON file
-  if (!process.env.KV_REST_API_URL) {
-    return readLocalJson();
-  }
-  const data = await kv.get<Talent[]>(KV_KEY);
-  if (!data) {
-    // First run: seed from local JSON and persist to KV
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
+
+  const url = await getBlobUrl();
+  if (!url) {
+    // First run: seed from local JSON
     const seed = readLocalJson();
-    await kv.set(KV_KEY, seed);
+    await writeCharacters(seed);
     return seed;
   }
-  return data;
+  const res = await fetch(url, { cache: 'no-store' });
+  return res.json() as Promise<Talent[]>;
 }
 
 export async function writeCharacters(characters: Talent[]): Promise<void> {
-  if (!process.env.KV_REST_API_URL) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
     fs.writeFileSync(JSON_FALLBACK, JSON.stringify(characters, null, 2), 'utf-8');
     return;
   }
-  await kv.set(KV_KEY, characters);
+  // Delete old blob first to avoid accumulation
+  const { blobs } = await list({ prefix: BLOB_KEY });
+  await Promise.all(blobs.map((b) => del(b.url)));
+
+  await put(BLOB_KEY, JSON.stringify(characters, null, 2), {
+    access: 'public',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+  });
 }
 
 export function nextId(characters: Talent[]): number {

@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { put, list, del } from '@vercel/blob';
 import fs from 'fs';
 import path from 'path';
 
@@ -13,7 +13,7 @@ export interface SeoSettings {
   googleAnalyticsId: string;
 }
 
-const KV_KEY = 'seo';
+const BLOB_KEY = 'seo.json';
 const JSON_FALLBACK = path.join(process.cwd(), 'data', 'seo.json');
 
 function readLocalJson(): SeoSettings {
@@ -21,23 +21,35 @@ function readLocalJson(): SeoSettings {
   return JSON.parse(raw) as SeoSettings;
 }
 
+async function getBlobUrl(): Promise<string | null> {
+  const { blobs } = await list({ prefix: BLOB_KEY });
+  return blobs[0]?.url ?? null;
+}
+
 export async function readSeo(): Promise<SeoSettings> {
-  if (!process.env.KV_REST_API_URL) {
-    return readLocalJson();
-  }
-  const data = await kv.get<SeoSettings>(KV_KEY);
-  if (!data) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
+
+  const url = await getBlobUrl();
+  if (!url) {
     const seed = readLocalJson();
-    await kv.set(KV_KEY, seed);
+    await writeSeo(seed);
     return seed;
   }
-  return data;
+  const res = await fetch(url, { cache: 'no-store' });
+  return res.json() as Promise<SeoSettings>;
 }
 
 export async function writeSeo(settings: SeoSettings): Promise<void> {
-  if (!process.env.KV_REST_API_URL) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
     fs.writeFileSync(JSON_FALLBACK, JSON.stringify(settings, null, 2), 'utf-8');
     return;
   }
-  await kv.set(KV_KEY, settings);
+  const { blobs } = await list({ prefix: BLOB_KEY });
+  await Promise.all(blobs.map((b) => del(b.url)));
+
+  await put(BLOB_KEY, JSON.stringify(settings, null, 2), {
+    access: 'public',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+  });
 }
