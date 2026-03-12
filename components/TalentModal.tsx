@@ -88,9 +88,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
       className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden relative flex flex-col sm:flex-row"
-        style={{ height: 'min(88vh, 680px)' }}
-      >
+      <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] shadow-2xl overflow-hidden relative flex flex-col sm:flex-row items-stretch">
         {/* Close button */}
         <button
           onClick={onClose}
