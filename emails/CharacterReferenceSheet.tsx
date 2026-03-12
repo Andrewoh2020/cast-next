@@ -151,7 +151,7 @@ export default function CharacterReferenceSheet({
                 Your Reference Sheet is Ready
               </Text>
               <Text style={{ fontSize: 13, color: '#6b7280', margin: '0 0 16px' }}>
-                Download your full character reference sheet below. This link expires in 24 hours.
+                Download your full character reference sheet below.
               </Text>
               <Button
                 href={referenceSheetDownloadUrl}
