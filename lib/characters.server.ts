@@ -16,7 +16,7 @@ export async function readCharacters(): Promise<Talent[]> {
 
   try {
     const result = await get(BLOB_KEY, { access: 'private' });
-    if (!result) {
+    if (!result || result.statusCode === 304 || !result.stream) {
       const seed = readLocalJson();
       await writeCharacters(seed);
       return seed;

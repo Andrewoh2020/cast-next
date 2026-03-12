@@ -35,6 +35,8 @@ export interface Talent {
   slug: string;
   vibe: string;
   img: string;
+  gallery?: string[];
+  referenceSheetUrl?: string;
   // Core attributes
   roles: TalentRole[];
   sex: TalentSex;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, X, FileText, Plus } from 'lucide-react';
 import {
   Talent, TalentRole, TalentSex, TalentEthnicity, TalentAgeRange,
   TalentBuild, TalentHeight, TalentGenre,
@@ -24,6 +24,8 @@ interface Props {
 
 const blank = (): Omit<Talent, 'id'> => ({
   name: '', slug: '', vibe: '', img: '',
+  gallery: [],
+  referenceSheetUrl: '',
   roles: [], sex: 'female', ethnicities: [], ageRange: '30s',
   build: 'average', height: 'average', genres: [], languages: [],
   prices: [
@@ -127,8 +129,12 @@ function PriceField({ label, value, onChange }: { label: string; value: string; 
 export default function CharacterForm({ open, character, onClose, onSave }: Props) {
   const [form, setForm] = useState<Omit<Talent, 'id'> & { id?: number }>(blank());
   const [uploading, setUploading] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [uploadingSheet, setUploadingSheet] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const sheetRef = useRef<HTMLInputElement>(null);
 
   // Snapshot used to detect dirty state
   const [snapshot, setSnapshot] = useState('');
@@ -155,16 +161,48 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
     set(key as keyof typeof form, next as (typeof form)[typeof key]);
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
+  const uploadFile = async (file: File): Promise<string> => {
     const fd = new FormData();
     fd.append('file', file);
     const res = await fetch('/api/upload', { method: 'POST', body: fd });
     const { url } = await res.json();
+    return url;
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const url = await uploadFile(file);
     set('img', url);
     setUploading(false);
+    e.target.value = '';
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setUploadingGallery(true);
+    const urls = await Promise.all(files.map(uploadFile));
+    set('gallery', [...(form.gallery ?? []), ...urls]);
+    setUploadingGallery(false);
+    e.target.value = '';
+  };
+
+  const removeGalleryImage = (idx: number) => {
+    const next = [...(form.gallery ?? [])];
+    next.splice(idx, 1);
+    set('gallery', next);
+  };
+
+  const handleSheetUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingSheet(true);
+    const url = await uploadFile(file);
+    set('referenceSheetUrl', url);
+    setUploadingSheet(false);
+    e.target.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -251,6 +289,81 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 placeholder="https://images.unsplash.com/..."
               />
             </Field>
+          </Section>
+
+          {/* GALLERY */}
+          <Section title="Gallery / Additional Looks">
+            <div className="grid grid-cols-3 gap-2">
+              {(form.gallery ?? []).map((url, idx) => (
+                <div key={idx} className="relative rounded-xl overflow-hidden group" style={{ aspectRatio: '1/1' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Look ${idx + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeGalleryImage(idx)}
+                    className="absolute top-1 right-1 w-6 h-6 bg-black/60 hover:bg-red-500 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => galleryRef.current?.click()}
+                disabled={uploadingGallery}
+                className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-400 text-gray-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                style={{ aspectRatio: '1/1' }}
+              >
+                {uploadingGallery ? (
+                  <span className="text-xs font-semibold text-indigo-400 animate-pulse">Uploading...</span>
+                ) : (
+                  <>
+                    <Plus size={20} strokeWidth={1.5} />
+                    <span className="text-xs mt-1 font-medium">Add Look</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <input ref={galleryRef} type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" />
+            <p className="text-xs text-gray-400">Upload multiple photos of the character — different outfits, angles, or expressions.</p>
+          </Section>
+
+          {/* REFERENCE SHEET */}
+          <Section title="Reference Sheet">
+            {form.referenceSheetUrl ? (
+              <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
+                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FileText size={20} className="text-indigo-500" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 truncate">Reference sheet uploaded</p>
+                  <p className="text-xs text-gray-400 truncate">{form.referenceSheetUrl}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => set('referenceSheetUrl', '')}
+                  className="w-7 h-7 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-500 flex items-center justify-center text-gray-500 transition-colors flex-shrink-0"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => sheetRef.current?.click()}
+                disabled={uploadingSheet}
+                className="w-full flex items-center gap-3 rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-400 p-5 text-gray-400 hover:text-indigo-500 transition-colors"
+              >
+                <FileText size={22} strokeWidth={1.5} />
+                <div className="text-left">
+                  <p className="text-sm font-semibold">
+                    {uploadingSheet ? 'Uploading...' : 'Upload Reference Sheet'}
+                  </p>
+                  <p className="text-xs">PDF or image — will be emailed to customer after purchase</p>
+                </div>
+              </button>
+            )}
+            <input ref={sheetRef} type="file" accept="image/*,application/pdf" onChange={handleSheetUpload} className="hidden" />
           </Section>
 
           {/* IDENTITY */}

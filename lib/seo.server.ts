@@ -26,7 +26,7 @@ export async function readSeo(): Promise<SeoSettings> {
 
   try {
     const result = await get(BLOB_KEY, { access: 'private' });
-    if (!result) {
+    if (!result || result.statusCode === 304 || !result.stream) {
       const seed = readLocalJson();
       await writeSeo(seed);
       return seed;

@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { put } from '@vercel/blob';
+
+const ALLOWED_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'application/pdf': 'pdf',
+};
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -8,19 +15,30 @@ export async function POST(req: NextRequest) {
 
   if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 });
 
-  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  if (!allowed.includes(file.type)) {
-    return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
+  const ext = ALLOWED_TYPES[file.type];
+  if (!ext) return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
+
+  const pathname = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const bytes = await file.arrayBuffer();
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(pathname, bytes, {
+      access: 'private',
+      contentType: file.type,
+      addRandomSuffix: false,
+      allowOverwrite: false,
+    });
+    // Store the pathname so we can proxy it; the full blob URL requires auth
+    const proxyUrl = `/api/media?p=${encodeURIComponent(blob.pathname)}`;
+    return NextResponse.json({ url: proxyUrl, pathname: blob.pathname });
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const ext = file.name.split('.').pop() ?? 'jpg';
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  // Local dev fallback — write to public/uploads
+  const fs = await import('fs');
+  const path = await import('path');
   const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-  fs.writeFileSync(path.join(uploadDir, filename), buffer);
-  return NextResponse.json({ url: `/uploads/${filename}` });
+  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  fs.writeFileSync(path.join(uploadDir, filename), Buffer.from(bytes));
+  return NextResponse.json({ url: `/uploads/${filename}`, pathname: null });
 }
