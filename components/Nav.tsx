@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { UserButton, useUser } from '@clerk/nextjs';
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const { isSignedIn } = useUser();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/5">
@@ -21,12 +23,23 @@ export default function Nav() {
           <Link href="#how" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
             How It Works
           </Link>
-          <Link
-            href="#roster"
-            className="text-sm font-semibold bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            Get Started
-          </Link>
+          {isSignedIn ? (
+            <>
+              <Link href="/account" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+                My Account
+              </Link>
+              <UserButton />
+            </>
+          ) : (
+            <>
+              <Link href="/sign-in" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+                Sign In
+              </Link>
+              <Link href="/sign-up" className="text-sm font-semibold bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Hamburger */}
@@ -50,13 +63,20 @@ export default function Nav() {
           <Link href="#how" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
             How It Works
           </Link>
-          <Link
-            href="#roster"
-            onClick={() => setOpen(false)}
-            className="mt-3 text-center text-sm font-semibold bg-black text-white px-5 py-3 rounded-lg"
-          >
-            Get Started
-          </Link>
+          {isSignedIn ? (
+            <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+              My Account
+            </Link>
+          ) : (
+            <>
+              <Link href="/sign-in" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+                Sign In
+              </Link>
+              <Link href="/sign-up" onClick={() => setOpen(false)} className="mt-3 text-center text-sm font-semibold bg-black text-white px-5 py-3 rounded-lg">
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       )}
     </nav>

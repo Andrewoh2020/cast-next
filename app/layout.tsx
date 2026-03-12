@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { readSeo } from "@/lib/seo.server";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -73,6 +74,7 @@ export default async function RootLayout({
   };
 
   return (
+    <ClerkProvider>
     <html lang="en">
       <head>
         <script
@@ -96,5 +98,6 @@ export default async function RootLayout({
         <Footer />
       </body>
     </html>
+    </ClerkProvider>
   );
 }
