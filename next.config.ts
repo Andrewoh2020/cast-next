@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@react-email/components', '@react-email/render'],
+  serverExternalPackages: ['@react-email/components', '@react-email/render', 'resend'],
   images: {
     remotePatterns: [
       {
