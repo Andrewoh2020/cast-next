@@ -1,60 +1,65 @@
-import Image from 'next/image';
-import { Talent, ROLE_LABELS, AGE_LABELS, BUILD_LABELS } from '@/lib/talent';
+'use client';
+
+import { Talent, ROLE_LABELS } from '@/lib/talent';
 
 interface Props {
   talent: Talent;
   onClick: (talent: Talent) => void;
+  index?: number;
 }
 
-export default function TalentCard({ talent, onClick }: Props) {
-  const primaryRole = ROLE_LABELS[talent.roles[0]];
+// Vary card aspect ratios to create masonry rhythm
+const ASPECT_STYLES = [
+  { paddingBottom: '133%' }, // 3:4 portrait
+  { paddingBottom: '120%' }, // slightly shorter portrait
+  { paddingBottom: '150%' }, // tall portrait
+  { paddingBottom: '125%' }, // 4:5
+  { paddingBottom: '110%' }, // near square-ish portrait
+];
+
+export default function TalentCard({ talent, onClick, index = 0 }: Props) {
+  const aspectStyle = ASPECT_STYLES[index % ASPECT_STYLES.length];
+  const primaryRole = talent.roles[0] ? ROLE_LABELS[talent.roles[0]] : null;
 
   return (
     <div
       onClick={() => onClick(talent)}
-      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
+      className="group relative w-full overflow-hidden rounded-2xl cursor-pointer bg-gray-100 animate-fade-in-up"
+      style={{ paddingBottom: aspectStyle.paddingBottom }}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-        <Image
-          src={talent.img}
-          alt={talent.name}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        />
-        <span className="absolute top-3 left-3 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/85 backdrop-blur-sm text-gray-700">
-          {primaryRole}
-        </span>
-      </div>
+      {/* Photo */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={talent.img}
+        alt={talent.name}
+        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+      />
 
-      <div className="p-5 flex flex-col flex-1">
-        <div className="text-base font-bold text-black tracking-tight mb-1">{talent.name}</div>
-        <div className="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2">{talent.vibe}</div>
+      {/* Gradient scrim — slides in from bottom on hover */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-350" />
 
-        {/* Attribute pills */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          <span className="text-[11px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-            {AGE_LABELS[talent.ageRange]}
+      {/* Top role chip — always visible */}
+      {primaryRole && (
+        <div className="absolute top-3 left-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest bg-white/90 backdrop-blur-sm text-gray-700 px-2.5 py-1 rounded-full">
+            {primaryRole}
           </span>
-          <span className="text-[11px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-            {BUILD_LABELS[talent.build]}
-          </span>
-          {talent.genres.slice(0, 1).map((g) => (
-            <span key={g} className="text-[11px] font-medium bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full capitalize">
-              {g}
-            </span>
-          ))}
         </div>
+      )}
 
-        <div className="mt-auto pt-2 text-xs text-gray-500 mb-3">
-          From <span className="text-base font-black text-black">{talent.prices[0].price}</span>
+      {/* Bottom overlay — slides up on hover */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
+        <p className="text-white font-bold text-base tracking-tight leading-tight mb-1">
+          {talent.name}
+        </p>
+        <div className="flex items-center justify-between">
+          <span className="text-white/70 text-xs">
+            From <span className="text-white font-semibold">{talent.prices[0]?.price}</span>
+          </span>
+          <span className="text-[11px] font-bold bg-white text-black px-3 py-1 rounded-full">
+            View Profile →
+          </span>
         </div>
-        <button
-          onClick={(e) => { e.stopPropagation(); onClick(talent); }}
-          className="w-full text-sm font-semibold text-indigo-500 border border-indigo-200 py-2.5 rounded-lg hover:bg-indigo-500 hover:text-white hover:border-indigo-500 transition-all"
-        >
-          View Profile
-        </button>
       </div>
     </div>
   );

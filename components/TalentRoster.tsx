@@ -103,9 +103,15 @@ export default function TalentRoster() {
                 <button onClick={() => setFilters({})} className="text-sm text-indigo-500 hover:underline">Clear all filters</button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-                {filtered.map((talent) => (
-                  <TalentCard key={talent.id} talent={talent} onClick={setSelectedTalent} />
+              <div className="columns-2 sm:columns-2 md:columns-3 xl:columns-4 gap-3">
+                {filtered.map((talent, i) => (
+                  <div
+                    key={talent.id}
+                    className="break-inside-avoid mb-3"
+                    style={{ animationDelay: `${i * 45}ms` }}
+                  >
+                    <TalentCard talent={talent} onClick={setSelectedTalent} index={i} />
+                  </div>
                 ))}
               </div>
             )}

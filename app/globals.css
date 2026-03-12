@@ -38,6 +38,15 @@ html {
   @apply bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-500;
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
