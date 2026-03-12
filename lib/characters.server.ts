@@ -1,4 +1,4 @@
-import { put, list, del } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 import fs from 'fs';
 import path from 'path';
 import { Talent } from './talent';
@@ -38,14 +38,11 @@ export async function writeCharacters(characters: Talent[]): Promise<void> {
     fs.writeFileSync(JSON_FALLBACK, JSON.stringify(characters, null, 2), 'utf-8');
     return;
   }
-  // Delete old blob first to avoid accumulation
-  const { blobs } = await list({ prefix: BLOB_KEY });
-  await Promise.all(blobs.map((b) => del(b.url)));
-
   await put(BLOB_KEY, JSON.stringify(characters, null, 2), {
     access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }
 
