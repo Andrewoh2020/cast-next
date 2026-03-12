@@ -2,24 +2,13 @@ import { MetadataRoute } from 'next';
 import { readSeo } from '@/lib/seo.server';
 import { readCharacters } from '@/lib/characters.server';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const seo = readSeo();
-  const characters = readCharacters();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [seo, characters] = await Promise.all([readSeo(), readCharacters()]);
   const base = seo.canonicalUrl || 'https://cast-next-silk.vercel.app';
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: base,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
-      url: `${base}/#roster`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
+    { url: base, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: `${base}/#roster`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
   ];
 
   const characterRoutes: MetadataRoute.Sitemap = characters.map((c) => ({

@@ -11,7 +11,7 @@ const geist = Geist({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = readSeo();
+  const seo = await readSeo();
 
   return {
     metadataBase: new URL(seo.canonicalUrl || "https://cast-next-silk.vercel.app"),
@@ -53,12 +53,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const seo = readSeo();
+  const seo = await readSeo();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -67,7 +67,9 @@ export default function RootLayout({
     url: seo.canonicalUrl,
     description: seo.description,
     logo: seo.ogImage,
-    sameAs: seo.twitterHandle ? [`https://twitter.com/${seo.twitterHandle.replace("@", "")}`] : [],
+    sameAs: seo.twitterHandle
+      ? [`https://twitter.com/${seo.twitterHandle.replace("@", "")}`]
+      : [],
   };
 
   return (
