@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
 import { readCharacters } from '@/lib/characters.server';
-import CharacterReferenceSheet from '@/emails/CharacterReferenceSheet';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,16 +23,21 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cast-next-silk.vercel.app';
 
-    // Build an absolute download URL for the reference sheet
+    // Build reference sheet download URL
     let referenceSheetDownloadUrl: string | undefined;
     if (talent.referenceSheetUrl) {
       if (talent.referenceSheetUrl.startsWith('/api/media')) {
-        // Our proxy route — make it absolute and add download flag
         referenceSheetDownloadUrl = `${baseUrl}${talent.referenceSheetUrl}&download=1`;
       } else if (talent.referenceSheetUrl.startsWith('http')) {
         referenceSheetDownloadUrl = talent.referenceSheetUrl;
       }
     }
+
+    // Dynamic imports to avoid build-time module initialization issues
+    const { Resend } = await import('resend');
+    const { default: CharacterReferenceSheet } = await import('@/emails/CharacterReferenceSheet');
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const { error } = await resend.emails.send({
       from: 'Cast <onboarding@resend.dev>',
