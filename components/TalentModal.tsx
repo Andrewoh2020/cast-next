@@ -88,7 +88,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
       className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] shadow-2xl overflow-hidden relative flex flex-col sm:flex-row items-stretch">
+      <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden relative flex flex-col sm:flex-row items-stretch" style={{ height: 'min(88vh, 700px)' }}>
         {/* Close button */}
         <button
           onClick={onClose}
@@ -172,16 +172,16 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
         </div>
 
         {/* ── CENTER COLUMN — main image ───────────────── */}
-        <div className="flex-1 overflow-y-auto bg-gray-100 order-1 sm:order-2 min-h-[240px]">
+        <div className="flex-1 relative bg-gray-100 order-1 sm:order-2 min-h-[240px]">
           {activeImg ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={activeImg}
               alt={talent.name}
-              className="w-full h-auto block transition-opacity duration-300"
+              className="absolute inset-0 w-full h-full object-contain transition-opacity duration-300"
             />
           ) : (
-            <div className="w-full h-full bg-gray-200" />
+            <div className="absolute inset-0 bg-gray-200" />
           )}
         </div>
 
