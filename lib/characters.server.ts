@@ -1,4 +1,4 @@
-import { put, list } from '@vercel/blob';
+import { put, get } from '@vercel/blob';
 import fs from 'fs';
 import path from 'path';
 import { Talent } from './talent';
@@ -11,23 +11,18 @@ function readLocalJson(): Talent[] {
   return JSON.parse(raw) as Talent[];
 }
 
-async function getBlobUrl(): Promise<string | null> {
-  const { blobs } = await list({ prefix: BLOB_KEY });
-  return blobs[0]?.url ?? null;
-}
-
 export async function readCharacters(): Promise<Talent[]> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
 
   try {
-    const url = await getBlobUrl();
-    if (!url) {
+    const result = await get(BLOB_KEY, { access: 'private' });
+    if (!result) {
       const seed = readLocalJson();
       await writeCharacters(seed);
       return seed;
     }
-    const res = await fetch(url, { cache: 'no-store' });
-    return res.json() as Promise<Talent[]>;
+    const text = await new Response(result.stream).text();
+    return JSON.parse(text) as Talent[];
   } catch {
     return readLocalJson();
   }
@@ -39,7 +34,7 @@ export async function writeCharacters(characters: Talent[]): Promise<void> {
     return;
   }
   await put(BLOB_KEY, JSON.stringify(characters, null, 2), {
-    access: 'public',
+    access: 'private',
     contentType: 'application/json',
     addRandomSuffix: false,
     allowOverwrite: true,

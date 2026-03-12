@@ -1,4 +1,4 @@
-import { put, list } from '@vercel/blob';
+import { put, get } from '@vercel/blob';
 import fs from 'fs';
 import path from 'path';
 
@@ -21,23 +21,18 @@ function readLocalJson(): SeoSettings {
   return JSON.parse(raw) as SeoSettings;
 }
 
-async function getBlobUrl(): Promise<string | null> {
-  const { blobs } = await list({ prefix: BLOB_KEY });
-  return blobs[0]?.url ?? null;
-}
-
 export async function readSeo(): Promise<SeoSettings> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
 
   try {
-    const url = await getBlobUrl();
-    if (!url) {
+    const result = await get(BLOB_KEY, { access: 'private' });
+    if (!result) {
       const seed = readLocalJson();
       await writeSeo(seed);
       return seed;
     }
-    const res = await fetch(url, { cache: 'no-store' });
-    return res.json() as Promise<SeoSettings>;
+    const text = await new Response(result.stream).text();
+    return JSON.parse(text) as SeoSettings;
   } catch {
     return readLocalJson();
   }
@@ -49,7 +44,7 @@ export async function writeSeo(settings: SeoSettings): Promise<void> {
     return;
   }
   await put(BLOB_KEY, JSON.stringify(settings, null, 2), {
-    access: 'public',
+    access: 'private',
     contentType: 'application/json',
     addRandomSuffix: false,
     allowOverwrite: true,
