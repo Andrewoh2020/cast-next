@@ -1,4 +1,5 @@
 import { put, get } from '@vercel/blob';
+import { appendPurchaseLog } from './purchases-log.server';
 
 export interface PurchaseRecord {
   characterId: number;
@@ -9,6 +10,7 @@ export interface PurchaseRecord {
   licensePrice: string;
   purchasedAt: string;
   referenceSheetUrl?: string;
+  sessionId?: string;
 }
 
 export interface UserData {
@@ -23,7 +25,7 @@ function userKey(userId: string, file: string) {
 async function readUserBlob<T>(pathname: string, fallback: T): Promise<T> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return fallback;
   try {
-    const result = await get(pathname, { access: 'private' });
+    const result = await get(pathname, { access: 'private', useCache: false });
     if (!result || result.statusCode === 304 || !result.stream) return fallback;
     const text = await new Response(result.stream).text();
     return JSON.parse(text) as T;
@@ -58,6 +60,15 @@ export async function toggleFavorite(userId: string, characterId: number): Promi
 
 export async function recordPurchase(userId: string, purchase: PurchaseRecord): Promise<void> {
   const data = await getUserData(userId);
+  if (purchase.sessionId && data.purchases.some((p) => p.sessionId === purchase.sessionId)) return;
   const updated = [purchase, ...data.purchases];
   await writeUserBlob(userKey(userId, 'data.json'), { ...data, purchases: updated });
+  // Append to global analytics log (non-blocking)
+  appendPurchaseLog({
+    characterId: purchase.characterId,
+    characterName: purchase.characterName,
+    licenseName: purchase.licenseName,
+    amount: Number(purchase.licensePrice.replace(/[^0-9.]/g, '')) || 0,
+    purchasedAt: purchase.purchasedAt,
+  }).catch(() => {});
 }

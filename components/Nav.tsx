@@ -17,12 +17,6 @@ export default function Nav() {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="#roster" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
-            Talent Roster
-          </Link>
-          <Link href="#how" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
-            How It Works
-          </Link>
           {isSignedIn ? (
             <>
               <Link href="/account" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
@@ -57,12 +51,6 @@ export default function Nav() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-6 pb-5 flex flex-col gap-1">
-          <Link href="#roster" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
-            Talent Roster
-          </Link>
-          <Link href="#how" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
-            How It Works
-          </Link>
           {isSignedIn ? (
             <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
               My Account

@@ -1,7 +1,28 @@
 import { put, get } from '@vercel/blob';
 import fs from 'fs';
 import path from 'path';
-import { Talent } from './talent';
+import { Talent, PriceOption } from './talent';
+
+const DEFAULT_PRICES: PriceOption[] = [
+  { name: 'Single Project', price: '$50', amount: 50 },
+  { name: 'Studio License', price: '$250', amount: 250 },
+  { name: 'Exclusive Rights', price: '$1000', amount: 1000 },
+];
+
+// Ensure every character has all standard license tiers.
+// Preserves any custom pricing already set; fills in defaults for missing tiers.
+// Respects exclusiveDisabled flag — characters marked as such will not have Exclusive Rights offered.
+function normalizePrices(characters: Talent[]): Talent[] {
+  return characters.map((c) => {
+    const tiers = c.exclusiveDisabled
+      ? DEFAULT_PRICES.filter((d) => d.name !== 'Exclusive Rights')
+      : DEFAULT_PRICES;
+    return {
+      ...c,
+      prices: tiers.map((def) => c.prices.find((p) => p.name === def.name) ?? def),
+    };
+  });
+}
 
 const BLOB_KEY = 'characters.json';
 const JSON_FALLBACK = path.join(process.cwd(), 'data', 'characters.json');
@@ -12,19 +33,19 @@ function readLocalJson(): Talent[] {
 }
 
 export async function readCharacters(): Promise<Talent[]> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return readLocalJson();
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return normalizePrices(readLocalJson());
 
   try {
     const result = await get(BLOB_KEY, { access: 'private' });
     if (!result || result.statusCode === 304 || !result.stream) {
       const seed = readLocalJson();
       await writeCharacters(seed);
-      return seed;
+      return normalizePrices(seed);
     }
     const text = await new Response(result.stream).text();
-    return JSON.parse(text) as Talent[];
+    return normalizePrices(JSON.parse(text) as Talent[]);
   } catch {
-    return readLocalJson();
+    return normalizePrices(readLocalJson());
   }
 }
 

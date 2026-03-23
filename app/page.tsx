@@ -1,16 +1,12 @@
-import Hero from '@/components/Hero';
-import TrustStrip from '@/components/TrustStrip';
-import HowItWorks from '@/components/HowItWorks';
-import TalentRoster from '@/components/TalentRoster';
+import ImmersiveLayout from '@/components/ImmersiveLayout';
+import ExclusiveRoster from '@/components/ExclusiveRoster';
 import CtaBanner from '@/components/CtaBanner';
 
 export default function Home() {
   return (
     <main>
-      <Hero />
-      <TrustStrip />
-      <HowItWorks />
-      <TalentRoster />
+      <ImmersiveLayout />
+      <ExclusiveRoster />
       <CtaBanner />
     </main>
   );

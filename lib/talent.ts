@@ -12,6 +12,7 @@ export type TalentEthnicity =
 export type TalentAgeRange = 'child' | 'teen' | '20s' | '30s' | '40s' | '50s' | '60s+';
 export type TalentBuild = 'slim' | 'athletic' | 'average' | 'stocky' | 'curvy' | 'plus-size';
 export type TalentHeight = 'short' | 'average' | 'tall';
+export type TalentStyle = 'realistic' | 'anime' | 'cartoon' | '3d-cgi' | 'stylized';
 export type TalentGenre =
   | 'action'
   | 'drama'
@@ -44,9 +45,12 @@ export interface Talent {
   ageRange: TalentAgeRange;
   build: TalentBuild;
   height: TalentHeight;
+  style: TalentStyle;
   genres: TalentGenre[];
   languages: string[];
   prices: PriceOption[];
+  exclusive?: boolean;
+  exclusiveDisabled?: boolean;
 }
 
 // ── Label maps for display ──────────────────────────────────────────
@@ -102,6 +106,14 @@ export const HEIGHT_LABELS: Record<TalentHeight, string> = {
   tall: 'Tall',
 };
 
+export const STYLE_LABELS: Record<TalentStyle, string> = {
+  realistic: 'Realistic',
+  anime: 'Anime',
+  cartoon: 'Cartoon',
+  '3d-cgi': '3D / CGI',
+  stylized: 'Stylized',
+};
+
 export const GENRE_LABELS: Record<TalentGenre, string> = {
   action: 'Action',
   drama: 'Drama',
@@ -117,11 +129,6 @@ export const GENRE_LABELS: Record<TalentGenre, string> = {
 // ── Filter config (used by roster UI) ────────────────────────────────
 
 export const FILTER_GROUPS = [
-  {
-    key: 'roles' as const,
-    label: 'Role',
-    options: Object.entries(ROLE_LABELS).map(([value, label]) => ({ value, label })),
-  },
   {
     key: 'sex' as const,
     label: 'Sex',
@@ -148,9 +155,9 @@ export const FILTER_GROUPS = [
     options: Object.entries(HEIGHT_LABELS).map(([value, label]) => ({ value, label })),
   },
   {
-    key: 'genres' as const,
-    label: 'Genre',
-    options: Object.entries(GENRE_LABELS).map(([value, label]) => ({ value, label })),
+    key: 'style' as const,
+    label: 'Style',
+    options: Object.entries(STYLE_LABELS).map(([value, label]) => ({ value, label })),
   },
 ] as const;
 
@@ -189,11 +196,13 @@ export const talents: Talent[] = [
     ageRange: '30s',
     build: 'slim',
     height: 'tall',
+    style: 'realistic',
     genres: ['drama', 'thriller', 'political'],
     languages: ['EN', 'FR'],
     prices: [
-      { name: "Single Project", price: "$299", amount: 299 },
-      { name: "Unlimited", price: "$799", amount: 799 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -208,11 +217,13 @@ export const talents: Talent[] = [
     ageRange: '40s',
     build: 'athletic',
     height: 'tall',
+    style: 'realistic',
     genres: ['action', 'thriller'],
     languages: ['EN', 'ES'],
     prices: [
-      { name: "Single Project", price: "$299", amount: 299 },
-      { name: "Unlimited", price: "$799", amount: 799 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -227,11 +238,13 @@ export const talents: Talent[] = [
     ageRange: '20s',
     build: 'slim',
     height: 'average',
+    style: 'realistic',
     genres: ['sci-fi', 'thriller', 'action'],
     languages: ['EN', 'JA'],
     prices: [
-      { name: "Single Project", price: "$199", amount: 199 },
-      { name: "Unlimited", price: "$599", amount: 599 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -246,11 +259,13 @@ export const talents: Talent[] = [
     ageRange: '40s',
     build: 'average',
     height: 'tall',
+    style: 'realistic',
     genres: ['drama', 'thriller', 'political'],
     languages: ['EN', 'DE'],
     prices: [
-      { name: "Single Project", price: "$349", amount: 349 },
-      { name: "Unlimited", price: "$899", amount: 899 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -265,11 +280,13 @@ export const talents: Talent[] = [
     ageRange: '20s',
     build: 'average',
     height: 'average',
+    style: 'realistic',
     genres: ['drama', 'indie', 'romance'],
     languages: ['EN'],
     prices: [
-      { name: "Single Project", price: "$299", amount: 299 },
-      { name: "Unlimited", price: "$799", amount: 799 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -284,11 +301,13 @@ export const talents: Talent[] = [
     ageRange: '30s',
     build: 'athletic',
     height: 'tall',
+    style: 'realistic',
     genres: ['action', 'thriller', 'drama'],
     languages: ['EN', 'RU'],
     prices: [
-      { name: "Single Project", price: "$349", amount: 349 },
-      { name: "Unlimited", price: "$899", amount: 899 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -303,11 +322,13 @@ export const talents: Talent[] = [
     ageRange: '30s',
     build: 'slim',
     height: 'short',
+    style: 'realistic',
     genres: ['sci-fi', 'comedy', 'drama'],
     languages: ['EN', 'ZH'],
     prices: [
-      { name: "Single Project", price: "$199", amount: 199 },
-      { name: "Unlimited", price: "$599", amount: 599 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -322,11 +343,13 @@ export const talents: Talent[] = [
     ageRange: '50s',
     build: 'average',
     height: 'average',
+    style: 'realistic',
     genres: ['political', 'thriller', 'drama'],
     languages: ['EN', 'FR'],
     prices: [
-      { name: "Single Project", price: "$399", amount: 399 },
-      { name: "Unlimited", price: "$999", amount: 999 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -341,11 +364,13 @@ export const talents: Talent[] = [
     ageRange: '30s',
     build: 'athletic',
     height: 'tall',
+    style: 'realistic',
     genres: ['drama', 'thriller', 'political'],
     languages: ['EN', 'AR'],
     prices: [
-      { name: "Single Project", price: "$299", amount: 299 },
-      { name: "Unlimited", price: "$799", amount: 799 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -360,11 +385,13 @@ export const talents: Talent[] = [
     ageRange: '20s',
     build: 'average',
     height: 'average',
+    style: 'realistic',
     genres: ['romance', 'drama', 'comedy'],
     languages: ['EN'],
     prices: [
-      { name: "Single Project", price: "$299", amount: 299 },
-      { name: "Unlimited", price: "$799", amount: 799 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -379,11 +406,13 @@ export const talents: Talent[] = [
     ageRange: '20s',
     build: 'slim',
     height: 'average',
+    style: 'realistic',
     genres: ['romance', 'indie', 'drama'],
     languages: ['EN', 'PT'],
     prices: [
-      { name: "Single Project", price: "$199", amount: 199 },
-      { name: "Unlimited", price: "$599", amount: 599 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
   {
@@ -398,11 +427,13 @@ export const talents: Talent[] = [
     ageRange: '60s+',
     build: 'stocky',
     height: 'tall',
+    style: 'realistic',
     genres: ['drama', 'action', 'thriller'],
     languages: ['EN'],
     prices: [
-      { name: "Single Project", price: "$399", amount: 399 },
-      { name: "Unlimited", price: "$999", amount: 999 },
+      { name: "Single Project", price: "$50", amount: 50 },
+      { name: "Studio License", price: "$250", amount: 250 },
+      { name: "Exclusive Rights", price: "$1000", amount: 1000 },
     ],
   },
 ];

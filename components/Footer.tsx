@@ -13,15 +13,15 @@ export default function Footer() {
 
         <div className="flex gap-12 flex-wrap">
           {[
-            { title: 'Product', links: ['Talent Roster', 'Pricing', 'New Releases'] },
-            { title: 'Company', links: ['About', 'Blog', 'Careers'] },
-            { title: 'Legal', links: ['License Terms', 'Privacy Policy', 'Copyright FAQ'] },
+            { title: 'Product', links: [{ label: 'Talent Roster', href: '/#roster' }] },
+            { title: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Blog', href: '#' }] },
+            { title: 'Legal', links: [{ label: 'License Terms', href: '/license-terms' }, { label: 'Privacy Policy', href: '/privacy-policy' }, { label: 'Copyright FAQ', href: '/copyright-faq' }] },
           ].map((col) => (
             <div key={col.title} className="flex flex-col gap-2 min-w-[110px]">
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">{col.title}</h4>
               {col.links.map((link) => (
-                <Link key={link} href="#" className="text-sm text-white/50 hover:text-white transition-colors">
-                  {link}
+                <Link key={link.label} href={link.href} className="text-sm text-white/50 hover:text-white transition-colors">
+                  {link.label}
                 </Link>
               ))}
             </div>

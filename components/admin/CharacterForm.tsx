@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Upload, X, FileText, Plus } from 'lucide-react';
 import {
-  Talent, TalentRole, TalentSex, TalentEthnicity, TalentAgeRange,
-  TalentBuild, TalentHeight, TalentGenre,
-  ROLE_LABELS, SEX_LABELS, ETHNICITY_LABELS, AGE_LABELS,
-  BUILD_LABELS, HEIGHT_LABELS, GENRE_LABELS,
+  Talent, TalentSex, TalentEthnicity, TalentAgeRange,
+  TalentBuild, TalentHeight, TalentStyle,
+  SEX_LABELS, ETHNICITY_LABELS, AGE_LABELS,
+  BUILD_LABELS, HEIGHT_LABELS, STYLE_LABELS,
 } from '@/lib/talent';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,11 +27,13 @@ const blank = (): Omit<Talent, 'id'> => ({
   gallery: [],
   referenceSheetUrl: '',
   roles: [], sex: 'female', ethnicities: [], ageRange: '30s',
-  build: 'average', height: 'average', genres: [], languages: [],
+  build: 'average', height: 'average', style: 'realistic', languages: [], genres: [],
   prices: [
-    { name: 'Single Project', price: '$299', amount: 299 },
-    { name: 'Unlimited', price: '$799', amount: 799 },
+    { name: 'Single Project', price: '$50', amount: 50 },
+    { name: 'Studio License', price: '$250', amount: 250 },
+    { name: 'Exclusive Rights', price: '$1000', amount: 1000 },
   ],
+  exclusiveDisabled: false,
 });
 
 function toSlug(name: string) {
@@ -61,43 +63,6 @@ function Field({ label, hint, children, required }: { label: string; hint?: stri
   );
 }
 
-// ─── Language tags ────────────────────────────────────────────────────────────
-function LanguageInput({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
-  const [input, setInput] = useState('');
-  const add = () => {
-    const t = input.trim().toUpperCase();
-    if (t && !value.includes(t)) onChange([...value, t]);
-    setInput('');
-  };
-  return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-2 min-h-[32px]">
-        {value.length === 0 && <span className="text-xs text-gray-400 italic">No languages added yet</span>}
-        {value.map((lang) => (
-          <span key={lang} className="inline-flex items-center gap-1 text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full">
-            {lang}
-            <button type="button" onClick={() => onChange(value.filter((l) => l !== lang))}
-              className="hover:text-indigo-900 transition-colors ml-0.5 text-indigo-400">×</button>
-          </span>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
-          placeholder="e.g. EN, FR, JA — press Enter to add"
-          maxLength={6}
-          className="flex-1"
-        />
-        <button type="button" onClick={add}
-          className="px-4 py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 whitespace-nowrap">
-          Add
-        </button>
-      </div>
-    </div>
-  );
-}
 
 // ─── Price input ────────────────────────────────────────────────────────────
 function PriceField({ label, value, onChange }: { label: string; value: string; onChange: (price: string, amount: number) => void }) {
@@ -331,22 +296,55 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
           {/* REFERENCE SHEET */}
           <Section title="Reference Sheet">
             {form.referenceSheetUrl ? (
-              <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
-                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FileText size={20} className="text-indigo-500" />
+              <>
+                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-4">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText size={20} className="text-indigo-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">Reference sheet uploaded</p>
+                    <p className="text-xs text-gray-400 truncate">{form.referenceSheetUrl}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => set('referenceSheetUrl', '')}
+                    className="w-7 h-7 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-500 flex items-center justify-center text-gray-500 transition-colors flex-shrink-0"
+                  >
+                    <X size={13} />
+                  </button>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate">Reference sheet uploaded</p>
-                  <p className="text-xs text-gray-400 truncate">{form.referenceSheetUrl}</p>
+
+                {/* Preview */}
+                <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 px-3 py-2 border-b border-gray-200">
+                    Preview — what the client receives
+                  </p>
+                  {/\.pdf(\?|$)/i.test(form.referenceSheetUrl) ? (
+                    <iframe
+                      src={form.referenceSheetUrl}
+                      className="w-full"
+                      style={{ height: '480px' }}
+                      title="Reference sheet preview"
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={form.referenceSheetUrl}
+                      alt="Reference sheet preview"
+                      className="w-full object-contain max-h-[480px]"
+                    />
+                  )}
                 </div>
+
                 <button
                   type="button"
-                  onClick={() => set('referenceSheetUrl', '')}
-                  className="w-7 h-7 rounded-full bg-gray-200 hover:bg-red-100 hover:text-red-500 flex items-center justify-center text-gray-500 transition-colors flex-shrink-0"
+                  onClick={() => sheetRef.current?.click()}
+                  disabled={uploadingSheet}
+                  className="w-full text-xs font-semibold text-indigo-500 hover:text-indigo-700 py-2 transition-colors"
                 >
-                  <X size={13} />
+                  {uploadingSheet ? 'Uploading...' : 'Replace file'}
                 </button>
-              </div>
+              </>
             ) : (
               <button
                 type="button"
@@ -404,35 +402,6 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               )}>
                 {form.vibe.length} / 120 chars recommended
               </p>
-            </Field>
-          </Section>
-
-          {/* ROLES & GENRES */}
-          <Section title="Roles & Genres">
-            <Field label="Roles" required hint="(select all that apply)">
-              <div className="flex flex-wrap gap-2 pt-0.5">
-                {(Object.entries(ROLE_LABELS) as [TalentRole, string][]).map(([val, label]) => (
-                  <ToggleTag
-                    key={val}
-                    label={label}
-                    selected={form.roles.includes(val)}
-                    onClick={() => toggleArr('roles', val)}
-                  />
-                ))}
-              </div>
-            </Field>
-
-            <Field label="Genres" required hint="(select all that apply)">
-              <div className="flex flex-wrap gap-2 pt-0.5">
-                {(Object.entries(GENRE_LABELS) as [TalentGenre, string][]).map(([val, label]) => (
-                  <ToggleTag
-                    key={val}
-                    label={label}
-                    selected={form.genres.includes(val)}
-                    onClick={() => toggleArr('genres', val)}
-                  />
-                ))}
-              </div>
             </Field>
           </Section>
 
@@ -502,9 +471,19 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               </div>
             </Field>
 
-            <Field label="Languages">
-              <LanguageInput value={form.languages} onChange={(v) => set('languages', v)} />
+            <Field label="Style" required>
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {(Object.entries(STYLE_LABELS) as [TalentStyle, string][]).map(([val, label]) => (
+                  <ToggleTag
+                    key={val}
+                    label={label}
+                    selected={form.style === val}
+                    onClick={() => set('style', val)}
+                  />
+                ))}
+              </div>
             </Field>
+
           </Section>
 
           {/* PRICING */}
@@ -519,7 +498,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               }}
             />
             <PriceField
-              label="Unlimited License"
+              label="Studio License"
               value={form.prices[1].price}
               onChange={(price, amount) => {
                 const prices = [...form.prices];
@@ -527,6 +506,30 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 set('prices', prices);
               }}
             />
+            <div className={`transition-opacity ${form.exclusiveDisabled ? 'opacity-40 pointer-events-none' : ''}`}>
+              <PriceField
+                label="Exclusive Rights"
+                value={form.prices[2]?.price ?? '$1000'}
+                onChange={(price, amount) => {
+                  const prices = [...form.prices];
+                  prices[2] = { ...prices[2], price, amount };
+                  set('prices', prices);
+                }}
+              />
+            </div>
+
+            <label className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 cursor-pointer">
+              <div>
+                <p className="text-sm font-bold text-amber-900">Disable Exclusive Rights</p>
+                <p className="text-xs text-amber-700 mt-0.5">Buyers will not see the option to claim this character exclusively. Use this to protect high-value characters.</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={!!form.exclusiveDisabled}
+                onChange={(e) => set('exclusiveDisabled', e.target.checked)}
+                className="w-5 h-5 accent-amber-500 flex-shrink-0 ml-4"
+              />
+            </label>
           </Section>
 
           {/* Spacer so sticky footer doesn't cover last field */}

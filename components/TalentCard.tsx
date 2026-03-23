@@ -1,6 +1,7 @@
 'use client';
 
-import { Talent, ROLE_LABELS } from '@/lib/talent';
+import { useRef, useState } from 'react';
+import { Talent } from '@/lib/talent';
 
 interface Props {
   talent: Talent;
@@ -10,23 +11,43 @@ interface Props {
   onToggleFavorite?: (talent: Talent) => void;
 }
 
-const ASPECT_STYLES = [
-  { paddingBottom: '133%' },
-  { paddingBottom: '120%' },
-  { paddingBottom: '150%' },
-  { paddingBottom: '125%' },
-  { paddingBottom: '110%' },
-];
-
 export default function TalentCard({ talent, onClick, index = 0, isFavorited = false, onToggleFavorite }: Props) {
-  const aspectStyle = ASPECT_STYLES[index % ASPECT_STYLES.length];
-  const primaryRole = talent.roles[0] ? ROLE_LABELS[talent.roles[0]] : null;
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50, active: false });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotateY = ((x - cx) / cx) * 12;
+    const rotateX = -((y - cy) / cy) * 12;
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+    setTilt({ rotateX, rotateY, glareX, glareY, active: true });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50, active: false });
+  };
 
   return (
     <div
+      ref={cardRef}
       onClick={() => onClick(talent)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       className="group relative w-full overflow-hidden rounded-2xl cursor-pointer bg-gray-100 animate-fade-in-up"
-      style={{ paddingBottom: aspectStyle.paddingBottom }}
+      style={{
+        paddingBottom: '133%',
+        transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${tilt.active ? 1.02 : 1})`,
+        transition: tilt.active ? 'transform 0.1s ease-out' : 'transform 0.4s ease-out',
+        willChange: 'transform',
+      }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -38,13 +59,17 @@ export default function TalentCard({ talent, onClick, index = 0, isFavorited = f
       {/* Gradient scrim */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-350" />
 
-      {/* Top row: role chip + favorite button */}
-      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-        {primaryRole && (
-          <span className="text-[10px] font-bold uppercase tracking-widest bg-white/90 backdrop-blur-sm text-gray-700 px-2.5 py-1 rounded-full">
-            {primaryRole}
-          </span>
-        )}
+      {/* Holographic glare */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
+        style={{
+          opacity: tilt.active ? 0.18 : 0,
+          background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.85) 0%, rgba(180,160,255,0.3) 30%, transparent 65%)`,
+        }}
+      />
+
+      {/* Top row: favorite button */}
+      <div className="absolute top-3 left-3 right-3 flex items-center justify-end">
         {onToggleFavorite && (
           <button
             onClick={(e) => { e.stopPropagation(); onToggleFavorite(talent); }}

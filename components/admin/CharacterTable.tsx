@@ -1,6 +1,6 @@
 'use client';
 
-import { Talent, ROLE_LABELS, AGE_LABELS, BUILD_LABELS, ETHNICITY_LABELS } from '@/lib/talent';
+import { Talent, AGE_LABELS, BUILD_LABELS, ETHNICITY_LABELS } from '@/lib/talent';
 
 interface Props {
   characters: Talent[];
@@ -26,7 +26,7 @@ export default function CharacterTable({ characters, onEdit, onDelete }: Props) 
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50">
               <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400">Character</th>
-              <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400">Roles</th>
+
               <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 hidden md:table-cell">Attributes</th>
               <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 hidden lg:table-cell">Ethnicity</th>
               <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400">Price</th>
@@ -50,16 +50,6 @@ export default function CharacterTable({ characters, onEdit, onDelete }: Props) 
                   </div>
                 </td>
 
-                {/* Roles */}
-                <td className="px-5 py-4">
-                  <div className="flex flex-wrap gap-1">
-                    {c.roles.map((r) => (
-                      <span key={r} className="text-[11px] font-semibold bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">
-                        {ROLE_LABELS[r]}
-                      </span>
-                    ))}
-                  </div>
-                </td>
 
                 {/* Attributes */}
                 <td className="px-5 py-4 hidden md:table-cell">

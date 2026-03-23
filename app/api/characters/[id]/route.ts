@@ -5,11 +5,11 @@ import { Talent } from '@/lib/talent';
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const body = await req.json() as Talent;
+    const body = await req.json() as Partial<Talent>;
     const characters = await readCharacters();
     const idx = characters.findIndex((c) => c.id === Number(id));
     if (idx === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    characters[idx] = { ...body, id: Number(id) };
+    characters[idx] = { ...characters[idx], ...body, id: Number(id) };
     await writeCharacters(characters);
     return NextResponse.json(characters[idx]);
   } catch (err) {

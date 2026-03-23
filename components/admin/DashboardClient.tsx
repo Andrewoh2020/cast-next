@@ -12,7 +12,20 @@ interface Props {
   initialCharacters: Talent[];
 }
 
-type Tab = 'roster' | 'seo';
+type Tab = 'roster' | 'analytics' | 'seo';
+
+interface CharacterStat {
+  purchases: number;
+  revenue: number;
+  byLicense: Record<string, { count: number; revenue: number }>;
+  viewsThisWeek: number;
+}
+
+interface StatsData {
+  totalRevenue: number;
+  totalPurchases: number;
+  byCharacter: Record<number, CharacterStat>;
+}
 
 export default function DashboardClient({ initialCharacters }: Props) {
   const router = useRouter();
@@ -21,6 +34,21 @@ export default function DashboardClient({ initialCharacters }: Props) {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Talent | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [statsData, setStatsData] = useState<StatsData | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+
+  const loadStats = async () => {
+    setStatsLoading(true);
+    const res = await fetch('/api/admin/stats');
+    const data = await res.json();
+    setStatsData(data);
+    setStatsLoading(false);
+  };
+
+  const handleTabChange = (t: Tab) => {
+    setTab(t);
+    if (t === 'analytics' && !statsData) loadStats();
+  };
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -58,11 +86,10 @@ export default function DashboardClient({ initialCharacters }: Props) {
     setDeleteId(null);
   };
 
-  const stats = {
+  const rosterStats = {
     total: characters.length,
-    lead: characters.filter((c) => c.roles.includes('lead')).length,
-    villain: characters.filter((c) => c.roles.includes('villain')).length,
-    hero: characters.filter((c) => c.roles.includes('hero')).length,
+    exclusive: characters.filter((c) => c.exclusive).length,
+    available: characters.filter((c) => !c.exclusive).length,
   };
 
   return (
@@ -93,11 +120,12 @@ export default function DashboardClient({ initialCharacters }: Props) {
         <div className="flex items-center gap-1 mb-8 bg-gray-100 p-1 rounded-xl w-fit">
           {([
             { key: 'roster', label: 'Talent Roster' },
+            { key: 'analytics', label: 'Analytics' },
             { key: 'seo', label: 'SEO' },
           ] as { key: Tab; label: string }[]).map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => handleTabChange(t.key)}
               className={cn(
                 'px-5 py-2 rounded-lg text-sm font-semibold transition-all',
                 tab === t.key
@@ -126,12 +154,11 @@ export default function DashboardClient({ initialCharacters }: Props) {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
               {[
-                { label: 'Total Characters', value: stats.total, color: 'text-indigo-600' },
-                { label: 'Lead Roles', value: stats.lead, color: 'text-violet-600' },
-                { label: 'Villains', value: stats.villain, color: 'text-rose-600' },
-                { label: 'Heroes', value: stats.hero, color: 'text-emerald-600' },
+                { label: 'Total Characters', value: rosterStats.total, color: 'text-indigo-600' },
+                { label: 'Available', value: rosterStats.available, color: 'text-emerald-600' },
+                { label: 'Exclusively Licensed', value: rosterStats.exclusive, color: 'text-amber-600' },
               ].map((s) => (
                 <div key={s.label} className="bg-white border border-gray-100 rounded-2xl p-5">
                   <div className={`text-3xl font-black mb-1 ${s.color}`}>{s.value}</div>
@@ -145,6 +172,122 @@ export default function DashboardClient({ initialCharacters }: Props) {
               onEdit={openEdit}
               onDelete={(id) => setDeleteId(id)}
             />
+          </>
+        )}
+
+        {/* ── Analytics tab ── */}
+        {tab === 'analytics' && (
+          <>
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-2xl font-black tracking-tight text-black">Analytics</h1>
+                <p className="text-sm text-gray-500 mt-1">Revenue, purchases, and character views</p>
+              </div>
+              <button
+                onClick={loadStats}
+                className="text-sm font-semibold text-gray-600 border border-gray-200 px-4 py-2 rounded-lg hover:border-gray-400 transition-colors"
+              >
+                Refresh
+              </button>
+            </div>
+
+            {statsLoading ? (
+              <div className="flex items-center justify-center py-24">
+                <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : statsData ? (
+              <>
+                {/* Summary cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+                  <div className="bg-white border border-gray-100 rounded-2xl p-5">
+                    <div className="text-3xl font-black text-emerald-600 mb-1">
+                      ${statsData.totalRevenue.toLocaleString()}
+                    </div>
+                    <div className="text-xs font-medium text-gray-500">Total Revenue</div>
+                  </div>
+                  <div className="bg-white border border-gray-100 rounded-2xl p-5">
+                    <div className="text-3xl font-black text-indigo-600 mb-1">
+                      {statsData.totalPurchases}
+                    </div>
+                    <div className="text-xs font-medium text-gray-500">Total Purchases</div>
+                  </div>
+                  <div className="bg-white border border-gray-100 rounded-2xl p-5">
+                    <div className="text-3xl font-black text-violet-600 mb-1">
+                      {statsData.totalPurchases > 0
+                        ? `$${Math.round(statsData.totalRevenue / statsData.totalPurchases)}`
+                        : '—'}
+                    </div>
+                    <div className="text-xs font-medium text-gray-500">Avg. Order Value</div>
+                  </div>
+                </div>
+
+                {/* Per-character breakdown */}
+                <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+                  <div className="px-5 py-4 border-b border-gray-100">
+                    <p className="text-sm font-bold text-black">Per-Character Stats</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Views are unique sessions in the last 7 days</p>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-100 bg-gray-50">
+                          <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Character</th>
+                          <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Views (7d)</th>
+                          <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Purchases</th>
+                          <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Revenue</th>
+                          <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hidden lg:table-cell">License Breakdown</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-50">
+                        {characters.map((c) => {
+                          const s = statsData.byCharacter[c.id];
+                          return (
+                            <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                              <td className="px-5 py-4">
+                                <div className="flex items-center gap-3">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={c.img} alt={c.name} className="w-9 h-12 rounded-lg object-cover flex-shrink-0" />
+                                  <span className="font-semibold text-black">{c.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-5 py-4">
+                                <span className="font-bold text-violet-600">{s?.viewsThisWeek ?? 0}</span>
+                              </td>
+                              <td className="px-5 py-4">
+                                <span className="font-bold text-indigo-600">{s?.purchases ?? 0}</span>
+                              </td>
+                              <td className="px-5 py-4">
+                                <span className="font-bold text-emerald-600">
+                                  {s?.revenue ? `$${s.revenue.toLocaleString()}` : '—'}
+                                </span>
+                              </td>
+                              <td className="px-5 py-4 hidden lg:table-cell">
+                                {s?.byLicense ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {Object.entries(s.byLicense).map(([name, data]) => (
+                                      <span key={name} className="text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                        {name}: {data.count} (${data.revenue})
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-300 text-xs">No sales yet</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-24 text-gray-400">
+                <p className="font-semibold text-gray-600 mb-1">Failed to load stats</p>
+                <button onClick={loadStats} className="text-sm text-indigo-500 hover:underline">Try again</button>
+              </div>
+            )}
           </>
         )}
 
