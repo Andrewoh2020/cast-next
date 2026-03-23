@@ -6,9 +6,8 @@ import Link from 'next/link';
 import AutoDownload from '@/components/AutoDownload';
 import DownloadButton from '@/components/DownloadButton';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ session_id?: string }> }) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const { session_id } = await searchParams;
   if (!session_id) redirect('/');
 
