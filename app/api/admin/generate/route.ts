@@ -19,7 +19,7 @@ async function generateAndUpload(prompt: string, aspectRatio: string, resolution
       resolution,
       output_format: 'jpeg',
     },
-  }) as { images: { url: string }[] };
+  }) as unknown as { images: { url: string }[] };
 
   const imageUrl = result.images[0].url;
 
