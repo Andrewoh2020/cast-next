@@ -97,6 +97,9 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
   const [uploadingGallery, setUploadingGallery] = useState(false);
   const [uploadingSheet, setUploadingSheet] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [aiDescription, setAiDescription] = useState('');
+  const [generating, setGenerating] = useState<'profile' | 'refsheet' | 'both' | null>(null);
+  const [genError, setGenError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const sheetRef = useRef<HTMLInputElement>(null);
@@ -170,6 +173,27 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
     e.target.value = '';
   };
 
+  const handleGenerate = async (mode: 'profile' | 'refsheet' | 'both') => {
+    if (!aiDescription.trim()) return;
+    setGenerating(mode);
+    setGenError('');
+    const slug = form.slug || toSlug(aiDescription.split(' ').slice(0, 3).join(' '));
+    try {
+      const res = await fetch('/api/admin/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: aiDescription, slug, mode }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Generation failed');
+      if (data.profileUrl) set('img', data.profileUrl);
+      if (data.refSheetUrl) set('referenceSheetUrl', data.refSheetUrl);
+    } catch (err) {
+      setGenError(err instanceof Error ? err.message : 'Generation failed');
+    }
+    setGenerating(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isDirty && character) return;
@@ -210,6 +234,48 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
 
         {/* ── Scrollable body ────────────────────────── */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+
+          {/* AI GENERATION */}
+          <div className="px-6 py-5 border-b border-gray-100 bg-gradient-to-br from-indigo-50 to-white space-y-3">
+            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">✦ AI Generate</p>
+            <textarea
+              rows={3}
+              placeholder="Describe the character… e.g. 'a 30s East Asian female corporate executive, slim build, sharp features, tailored blazer'"
+              value={aiDescription}
+              onChange={(e) => setAiDescription(e.target.value)}
+              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300 placeholder:text-gray-400"
+            />
+            {genError && <p className="text-xs text-red-500">{genError}</p>}
+            <div className="flex gap-2 flex-wrap">
+              <button
+                type="button"
+                disabled={!aiDescription.trim() || !!generating}
+                onClick={() => handleGenerate('profile')}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
+              >
+                {generating === 'profile' ? <span className="animate-spin">⟳</span> : '🖼'}
+                Profile Image
+              </button>
+              <button
+                type="button"
+                disabled={!aiDescription.trim() || !!generating}
+                onClick={() => handleGenerate('refsheet')}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
+              >
+                {generating === 'refsheet' ? <span className="animate-spin">⟳</span> : '📋'}
+                Reference Sheet
+              </button>
+              <button
+                type="button"
+                disabled={!aiDescription.trim() || !!generating}
+                onClick={() => handleGenerate('both')}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-40 transition-colors"
+              >
+                {generating === 'both' ? <span className="animate-spin">⟳</span> : '⚡'}
+                {generating === 'both' ? 'Generating…' : 'Generate Both'}
+              </button>
+            </div>
+          </div>
 
           {/* IMAGE */}
           <Section title="Character Image">

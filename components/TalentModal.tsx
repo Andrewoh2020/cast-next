@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import {
   Talent,
-  ROLE_LABELS,
+
   SEX_LABELS,
   ETHNICITY_LABELS,
   AGE_LABELS,
@@ -209,14 +209,6 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
             {talent.name}
           </h2>
 
-          {/* Roles */}
-          <div className="flex flex-wrap gap-1 mb-3">
-            {talent.roles.map((r) => (
-              <span key={r} className="text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full">
-                {ROLE_LABELS[r]}
-              </span>
-            ))}
-          </div>
 
           {/* Vibe */}
           <p className="text-xs text-gray-500 leading-relaxed mb-5">{talent.vibe}</p>
