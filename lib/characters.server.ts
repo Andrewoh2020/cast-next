@@ -51,8 +51,10 @@ export async function readCharacters(): Promise<Talent[]> {
 }
 
 export async function writeCharacters(characters: Talent[]): Promise<void> {
-  // Always update the local JSON so the fallback read stays in sync
-  fs.writeFileSync(JSON_FALLBACK, JSON.stringify(characters, null, 2), 'utf-8');
+  // Update local JSON when possible (fails on read-only filesystems like Vercel)
+  try {
+    fs.writeFileSync(JSON_FALLBACK, JSON.stringify(characters, null, 2), 'utf-8');
+  } catch {}
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     await put(BLOB_KEY, JSON.stringify(characters, null, 2), {
