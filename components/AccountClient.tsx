@@ -148,17 +148,26 @@ export default function AccountClient({ initialFavorites, initialPurchases }: Pr
                   </div>
                 </div>
                 {(() => {
-                  const url = p.referenceSheetUrl
-                    ? `${p.referenceSheetUrl}${p.referenceSheetUrl.includes('?') ? '&' : '?'}download=1`
-                    : `${p.characterImg}`;
-                  return (
+                  const files: { url: string; filename: string }[] = [];
+                  if (p.characterImg) {
+                    files.push({
+                      url: `${p.characterImg}${p.characterImg.includes('?') ? '&' : '?'}download=1&filename=${p.characterSlug}-profile`,
+                      filename: `${p.characterSlug}-profile`,
+                    });
+                  }
+                  if (p.referenceSheetUrl) {
+                    files.push({
+                      url: `${p.referenceSheetUrl}${p.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${p.characterSlug}-reference-sheet`,
+                      filename: `${p.characterSlug}-reference-sheet`,
+                    });
+                  }
+                  return files.length > 0 ? (
                     <DownloadButton
-                      url={url}
-                      filename={p.referenceSheetUrl ? `${p.characterSlug}-reference-sheet` : p.characterSlug}
+                      files={files}
                       label="Download"
                       className="flex-shrink-0 text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 min-w-[80px] text-center"
                     />
-                  );
+                  ) : null;
                 })()}
               </div>
             ))}
