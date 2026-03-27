@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
             product_data: {
               name: `${characterName} — ${licenseName} License`,
               description: `Cast AI character license for ${characterName}`,
-              images: characterImg ? [characterImg] : [],
+              images: characterImg?.startsWith('http') ? [characterImg] : [],
             },
           },
           quantity: 1,

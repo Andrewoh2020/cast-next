@@ -36,7 +36,7 @@ export async function readCharacters(): Promise<Talent[]> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) return normalizePrices(readLocalJson());
 
   try {
-    const result = await get(BLOB_KEY, { access: 'private' });
+    const result = await get(BLOB_KEY, { access: 'private', useCache: false });
     if (!result || result.statusCode === 304 || !result.stream) {
       const seed = readLocalJson();
       await writeCharacters(seed);
@@ -44,22 +44,24 @@ export async function readCharacters(): Promise<Talent[]> {
     }
     const text = await new Response(result.stream).text();
     return normalizePrices(JSON.parse(text) as Talent[]);
-  } catch {
+  } catch (err) {
+    console.error('[characters.server] Blob read failed, using local fallback:', err);
     return normalizePrices(readLocalJson());
   }
 }
 
 export async function writeCharacters(characters: Talent[]): Promise<void> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    fs.writeFileSync(JSON_FALLBACK, JSON.stringify(characters, null, 2), 'utf-8');
-    return;
+  // Always update the local JSON so the fallback read stays in sync
+  fs.writeFileSync(JSON_FALLBACK, JSON.stringify(characters, null, 2), 'utf-8');
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    await put(BLOB_KEY, JSON.stringify(characters, null, 2), {
+      access: 'private',
+      contentType: 'application/json',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    });
   }
-  await put(BLOB_KEY, JSON.stringify(characters, null, 2), {
-    access: 'private',
-    contentType: 'application/json',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
 }
 
 export function nextId(characters: Talent[]): number {

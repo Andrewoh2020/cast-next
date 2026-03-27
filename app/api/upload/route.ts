@@ -18,7 +18,12 @@ export async function POST(req: NextRequest) {
   const ext = ALLOWED_TYPES[file.type];
   if (!ext) return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
 
-  const pathname = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const slug = formData.get('slug') as string | null;
+  const type = formData.get('type') as string | null;
+
+  const pathname = slug && type
+    ? `characters/${slug}-${type}-${Date.now()}.${ext}`
+    : `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const bytes = await file.arrayBuffer();
 
   if (process.env.BLOB_READ_WRITE_TOKEN) {

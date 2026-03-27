@@ -1,29 +1,22 @@
 [
   {
-    "id": 1,
-    "name": "Elara Voss",
-    "slug": "elara-voss",
-    "vibe": "Cool-headed corporate exec with a hidden edge. Sharp suits, sharper wit.",
-    "img": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
-    "roles": [
-      "lead"
-    ],
+    "name": "Naomi Black",
+    "slug": "black-woman-naomi-black",
+    "vibe": "A 42-year-old Black woman with a lean, athletic build and rich dark skin. She has natural textured hair worn in a sleek, shoulder-length loc style with silver-grey strands woven throughout. Her face is angular with high cheekbones, sharp eyes, and a determined expression. She wears a tailored charcoal blazer over a crisp white shirt, paired with minimalist silver jewelry. Her overall presence conveys quiet confidence and understated power.",
+    "img": "/api/media?p=characters%2Fa-42-year-old-black-profile-1774439654051.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903.jpg",
+    "roles": [],
     "sex": "female",
     "ethnicities": [
-      "white"
+      "black"
     ],
-    "ageRange": "30s",
-    "build": "slim",
+    "ageRange": "40s",
+    "build": "athletic",
     "height": "tall",
-    "genres": [
-      "drama",
-      "thriller",
-      "political"
-    ],
-    "languages": [
-      "EN",
-      "FR"
-    ],
+    "style": "cinematic",
+    "languages": [],
+    "genres": [],
     "prices": [
       {
         "name": "Single Project",
@@ -31,429 +24,438 @@
         "amount": 50
       },
       {
-        "name": "Unlimited",
-        "price": "$799",
-        "amount": 799
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
       }
-    ]
+    ],
+    "exclusiveDisabled": false,
+    "id": 14
   },
   {
-    "id": 2,
-    "name": "Marco Drew",
-    "slug": "marco-drev",
-    "vibe": "Rugged field operative. Weathered, world-weary, and completely reliable.",
-    "img": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80",
-    "roles": [
-      "hero"
-    ],
-    "sex": "male",
+    "name": "Elena Voss",
+    "slug": "white-woman-elena-voss",
+    "vibe": "A 48-year-old white woman with sharp Nordic features, steely gray eyes, and shoulder-length platinum blonde hair streaked with silver. She has a lean, athletic build from decades of discipline and carries herself with military precision. Her wardrobe consists of tailored dark blazers, high-collared shirts, and minimal jewelry—a single silver watch. Fine lines around her mouth suggest she smiles rarely; her commanding presence fills any room she enters.",
+    "img": "/api/media?p=characters%2Fa-48-year-old-white-profile-1774440910126.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fa-48-year-old-white-refsheet-1774440943756.jpg",
+    "roles": [],
+    "sex": "female",
     "ethnicities": [
       "white"
     ],
     "ageRange": "40s",
     "build": "athletic",
     "height": "tall",
-    "genres": [
-      "action",
-      "thriller"
-    ],
-    "languages": [
-      "EN",
-      "ES"
-    ],
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
     "prices": [
       {
         "name": "Single Project",
-        "price": "$299",
-        "amount": 299
+        "price": "$50",
+        "amount": 50
       },
       {
-        "name": "Unlimited",
-        "price": "$799",
-        "amount": 799
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
       }
-    ]
+    ],
+    "exclusiveDisabled": false,
+    "id": 15
   },
   {
-    "id": 3,
-    "name": "Nova Sinclair",
-    "slug": "nova-sinclair",
-    "vibe": "Gen-Z hacker with an aesthetic. Neon-lit rooms, effortless confidence.",
-    "img": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80",
-    "roles": [
-      "supporting"
-    ],
+    "name": "Taylor Red",
+    "slug": "white-woman-taylor-red",
+    "vibe": "A sharp-featured woman in her late 40s with a lean, angular build and shoulder-length salt-and-pepper hair swept back severely. She has high cheekbones, piercing gray-blue eyes, and pale freckled skin with fine lines etched around her mouth from years of smoking. Her style is deliberately austere—tailored charcoal blazers, vintage silk scarves, and dark denim—with minimal jewelry except for a single ornate silver ring. She carries herself with controlled intensity and an air of guarded sophistication.",
+    "img": "/api/media?p=characters%2Fwhite-woman-profile-1774441877920.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fwhite-woman-refsheet-1774441897925.jpg",
+    "roles": [],
     "sex": "female",
-    "ethnicities": [
-      "white",
-      "mixed"
-    ],
-    "ageRange": "20s",
-    "build": "slim",
-    "height": "average",
-    "genres": [
-      "sci-fi",
-      "thriller",
-      "action"
-    ],
-    "languages": [
-      "EN",
-      "JA"
-    ],
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$199",
-        "amount": 199
-      },
-      {
-        "name": "Unlimited",
-        "price": "$599",
-        "amount": 599
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "name": "Viktor Hale",
-    "slug": "viktor-hale",
-    "vibe": "The one you don't see coming. Charming surface, calculated interior.",
-    "img": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
-    "roles": [
-      "villain"
-    ],
-    "sex": "male",
-    "ethnicities": [
-      "white"
-    ],
-    "ageRange": "40s",
-    "build": "average",
-    "height": "tall",
-    "genres": [
-      "drama",
-      "thriller",
-      "political"
-    ],
-    "languages": [
-      "EN",
-      "DE"
-    ],
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$349",
-        "amount": 349
-      },
-      {
-        "name": "Unlimited",
-        "price": "$899",
-        "amount": 899
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "name": "Sera Moss",
-    "slug": "sera-moss",
-    "vibe": "Small-town idealist turned big-city disruptor. Raw, relatable, magnetic.",
-    "img": "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80",
-    "roles": [
-      "lead"
-    ],
-    "sex": "female",
-    "ethnicities": [
-      "black",
-      "mixed"
-    ],
-    "ageRange": "20s",
-    "build": "average",
-    "height": "average",
-    "genres": [
-      "drama",
-      "indie",
-      "romance"
-    ],
-    "languages": [
-      "EN"
-    ],
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$299",
-        "amount": 299
-      },
-      {
-        "name": "Unlimited",
-        "price": "$799",
-        "amount": 799
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "name": "Cain Rhoades",
-    "slug": "cain-rhoades",
-    "vibe": "Ex-military turned morally grey antihero. Stoic, scarred, survivalist.",
-    "img": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80",
-    "roles": [
-      "villain",
-      "lead"
-    ],
-    "sex": "male",
-    "ethnicities": [
-      "white"
-    ],
-    "ageRange": "30s",
-    "build": "athletic",
-    "height": "tall",
-    "genres": [
-      "action",
-      "thriller",
-      "drama"
-    ],
-    "languages": [
-      "EN",
-      "RU"
-    ],
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$349",
-        "amount": 349
-      },
-      {
-        "name": "Unlimited",
-        "price": "$899",
-        "amount": 899
-      }
-    ]
-  },
-  {
-    "id": 7,
-    "name": "Lyra Chen",
-    "slug": "lyra-chen",
-    "vibe": "Brilliant scientist who skipped social cues entirely. Awkward genius energy.",
-    "img": "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=80",
-    "roles": [
-      "supporting"
-    ],
-    "sex": "female",
-    "ethnicities": [
-      "east-asian"
-    ],
-    "ageRange": "30s",
-    "build": "slim",
-    "height": "short",
-    "genres": [
-      "sci-fi",
-      "comedy",
-      "drama"
-    ],
-    "languages": [
-      "EN",
-      "ZH"
-    ],
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$199",
-        "amount": 199
-      },
-      {
-        "name": "Unlimited",
-        "price": "$599",
-        "amount": 599
-      }
-    ]
-  },
-  {
-    "id": 8,
-    "name": "Axel Dunn",
-    "slug": "axel-dunn",
-    "vibe": "Silver-tongued politician with something to hide. Power suit, perfect teeth.",
-    "img": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=80",
-    "roles": [
-      "villain"
-    ],
-    "sex": "male",
     "ethnicities": [
       "white"
     ],
     "ageRange": "50s",
-    "build": "average",
-    "height": "average",
-    "genres": [
-      "political",
-      "thriller",
-      "drama"
-    ],
-    "languages": [
-      "EN",
-      "FR"
-    ],
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$399",
-        "amount": 399
-      },
-      {
-        "name": "Unlimited",
-        "price": "$999",
-        "amount": 999
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "name": "Zara Nile",
-    "slug": "zara-nile",
-    "vibe": "Fearless investigative journalist. Sees through everyone. No filter.",
-    "img": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&q=80",
-    "roles": [
-      "hero",
-      "lead"
-    ],
-    "sex": "female",
-    "ethnicities": [
-      "black"
-    ],
-    "ageRange": "30s",
-    "build": "athletic",
+    "build": "slim",
     "height": "tall",
-    "genres": [
-      "drama",
-      "thriller",
-      "political"
-    ],
-    "languages": [
-      "EN",
-      "AR"
-    ],
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
     "prices": [
       {
         "name": "Single Project",
-        "price": "$299",
-        "amount": 299
+        "price": "$50",
+        "amount": 50
       },
       {
-        "name": "Unlimited",
-        "price": "$799",
-        "amount": 799
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
       }
-    ]
+    ],
+    "exclusiveDisabled": false,
+    "id": 16
   },
   {
-    "id": 10,
-    "name": "Jasper Reid",
-    "slug": "jasper-reid",
-    "vibe": "Charming everyman navigating extraordinary circumstances. You root for him.",
-    "img": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80",
-    "roles": [
-      "lead"
-    ],
+    "name": "Marcus Chen",
+    "slug": "east-asian-man-marcus-chen",
+    "vibe": "Marcus Chen is a 26-year-old East Asian man with an athletic build and sharp facial features, including defined cheekbones and dark expressive eyes. He has jet-black hair styled with an undercut fade, and wears contemporary streetwear—slim-fit designer jeans, a fitted oversized hoodie, and clean minimalist sneakers. His overall aesthetic balances modern sophistication with casual confidence.",
+    "img": "/api/media?p=characters%2Feast-asian-man-profile-1774442514842.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-refsheet-1774442515195.jpg",
+    "roles": [],
     "sex": "male",
     "ethnicities": [
-      "white"
+      "east-asian"
     ],
     "ageRange": "20s",
-    "build": "average",
+    "build": "athletic",
     "height": "average",
-    "genres": [
-      "romance",
-      "drama",
-      "comedy"
-    ],
-    "languages": [
-      "EN"
-    ],
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
     "prices": [
       {
         "name": "Single Project",
-        "price": "$299",
-        "amount": 299
+        "price": "$50",
+        "amount": 50
       },
       {
-        "name": "Unlimited",
-        "price": "$799",
-        "amount": 799
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
       }
-    ]
+    ],
+    "exclusiveDisabled": false,
+    "id": 17
   },
   {
-    "id": 11,
-    "name": "Mira Sol",
-    "slug": "mira-sol",
-    "vibe": "Free-spirited wanderer with depth. Warm, artistic, quietly wise.",
-    "img": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
-    "roles": [
-      "supporting"
-    ],
-    "sex": "female",
+    "name": "Diego Morales",
+    "slug": "latino-man-diego-morales",
+    "vibe": "Diego Morales is a 28-year-old Mexican male athlete with a lean, muscular athletic build and dark brown eyes. He has jet-black hair styled short and close to his head, with warm tan brown skin and defined facial features including a strong jawline. He wears moisture-wicking athletic wear and sneakers, embodying the focused intensity of a competitive endurance runner.",
+    "img": "/api/media?p=characters%2Flatino-man-profile-1774442648187.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Flatino-man-refsheet-1774442654361.jpg",
+    "roles": [],
+    "sex": "male",
     "ethnicities": [
       "latino"
     ],
     "ageRange": "20s",
-    "build": "slim",
+    "build": "athletic",
     "height": "average",
-    "genres": [
-      "romance",
-      "indie",
-      "drama"
-    ],
-    "languages": [
-      "EN",
-      "PT"
-    ],
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
     "prices": [
       {
         "name": "Single Project",
-        "price": "$199",
-        "amount": 199
+        "price": "$50",
+        "amount": 50
       },
       {
-        "name": "Unlimited",
-        "price": "$599",
-        "amount": 599
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
       }
-    ]
+    ],
+    "exclusiveDisabled": false,
+    "id": 18
   },
   {
-    "id": 12,
-    "name": "Omar Steele",
-    "slug": "omar-steele",
-    "vibe": "Legendary mentor figure. Every word lands. Every scene, he owns.",
-    "img": "https://images.unsplash.com/photo-1542178243-bc20204b769f?w=600&q=80",
-    "roles": [
-      "lead",
-      "narrator"
+    "name": "Hailey Kim",
+    "slug": "east-asian-woman-hailey-kim",
+    "vibe": "A 24-year-old Korean female with a lean, athletic build and sharp facial features accentuated by high cheekbones and almond-shaped eyes. She has long, straight black hair styled with a slight wave, pale luminous skin, and wears trendy streetwear that blends high-fashion and casual aesthetics—oversized designer blazers, fitted black pants, and minimalist jewelry. Her presence exudes polished confidence with an approachable elegance characteristic of contemporary K-pop styling.",
+    "img": "/api/media?p=characters%2Feast-asian-woman-profile-1774442748991.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820.jpg",
+    "roles": [],
+    "sex": "female",
+    "ethnicities": [
+      "east-asian"
     ],
+    "ageRange": "20s",
+    "build": "slim",
+    "height": "tall",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "id": 19
+  },
+  {
+    "name": "Marcus Stewart",
+    "slug": "black-man-marcus-stewart",
+    "vibe": "Marcus Stewart is a 16-year-old Black male with a lean, athletic build and dark brown skin. He has closely cropped hair and sharp, angular facial features with expressive dark eyes. He typically wears oversized streetwear—hoodies, high-top sneakers, and chain accessories—with an effortlessly confident demeanor that suggests both street wisdom and untapped potential.",
+    "img": "/api/media?p=characters%2Fblack-man-profile-1774443406061.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fblack-man-refsheet-1774443506145.jpg",
+    "roles": [],
     "sex": "male",
     "ethnicities": [
       "black"
     ],
-    "ageRange": "60s+",
-    "build": "stocky",
-    "height": "tall",
-    "genres": [
-      "drama",
-      "action",
-      "thriller"
-    ],
-    "languages": [
-      "EN"
-    ],
+    "ageRange": "teen",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
     "prices": [
       {
         "name": "Single Project",
-        "price": "$399",
-        "amount": 399
+        "price": "$50",
+        "amount": 50
       },
       {
-        "name": "Unlimited",
-        "price": "$999",
-        "amount": 999
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
       }
+    ],
+    "exclusiveDisabled": false,
+    "id": 20
+  },
+  {
+    "name": "James Park",
+    "slug": "east-asian-man-james-park",
+    "vibe": "A 24-year-old South Korean male with a lean, athletic build and sharp facial features. He has long, dark hair styled with subtle highlights, pale complexion, and intense dark eyes with a confident gaze. He wears contemporary K-pop fashion including a oversized designer hoodie, fitted black jeans, and high-end sneakers, embodying the polished, trendsetting aesthetic of a Seoul music industry elite.",
+    "img": "/api/media?p=characters%2Feast-asian-man-profile-1774444453976.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998.jpg",
+    "roles": [],
+    "sex": "male",
+    "ethnicities": [
+      "east-asian"
+    ],
+    "ageRange": "20s",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "id": 21
+  },
+  {
+    "name": "Mei Chen",
+    "slug": "east-asian-woman-mei-chen",
+    "vibe": "A 14-year-old Chinese girl with a petite, slender build and shoulder-length black hair with subtle layers. She has warm brown eyes, a round face with soft features, and clear skin with light freckles across her nose. She wears casual contemporary streetwear including oversized hoodies and high-waisted jeans, with minimalist accessories and white sneakers.",
+    "img": "/api/media?p=characters%2Feast-asian-woman-mei-chen-profile-1774602307598.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-mei-chen-refsheet-1774602320855.jpg",
+    "roles": [],
+    "sex": "female",
+    "ethnicities": [
+      "east-asian"
+    ],
+    "ageRange": "teen",
+    "build": "slim",
+    "height": "short",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "id": 22
+  },
+  {
+    "name": "Akira Tanaka",
+    "slug": "east-asian-woman-akira-tanaka",
+    "vibe": "Akira Tanaka is a strikingly beautiful Japanese woman in her late 20s with porcelain skin, sharp cheekbones, and expressive dark brown eyes. She has long, jet-black hair with subtle waves and a sleek, modern sense of style that blends high fashion with contemporary J-pop aesthetics—think tailored streetwear, oversized designer pieces, and statement accessories. Her presence is magnetic and confident, with the polished, camera-ready appearance of an established music industry professional.",
+    "img": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-profile-1774602826035.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-refsheet-1774602834042.jpg",
+    "roles": [],
+    "sex": "female",
+    "ethnicities": [
+      "east-asian"
+    ],
+    "ageRange": "20s",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "id": 23
+  },
+  {
+    "name": "Akira Shimizu",
+    "slug": "east-asian-woman-akira-shimizu",
+    "vibe": "A striking 28-year-old Japanese woman with sharp, angular facial features and large expressive dark eyes. She has long, sleek black hair with subtle highlights, porcelain skin, and a slim, graceful build. Her style is contemporary and polished, featuring high-fashion streetwear with oversized blazers, designer accessories, and bold makeup that emphasizes her eyes, embodying modern J-pop aesthetic.",
+    "img": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-profile-1774603140717.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-1774603211197.jpg",
+    "roles": [],
+    "sex": "female",
+    "ethnicities": [
+      "east-asian"
+    ],
+    "ageRange": "20s",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "id": 24
+  },
+  {
+    "name": "Marcus Chen",
+    "slug": "east-asian-man-marcus-chen",
+    "vibe": "A strikingly handsome Chinese man in his early 30s with sharp, angular facial features and intense dark eyes. He has an athletic, muscular build with shoulder-length black hair styled back, and wears tailored designer clothing that balances sophistication with edge—favoring fitted black jackets and minimalist aesthetics. His composed demeanor and confident posture suggest both romantic depth and lethal capability.",
+    "img": "/api/media?p=characters%2Feast-asian-man-marcus-chen-profile-1774603415104.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-marcus-chen-refsheet-1774605356273.jpg",
+    "roles": [],
+    "sex": "male",
+    "ethnicities": [
+      "east-asian"
+    ],
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "languages": [],
+    "genres": [],
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "id": 25,
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Feast-asian-man-marcus-chen-refsheet-1774603403460.jpg"
     ]
   }
 ]

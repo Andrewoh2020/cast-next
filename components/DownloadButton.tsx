@@ -2,23 +2,31 @@
 
 import { useState } from 'react';
 
-interface Props {
+interface DownloadFile {
   url: string;
   filename: string;
+}
+
+interface Props {
+  files: DownloadFile[];
   label?: string;
   className?: string;
 }
 
-export default function DownloadButton({ url, filename, label = 'Download', className }: Props) {
+export default function DownloadButton({ files, label = 'Download', className }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleClick = () => {
     setLoading(true);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    setTimeout(() => setLoading(false), 3000);
+    files.forEach(({ url, filename }, i) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+      }, i * 800);
+    });
+    setTimeout(() => setLoading(false), files.length * 800 + 2000);
   };
 
   return (

@@ -72,21 +72,23 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
           <strong className="text-black">{m.characterName}</strong> ({m.licenseName} License) is now licensed to you.
         </p>
 
-        {/* Download — reference sheet if available, otherwise character image */}
+        {/* Download — profile photo + reference sheet (if available) */}
         {(() => {
-          const downloadUrl = m.referenceSheetUrl
-            ? `${m.referenceSheetUrl}${m.referenceSheetUrl.includes('?') ? '&' : '?'}download=1`
-            : `${m.characterImg}`;
-          const filename = m.referenceSheetUrl
-            ? `${m.characterSlug}-reference-sheet`
-            : `${m.characterSlug}`;
+          const files: { url: string; filename: string }[] = [];
+          if (m.characterImg) {
+            const sep = m.characterImg.includes('?') ? '&' : '?';
+            files.push({ url: `${m.characterImg}${sep}download=1&filename=${m.characterSlug}-profile`, filename: `${m.characterSlug}-profile` });
+          }
+          if (m.referenceSheetUrl) {
+            const sep = m.referenceSheetUrl.includes('?') ? '&' : '?';
+            files.push({ url: `${m.referenceSheetUrl}${sep}download=1&filename=${m.characterSlug}-reference-sheet`, filename: `${m.characterSlug}-reference-sheet` });
+          }
           return (
             <>
-              <AutoDownload url={downloadUrl} filename={filename} />
+              <AutoDownload files={files} />
               <DownloadButton
-                url={downloadUrl}
-                filename={filename}
-                label={`Download ${m.referenceSheetUrl ? 'Reference Sheet' : 'Character Asset'}`}
+                files={files}
+                label="Download Assets"
                 className="w-full flex items-center justify-center gap-2 bg-black text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition-colors text-sm mb-3 disabled:opacity-60"
               />
             </>

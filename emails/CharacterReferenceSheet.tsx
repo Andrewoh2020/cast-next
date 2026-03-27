@@ -13,6 +13,7 @@ interface Props {
   licenseName: string;
   licensePrice: string;
   referenceSheetDownloadUrl?: string;
+  profilePhotoDownloadUrl?: string;
   baseUrl?: string;
 }
 
@@ -21,6 +22,7 @@ export default function CharacterReferenceSheet({
   licenseName,
   licensePrice,
   referenceSheetDownloadUrl,
+  profilePhotoDownloadUrl,
   baseUrl = 'https://cast-next-silk.vercel.app',
 }: Props) {
   const attrs = [
@@ -110,7 +112,7 @@ export default function CharacterReferenceSheet({
                   src={talent.img.startsWith('http') ? talent.img : `${baseUrl}${talent.img}`}
                   alt={talent.name}
                   width={536}
-                  style={{ width: '100%', borderRadius: 12, display: 'block', maxHeight: 320, objectFit: 'cover' }}
+                  style={{ width: '100%', borderRadius: 12, display: 'block' }}
                 />
               </Section>
             )}
@@ -137,8 +139,8 @@ export default function CharacterReferenceSheet({
             ))}
           </Section>
 
-          {/* Reference sheet download */}
-          {referenceSheetDownloadUrl && (
+          {/* Asset downloads */}
+          {(profilePhotoDownloadUrl || referenceSheetDownloadUrl) && (
             <Section style={{
               backgroundColor: '#fff',
               borderRadius: 16,
@@ -148,26 +150,49 @@ export default function CharacterReferenceSheet({
               textAlign: 'center',
             }}>
               <Text style={{ fontSize: 15, fontWeight: 700, color: '#111', margin: '0 0 6px' }}>
-                Your Reference Sheet is Ready
+                Your Assets are Ready
               </Text>
               <Text style={{ fontSize: 13, color: '#6b7280', margin: '0 0 16px' }}>
-                Download your full character reference sheet below.
+                Download your character profile photo and reference sheet to start generating.
               </Text>
-              <Button
-                href={referenceSheetDownloadUrl}
-                style={{
-                  backgroundColor: '#6366f1',
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: 14,
-                  padding: '12px 28px',
-                  borderRadius: 10,
-                  textDecoration: 'none',
-                  display: 'inline-block',
-                }}
-              >
-                Download Reference Sheet
-              </Button>
+              {profilePhotoDownloadUrl && (
+                <Section style={{ marginBottom: 10 }}>
+                  <Button
+                    href={profilePhotoDownloadUrl}
+                    style={{
+                      backgroundColor: '#6366f1',
+                      color: '#fff',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      padding: '12px 28px',
+                      borderRadius: 10,
+                      textDecoration: 'none',
+                      display: 'inline-block',
+                    }}
+                  >
+                    Download Profile Photo
+                  </Button>
+                </Section>
+              )}
+              {referenceSheetDownloadUrl && (
+                <Section>
+                  <Button
+                    href={referenceSheetDownloadUrl}
+                    style={{
+                      backgroundColor: '#111',
+                      color: '#fff',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      padding: '12px 28px',
+                      borderRadius: 10,
+                      textDecoration: 'none',
+                      display: 'inline-block',
+                    }}
+                  >
+                    Download Reference Sheet
+                  </Button>
+                </Section>
+              )}
             </Section>
           )}
 

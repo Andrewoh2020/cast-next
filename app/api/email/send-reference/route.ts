@@ -23,13 +23,22 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cast-next-silk.vercel.app';
 
-    // Build reference sheet download URL
+    // Build download URLs
     let referenceSheetDownloadUrl: string | undefined;
     if (talent.referenceSheetUrl) {
       if (talent.referenceSheetUrl.startsWith('/api/media')) {
-        referenceSheetDownloadUrl = `${baseUrl}${talent.referenceSheetUrl}&download=1`;
+        referenceSheetDownloadUrl = `${baseUrl}${talent.referenceSheetUrl}&download=1&filename=${talent.slug}-reference-sheet`;
       } else if (talent.referenceSheetUrl.startsWith('http')) {
         referenceSheetDownloadUrl = talent.referenceSheetUrl;
+      }
+    }
+
+    let profilePhotoDownloadUrl: string | undefined;
+    if (talent.img) {
+      if (talent.img.startsWith('/api/media')) {
+        profilePhotoDownloadUrl = `${baseUrl}${talent.img}&download=1&filename=${talent.slug}-profile`;
+      } else if (talent.img.startsWith('http')) {
+        profilePhotoDownloadUrl = `${talent.img}${talent.img.includes('?') ? '&' : '?'}download=1`;
       }
     }
 
@@ -48,6 +57,7 @@ export async function POST(req: NextRequest) {
         licenseName: license.name,
         licensePrice: license.price,
         referenceSheetDownloadUrl,
+        profilePhotoDownloadUrl,
         baseUrl,
       }),
     });

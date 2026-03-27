@@ -116,7 +116,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
       window.location.href = data.url;
     } catch (err) {
       console.error(err);
-      setSendError('Something went wrong. Please try again.');
+      setSendError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setSending(false);
     }
   };
@@ -139,14 +139,24 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
         referenceSheetUrl: talent.referenceSheetUrl ?? null,
       }),
     });
-    // Trigger download if reference sheet exists
-    if (talent.referenceSheetUrl) {
-      const url = `${talent.referenceSheetUrl}${talent.referenceSheetUrl.includes('?') ? '&' : '?'}download=1`;
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${talent.slug}-reference-sheet`;
-      a.click();
+    // Trigger download of profile photo + reference sheet
+    const downloads: { url: string; filename: string }[] = [];
+    if (talent.img) {
+      const sep = talent.img.includes('?') ? '&' : '?';
+      downloads.push({ url: `${talent.img}${sep}download=1&filename=${talent.slug}-profile`, filename: `${talent.slug}-profile` });
     }
+    if (talent.referenceSheetUrl) {
+      const sep = talent.referenceSheetUrl.includes('?') ? '&' : '?';
+      downloads.push({ url: `${talent.referenceSheetUrl}${sep}download=1&filename=${talent.slug}-reference-sheet`, filename: `${talent.slug}-reference-sheet` });
+    }
+    downloads.forEach(({ url, filename }, i) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+      }, i * 800);
+    });
     setSending(false);
     onPurchase(talent, FREE_LICENSE_IDX);
   };

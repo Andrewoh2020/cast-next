@@ -17,11 +17,14 @@ export async function GET(req: NextRequest) {
       return new Response(null, { status: 304 });
     }
     const isDownload = req.nextUrl.searchParams.get('download') === '1';
+    const filenameParam = req.nextUrl.searchParams.get('filename');
+    const ext = (result.blob.contentType ?? '').includes('png') ? '.png' : '.jpg';
+    const filename = filenameParam ? `${filenameParam}${ext}` : pathname.split('/').pop()!;
     return new Response(result.stream, {
       headers: {
         'Content-Type': result.blob.contentType ?? 'application/octet-stream',
         'Cache-Control': 'private, max-age=3600',
-        ...(isDownload ? { 'Content-Disposition': `attachment; filename="${pathname.split('/').pop()}"` } : {}),
+        ...(isDownload ? { 'Content-Disposition': `attachment; filename="${filename}"` } : {}),
       },
     });
   } catch {

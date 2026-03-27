@@ -2,13 +2,23 @@
 
 import { useEffect } from 'react';
 
-export default function AutoDownload({ url, filename }: { url: string; filename: string }) {
+interface DownloadFile {
+  url: string;
+  filename: string;
+}
+
+export default function AutoDownload({ files }: { files: DownloadFile[] }) {
   useEffect(() => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-  }, [url, filename]);
+    files.forEach(({ url, filename }, i) => {
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+      }, i * 800);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 }
