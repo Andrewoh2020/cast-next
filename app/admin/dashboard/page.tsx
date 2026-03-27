@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { readCharacters } from '@/lib/characters.server';
 import DashboardClient from '@/components/admin/DashboardClient';
 
