@@ -345,9 +345,9 @@
     "name": "Akira Tanaka",
     "slug": "east-asian-woman-akira-tanaka",
     "vibe": "Akira Tanaka is a strikingly beautiful Japanese woman in her late 20s with porcelain skin, sharp cheekbones, and expressive dark brown eyes. She has long, jet-black hair with subtle waves and a sleek, modern sense of style that blends high fashion with contemporary J-pop aesthetics—think tailored streetwear, oversized designer pieces, and statement accessories. Her presence is magnetic and confident, with the polished, camera-ready appearance of an established music industry professional.",
-    "img": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-profile-1774602826035.jpg",
+    "img": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-profile-1774605692726.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-refsheet-1774602834042.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-refsheet-1774605871028.jpg",
     "roles": [],
     "sex": "female",
     "ethnicities": [
@@ -377,7 +377,13 @@
       }
     ],
     "exclusiveDisabled": false,
-    "id": 23
+    "id": 23,
+    "imgHistory": [
+      "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-profile-1774602826035.jpg"
+    ],
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-refsheet-1774602834042.jpg"
+    ]
   },
   {
     "name": "Akira Shimizu",
