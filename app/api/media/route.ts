@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
 import { get } from '@vercel/blob';
+import sharp from 'sharp';
+
+const ALLOWED_WIDTHS = [96, 200, 400, 800, 1200];
 
 export async function GET(req: NextRequest) {
   const pathname = req.nextUrl.searchParams.get('p');
@@ -16,10 +19,31 @@ export async function GET(req: NextRequest) {
     if (result.statusCode === 304 || !result.stream) {
       return new Response(null, { status: 304 });
     }
+
     const isDownload = req.nextUrl.searchParams.get('download') === '1';
     const filenameParam = req.nextUrl.searchParams.get('filename');
     const ext = (result.blob.contentType ?? '').includes('png') ? '.png' : '.jpg';
     const filename = filenameParam ? `${filenameParam}${ext}` : pathname.split('/').pop()!;
+
+    // Resize if w param is provided
+    const wParam = parseInt(req.nextUrl.searchParams.get('w') ?? '', 10);
+    const targetWidth = ALLOWED_WIDTHS.find((w) => w >= wParam) ?? 0;
+
+    if (targetWidth && !isDownload) {
+      const buf = await new Response(result.stream).arrayBuffer();
+      const resized = await sharp(Buffer.from(buf))
+        .resize(targetWidth, undefined, { withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
+      return new Response(resized as unknown as BodyInit, {
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    }
+
     return new Response(result.stream, {
       headers: {
         'Content-Type': result.blob.contentType ?? 'application/octet-stream',

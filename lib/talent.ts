@@ -95,6 +95,15 @@ export const STYLE_LABELS: Record<TalentStyle, string> = {
   stylized: 'Stylized',
 };
 
+// ── Image helpers ────────────────────────────────────────────────────
+
+/** Append a width parameter to a /api/media URL for on-the-fly resizing */
+export function thumbUrl(url: string, width: number): string {
+  if (!url || !url.startsWith('/api/media')) return url;
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}w=${width}`;
+}
+
 // ── Filter config (used by roster UI) ────────────────────────────────
 
 export const FILTER_GROUPS = [

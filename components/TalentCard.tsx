@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Talent } from '@/lib/talent';
+import { Talent, thumbUrl } from '@/lib/talent';
 
 interface Props {
   talent: Talent;
@@ -51,8 +51,9 @@ export default function TalentCard({ talent, onClick, index = 0, isFavorited = f
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={talent.img}
+        src={thumbUrl(talent.img, 400)}
         alt={talent.name}
+        loading="lazy"
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
       />
 

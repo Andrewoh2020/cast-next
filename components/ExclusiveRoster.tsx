@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Talent } from '@/lib/talent';
+import { Talent, thumbUrl } from '@/lib/talent';
 
 export default function ExclusiveRoster() {
   const [exclusives, setExclusives] = useState<Talent[]>([]);
@@ -26,8 +26,9 @@ export default function ExclusiveRoster() {
             <div key={talent.id} className="relative rounded-2xl overflow-hidden bg-gray-100" style={{ paddingBottom: '133%' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={talent.img}
+                src={thumbUrl(talent.img, 400)}
                 alt={talent.name}
+                loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover grayscale opacity-50"
               />
               <div className="absolute inset-0 bg-black/40" />

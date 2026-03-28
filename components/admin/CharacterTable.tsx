@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Talent, AGE_LABELS, BUILD_LABELS, RACE_LABELS } from '@/lib/talent';
+import { Talent, AGE_LABELS, BUILD_LABELS, RACE_LABELS, thumbUrl } from '@/lib/talent';
 
 interface Props {
   characters: Talent[];
@@ -108,7 +108,7 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
                     <div className="flex items-center gap-3">
                       <div className="relative w-12 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={c.img} alt={c.name} className="w-full h-full object-cover" />
+                        <img src={thumbUrl(c.img, 96)} alt={c.name} loading="lazy" className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <div className="font-semibold text-black">{c.name}</div>
