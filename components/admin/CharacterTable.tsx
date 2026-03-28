@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Talent, AGE_LABELS, BUILD_LABELS, ETHNICITY_LABELS } from '@/lib/talent';
+import { Talent, AGE_LABELS, BUILD_LABELS, RACE_LABELS } from '@/lib/talent';
 
 interface Props {
   characters: Talent[];
@@ -85,7 +85,9 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
                 </th>
                 <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400">Character</th>
                 <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 hidden md:table-cell">Attributes</th>
+                <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 hidden lg:table-cell">Race</th>
                 <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 hidden lg:table-cell">Ethnicity</th>
+                <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 hidden md:table-cell">Age</th>
                 <th className="text-left px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400">Price</th>
                 <th className="px-5 py-3.5" />
               </tr>
@@ -126,12 +128,30 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
 
                   <td className="px-5 py-4 hidden lg:table-cell">
                     <div className="flex flex-wrap gap-1">
-                      {c.ethnicities.map((e) => (
-                        <span key={e} className="text-[11px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">
-                          {ETHNICITY_LABELS[e]}
+                      {c.race.map((r) => (
+                        <span key={r} className="text-[11px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">
+                          {RACE_LABELS[r]}
                         </span>
                       ))}
                     </div>
+                  </td>
+
+                  <td className="px-5 py-4 hidden lg:table-cell">
+                    {c.ethnicity ? (
+                      <span className="text-[11px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full">
+                        {c.ethnicity}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-gray-300">—</span>
+                    )}
+                  </td>
+
+                  <td className="px-5 py-4 hidden md:table-cell">
+                    {c.age ? (
+                      <span className="text-sm font-medium text-gray-700">{c.age}</span>
+                    ) : (
+                      <span className="text-[11px] text-gray-300">—</span>
+                    )}
                   </td>
 
                   <td className="px-5 py-4">

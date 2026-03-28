@@ -52,15 +52,14 @@ cast-next/
 
 ## Data Model
 All character data lives in `lib/talent.ts`. Each `Talent` has:
-- `roles[]` — lead, supporting, villain, hero, narrator, ensemble
 - `sex` — male, female, nonbinary
-- `ethnicities[]` — multi-value (east-asian, south-asian, black, latino, middle-eastern, white, southeast-asian, mixed)
+- `race[]` — multi-value (east-asian, south-asian, black, latino, middle-eastern, white, southeast-asian, mixed)
+- `ethnicity` — specific national/cultural background (e.g. Korean, Nigerian, Swedish)
 - `ageRange` — child, teen, 20s, 30s, 40s, 50s, 60s+
 - `build` — slim, athletic, average, stocky, curvy, plus-size
 - `height` — short, average, tall
-- `genres[]` — action, drama, comedy, sci-fi, thriller, romance, horror, political, indie
-- `languages[]` — string array (e.g. ['EN', 'FR'])
-- `prices[]` — array of `{ name, price, amount }` (two tiers: Single Project + Unlimited)
+- `style` — realistic, anime, cartoon, 3d-cgi, stylized
+- `prices[]` — array of `{ name, price, amount }` (three tiers: Single Project, Studio License, Exclusive Rights)
 
 Filter logic (AND across categories, OR within): `filterTalent()` in `lib/talent.ts`
 

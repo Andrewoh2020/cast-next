@@ -11,7 +11,7 @@ interface Props {
 
 export default function FilterSidebar({ filters, onChange, resultCount }: Props) {
   const [expanded, setExpanded] = useState<Set<string>>(
-    new Set(['roles', 'sex', 'ethnicities', 'ageRange'])
+    new Set(['sex', 'race', 'ageRange'])
   );
 
   const toggle = (key: string) => {

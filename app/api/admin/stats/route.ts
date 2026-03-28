@@ -45,9 +45,15 @@ export async function GET() {
   // Generation stats
   const successfulGens = generations.filter((g) => !g.failed);
   const failedGens = generations.filter((g) => g.failed);
-  const totalFalCost = generations.reduce((sum, g) => sum + g.cost, 0);
+  const totalImageCost = generations.reduce((sum, g) => sum + g.cost, 0);
   const totalClaudeCost = generations.reduce((sum, g) => sum + (g.claudeCost ?? 0), 0);
-  const totalGenerationCost = totalFalCost + totalClaudeCost;
+  const totalGenerationCost = totalImageCost + totalClaudeCost;
+
+  // Per-provider breakdown
+  const kieGens = generations.filter((g) => g.provider === 'kie');
+  const falGens = generations.filter((g) => !g.provider || g.provider === 'fal');
+  const totalKieCost = kieGens.reduce((sum, g) => sum + g.cost, 0);
+  const totalFalCost = falGens.reduce((sum, g) => sum + g.cost, 0);
 
   const profileGens = successfulGens.filter((g) => g.type === 'profile');
   const refsheetGens = successfulGens.filter((g) => g.type === 'refsheet');
@@ -65,14 +71,26 @@ export async function GET() {
     genByCharacter[key].count += 1;
   }
 
-  // Recent generation history (last 50, newest first)
-  const generationHistory = [...generations].reverse().slice(0, 50);
+  // Recent generation history (last 50, newest first) — include provider
+  const generationHistory = [...generations].reverse().slice(0, 50).map((g) => ({
+    characterName: g.characterName,
+    characterSlug: g.characterSlug,
+    type: g.type,
+    cost: g.cost,
+    generatedAt: g.generatedAt,
+    url: g.url,
+    failed: g.failed,
+    error: g.error,
+    provider: g.provider ?? 'fal',
+  }));
 
   return NextResponse.json({
     totalRevenue, totalPurchases, byCharacter,
     generation: {
       totalCost: totalGenerationCost,
+      totalImageCost,
       totalFalCost,
+      totalKieCost,
       totalClaudeCost,
       totalSuccessful: successfulGens.length,
       totalFailed: failedGens.length,

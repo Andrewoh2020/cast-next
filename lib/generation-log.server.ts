@@ -5,20 +5,27 @@ export interface GenerationEntry {
   characterName?: string;
   characterSlug?: string;
   type: 'profile' | 'refsheet';
-  cost: number;          // fal.ai cost
+  cost: number;          // image generation cost
   claudeCost?: number;   // Claude API cost for description
   generatedAt: string;
   durationMs?: number;   // time from request to image saved
   url?: string;
   failed: boolean;
   error?: string;
+  provider?: 'kie' | 'fal';
 }
 
 const LOG_KEY = 'logs/generation-log.json';
 
 export const GENERATION_COST = {
-  profile: 0.12,   // 2K resolution = 1.5x base $0.08
-  refsheet: 0.16,  // 4K resolution = 2x base $0.08
+  kie: {
+    profile: 0.09,   // Kie.ai 4K nano-banana-2
+    refsheet: 0.09,
+  },
+  fal: {
+    profile: 0.16,   // Fal.ai 4K nano-banana-2
+    refsheet: 0.16,
+  },
 } as const;
 
 async function readLog(): Promise<GenerationEntry[]> {

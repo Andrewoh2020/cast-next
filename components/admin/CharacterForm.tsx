@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Upload, X, FileText, Plus } from 'lucide-react';
 import {
-  Talent, TalentSex, TalentEthnicity, TalentAgeRange,
+  Talent, TalentSex, TalentRace, TalentAgeRange,
   TalentBuild, TalentHeight, TalentStyle,
-  SEX_LABELS, ETHNICITY_LABELS, AGE_LABELS,
+  SEX_LABELS, RACE_LABELS, AGE_LABELS,
   BUILD_LABELS, HEIGHT_LABELS, STYLE_LABELS,
 } from '@/lib/talent';
 import { Input } from '@/components/ui/input';
@@ -26,8 +26,8 @@ const blank = (): Omit<Talent, 'id'> => ({
   name: '', slug: '', vibe: '', img: '',
   gallery: [],
   referenceSheetUrl: '',
-  roles: [], sex: 'female', ethnicities: [], ageRange: '30s',
-  build: 'average', height: 'average', style: 'realistic', languages: [], genres: [],
+  sex: 'female', race: [], ethnicity: '', age: undefined, ageRange: '30s',
+  build: 'average', height: 'average', style: 'realistic',
   prices: [
     { name: 'Single Project', price: '$50', amount: 50 },
     { name: 'Studio License', price: '$250', amount: 250 },
@@ -44,11 +44,11 @@ const SEX_SLUG: Record<string, string> = {
   male: 'man', female: 'woman', nonbinary: 'nonbinary',
 };
 
-function toCharacterSlug(name: string, sex: string, ethnicities: string[]): string {
-  const ethnicity = (ethnicities[0] ?? '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+function toCharacterSlug(name: string, sex: string, race: string[]): string {
+  const raceSlug = (race[0] ?? '').toLowerCase().replace(/[^a-z0-9-]/g, '');
   const gender = SEX_SLUG[sex] ?? sex;
   const namePart = toSlug(name);
-  return [ethnicity, gender, namePart].filter(Boolean).join('-');
+  return [raceSlug, gender, namePart].filter(Boolean).join('-');
 }
 
 // ─── Section wrapper ────────────────────────────────────────────────────────
@@ -255,22 +255,24 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
       setForm((prev) => {
         const a = data.attributes ?? {};
         const newSex = a.sex ?? prev.sex;
-        const newEthnicities = Array.isArray(a.ethnicities) && a.ethnicities.length > 0
-          ? a.ethnicities : prev.ethnicities;
+        const newRace = Array.isArray(a.race) && a.race.length > 0
+          ? a.race : prev.race;
         const newName = data.name || prev.name;
         const newSlug = !character
-          ? toCharacterSlug(newName, newSex, newEthnicities)
+          ? toCharacterSlug(newName, newSex, newRace)
           : prev.slug;
         return {
           ...prev,
           ...(data.name ? { name: newName } : {}),
           ...(newSlug !== prev.slug ? { slug: newSlug } : {}),
           ...(a.sex ? { sex: newSex } : {}),
+          ...(a.race ? { race: newRace } : {}),
+          ...(a.ethnicity ? { ethnicity: a.ethnicity } : {}),
+          ...(a.age ? { age: a.age } : {}),
           ...(a.ageRange ? { ageRange: a.ageRange } : {}),
           ...(a.build ? { build: a.build } : {}),
           ...(a.height ? { height: a.height } : {}),
           ...(a.style ? { style: a.style } : {}),
-          ...(newEthnicities !== prev.ethnicities ? { ethnicities: newEthnicities } : {}),
         };
       });
     } catch (err) {
@@ -775,7 +777,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 value={form.name}
                 onChange={(e) => {
                   set('name', e.target.value);
-                  set('slug', toCharacterSlug(e.target.value, form.sex, form.ethnicities));
+                  set('slug', toCharacterSlug(e.target.value, form.sex, form.race));
                 }}
                 placeholder="e.g. Elara Voss"
               />
@@ -822,17 +824,37 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               </RadioGroup>
             </Field>
 
-            <Field label="Ethnicity" required hint="(select all that apply)">
+            <Field label="Race" required hint="(select all that apply)">
               <div className="flex flex-wrap gap-2 pt-0.5">
-                {(Object.entries(ETHNICITY_LABELS) as [TalentEthnicity, string][]).map(([val, label]) => (
+                {(Object.entries(RACE_LABELS) as [TalentRace, string][]).map(([val, label]) => (
                   <ToggleTag
                     key={val}
                     label={label}
-                    selected={form.ethnicities.includes(val)}
-                    onClick={() => toggleArr('ethnicities', val)}
+                    selected={form.race.includes(val)}
+                    onClick={() => toggleArr('race', val)}
                   />
                 ))}
               </div>
+            </Field>
+
+            <Field label="Ethnicity" hint="(e.g. Korean, Nigerian, Swedish)">
+              <Input
+                value={form.ethnicity ?? ''}
+                onChange={(e) => set('ethnicity', e.target.value)}
+                placeholder="e.g. Korean, Japanese, Nigerian"
+              />
+            </Field>
+
+            <Field label="Age" hint="(specific age of the character)">
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                value={form.age ?? ''}
+                onChange={(e) => set('age', e.target.value ? parseInt(e.target.value) : undefined)}
+                placeholder="e.g. 28"
+                className="w-24"
+              />
             </Field>
 
             <Field label="Age Range" required>

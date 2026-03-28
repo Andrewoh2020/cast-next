@@ -5,7 +5,7 @@ import {
 import {
   Talent,
   SEX_LABELS, AGE_LABELS, BUILD_LABELS, HEIGHT_LABELS,
-  ETHNICITY_LABELS, GENRE_LABELS, ROLE_LABELS,
+  RACE_LABELS,
 } from '@/lib/talent';
 
 interface Props {
@@ -30,10 +30,8 @@ export default function CharacterReferenceSheet({
     { label: 'Age Range', value: AGE_LABELS[talent.ageRange] },
     { label: 'Build', value: BUILD_LABELS[talent.build] },
     { label: 'Height', value: HEIGHT_LABELS[talent.height] },
-    { label: 'Languages', value: talent.languages.join(', ') || '—' },
-    { label: 'Ethnicity', value: talent.ethnicities.map((e) => ETHNICITY_LABELS[e]).join(', ') || '—' },
-    { label: 'Roles', value: talent.roles.map((r) => ROLE_LABELS[r]).join(', ') || '—' },
-    { label: 'Genres', value: talent.genres.map((g) => GENRE_LABELS[g]).join(', ') || '—' },
+    { label: 'Race', value: talent.race.map((r) => RACE_LABELS[r]).join(', ') || '—' },
+    { label: 'Ethnicity', value: talent.ethnicity || '—' },
   ];
 
   return (

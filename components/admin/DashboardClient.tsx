@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Talent, ETHNICITY_LABELS, SEX_LABELS, AGE_LABELS, STYLE_LABELS } from '@/lib/talent';
+import { Talent, RACE_LABELS, SEX_LABELS, AGE_LABELS, STYLE_LABELS } from '@/lib/talent';
 import CharacterTable from './CharacterTable';
 import CharacterForm from './CharacterForm';
 import SeoConfigurator from './SeoConfigurator';
@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 interface RosterFilters {
   // Representation
   sex: string[];
-  ethnicities: string[];
+  race: string[];
   ageRange: string[];
   style: string[];
   // Performance
@@ -25,14 +25,14 @@ interface RosterFilters {
 }
 
 const EMPTY_FILTERS: RosterFilters = {
-  sex: [], ethnicities: [], ageRange: [], style: [],
+  sex: [], race: [], ageRange: [], style: [],
   noSales: false, highViewsNoPurchase: false,
   exclusivelyLicensed: false, exclusiveDisabled: false,
   missingRefSheet: false, missingProfileImage: false,
 };
 
 function activeFilterCount(f: RosterFilters) {
-  return f.sex.length + f.ethnicities.length + f.ageRange.length + f.style.length
+  return f.sex.length + f.race.length + f.ageRange.length + f.style.length
     + [f.noSales, f.highViewsNoPurchase, f.exclusivelyLicensed, f.exclusiveDisabled, f.missingRefSheet, f.missingProfileImage].filter(Boolean).length;
 }
 
@@ -58,11 +58,14 @@ interface GenerationHistoryEntry {
   url?: string;
   failed: boolean;
   error?: string;
+  provider?: 'kie' | 'fal';
 }
 
 interface GenerationStats {
   totalCost: number;
+  totalImageCost: number;
   totalFalCost: number;
+  totalKieCost: number;
   totalClaudeCost: number;
   totalSuccessful: number;
   totalFailed: number;
@@ -90,6 +93,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
   const [statsLoading, setStatsLoading] = useState(false);
   const [filters, setFilters] = useState<RosterFilters>(EMPTY_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'name'>('newest');
 
   const loadStats = async () => {
     setStatsLoading(true);
@@ -165,7 +169,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
     available: characters.filter((c) => !c.exclusive).length,
   };
 
-  const toggleArr = (key: 'sex' | 'ethnicities' | 'ageRange' | 'style', val: string) =>
+  const toggleArr = (key: 'sex' | 'race' | 'ageRange' | 'style', val: string) =>
     setFilters((prev) => {
       const arr = prev[key];
       return { ...prev, [key]: arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val] };
@@ -177,18 +181,15 @@ export default function DashboardClient({ initialCharacters }: Props) {
   const filteredCharacters = useMemo(() => {
     const f = filters;
     const numActive = activeFilterCount(f);
-    if (numActive === 0) return characters;
-
-    return characters.filter((c) => {
+    let result = numActive === 0 ? [...characters] : characters.filter((c) => {
       if (f.sex.length && !f.sex.includes(c.sex)) return false;
-      if (f.ethnicities.length && !f.ethnicities.some((e) => c.ethnicities.includes(e as never))) return false;
+      if (f.race.length && !f.race.some((r) => c.race.includes(r as never))) return false;
       if (f.ageRange.length && !f.ageRange.includes(c.ageRange)) return false;
       if (f.style.length && !f.style.includes(c.style)) return false;
       if (f.exclusivelyLicensed && !c.exclusive) return false;
       if (f.exclusiveDisabled && !c.exclusiveDisabled) return false;
       if (f.missingRefSheet && c.referenceSheetUrl) return false;
       if (f.missingProfileImage && c.img) return false;
-      // Performance filters need stats
       if (f.noSales && statsData) {
         const s = statsData.byCharacter[c.id];
         if (s?.purchases > 0) return false;
@@ -199,7 +200,17 @@ export default function DashboardClient({ initialCharacters }: Props) {
       }
       return true;
     });
-  }, [characters, filters, statsData]);
+
+    if (sortBy === 'newest') {
+      result.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? '') || b.id - a.id);
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '') || a.id - b.id);
+    } else {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return result;
+  }, [characters, filters, statsData, sortBy]);
 
   const numFilters = activeFilterCount(filters);
 
@@ -260,6 +271,15 @@ export default function DashboardClient({ initialCharacters }: Props) {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'name')}
+                  className="text-sm font-semibold text-gray-600 bg-white border border-gray-200 px-3 py-2.5 rounded-xl hover:border-gray-400 transition-colors cursor-pointer"
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="name">Name A–Z</option>
+                </select>
                 <button
                   onClick={() => {
                     setFiltersOpen((v) => !v);
@@ -305,12 +325,12 @@ export default function DashboardClient({ initialCharacters }: Props) {
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 mb-1.5">Ethnicity</p>
+                      <p className="text-xs font-semibold text-gray-500 mb-1.5">Race</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {(Object.entries(ETHNICITY_LABELS) as [string, string][]).map(([val, label]) => (
-                          <button key={val} onClick={() => toggleArr('ethnicities', val)}
+                        {(Object.entries(RACE_LABELS) as [string, string][]).map(([val, label]) => (
+                          <button key={val} onClick={() => toggleArr('race', val)}
                             className={cn('text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors',
-                              filters.ethnicities.includes(val) ? 'bg-indigo-500 border-indigo-500 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
+                              filters.race.includes(val) ? 'bg-indigo-500 border-indigo-500 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-gray-400'
                             )}>{label}</button>
                         ))}
                       </div>
@@ -467,7 +487,8 @@ export default function DashboardClient({ initialCharacters }: Props) {
                   <>
                     <div className="flex items-center gap-2 mb-4 mt-8">
                       <p className="text-base font-black tracking-tight text-black">AI Generation Costs</p>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">fal.ai</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">kie.ai</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-orange-500 bg-orange-50 px-2 py-0.5 rounded-full">fal.ai fallback</span>
                     </div>
 
                     {/* Budget warning */}
@@ -477,14 +498,16 @@ export default function DashboardClient({ initialCharacters }: Props) {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
                       {[
                         { label: 'Total Gen. Cost', value: `$${statsData.generation.totalCost.toFixed(4)}`, color: 'text-rose-600' },
-                        { label: 'fal.ai Cost', value: `$${statsData.generation.totalFalCost.toFixed(2)}`, color: 'text-orange-600' },
+                        { label: 'Kie.ai Cost', value: `$${(statsData.generation.totalKieCost ?? 0).toFixed(2)}`, color: 'text-emerald-600' },
+                        { label: 'Fal.ai Cost', value: `$${statsData.generation.totalFalCost.toFixed(2)}`, color: 'text-orange-600' },
                         { label: 'Claude Cost', value: `$${statsData.generation.totalClaudeCost.toFixed(4)}`, color: 'text-purple-600' },
                         { label: 'Successful Runs', value: statsData.generation.totalSuccessful, color: 'text-emerald-600' },
                         { label: 'Avg. Profile Cost', value: statsData.generation.avgProfileCost ? `$${statsData.generation.avgProfileCost.toFixed(2)}` : '—', color: 'text-indigo-600' },
                         { label: 'Avg. Ref Sheet Cost', value: statsData.generation.avgRefsheetCost ? `$${statsData.generation.avgRefsheetCost.toFixed(2)}` : '—', color: 'text-violet-600' },
+                        { label: 'Image Cost', value: `$${(statsData.generation.totalImageCost ?? 0).toFixed(2)}`, color: 'text-amber-600' },
                       ].map((s) => (
                         <div key={s.label} className="bg-white border border-gray-100 rounded-2xl p-5">
                           <div className={`text-2xl font-black mb-1 ${s.color}`}>{s.value}</div>
@@ -497,7 +520,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
                     {statsData.generation.totalFailed > 0 && (
                       <div className="mb-6 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">
                         <span className="font-bold">{statsData.generation.totalFailed} failed generation{statsData.generation.totalFailed !== 1 ? 's' : ''}</span>
-                        {' '}— fal.ai may still charge for these runs.
+                        {' '}— the provider may still charge for these runs.
                       </div>
                     )}
 
@@ -549,6 +572,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
                                 <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Character</th>
                                 <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Type</th>
                                 <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Cost</th>
+                                <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Provider</th>
                                 <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Status</th>
                                 <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400">Date</th>
                               </tr>
@@ -581,6 +605,15 @@ export default function DashboardClient({ initialCharacters }: Props) {
                                     </span>
                                   </td>
                                   <td className="px-5 py-3 font-bold text-rose-600">${entry.cost.toFixed(2)}</td>
+                                  <td className="px-5 py-3">
+                                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                                      entry.provider === 'kie'
+                                        ? 'bg-emerald-50 text-emerald-700'
+                                        : 'bg-orange-50 text-orange-700'
+                                    }`}>
+                                      {entry.provider === 'kie' ? 'Kie.ai' : 'Fal.ai'}
+                                    </span>
+                                  </td>
                                   <td className="px-5 py-3">
                                     {entry.failed ? (
                                       <span className="text-xs font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-full" title={entry.error}>Failed</span>

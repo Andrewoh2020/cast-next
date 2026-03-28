@@ -1,6 +1,5 @@
-export type TalentRole = 'lead' | 'supporting' | 'villain' | 'hero' | 'narrator' | 'ensemble';
 export type TalentSex = 'male' | 'female' | 'nonbinary';
-export type TalentEthnicity =
+export type TalentRace =
   | 'east-asian'
   | 'south-asian'
   | 'black'
@@ -13,17 +12,6 @@ export type TalentAgeRange = 'child' | 'teen' | '20s' | '30s' | '40s' | '50s' | 
 export type TalentBuild = 'slim' | 'athletic' | 'average' | 'stocky' | 'curvy' | 'plus-size';
 export type TalentHeight = 'short' | 'average' | 'tall';
 export type TalentStyle = 'realistic' | 'anime' | 'cartoon' | '3d-cgi' | 'stylized';
-export type TalentGenre =
-  | 'action'
-  | 'drama'
-  | 'comedy'
-  | 'sci-fi'
-  | 'thriller'
-  | 'romance'
-  | 'horror'
-  | 'political'
-  | 'indie';
-
 export interface PriceOption {
   name: string;
   price: string;
@@ -41,30 +29,21 @@ export interface Talent {
   referenceSheetUrl?: string;
   referenceSheetHistory?: string[];
   // Core attributes
-  roles: TalentRole[];
   sex: TalentSex;
-  ethnicities: TalentEthnicity[];
+  race: TalentRace[];
+  ethnicity?: string;
+  age?: number;
   ageRange: TalentAgeRange;
   build: TalentBuild;
   height: TalentHeight;
   style: TalentStyle;
-  genres: TalentGenre[];
-  languages: string[];
   prices: PriceOption[];
+  createdAt?: string;
   exclusive?: boolean;
   exclusiveDisabled?: boolean;
 }
 
 // ── Label maps for display ──────────────────────────────────────────
-
-export const ROLE_LABELS: Record<TalentRole, string> = {
-  lead: 'Lead',
-  supporting: 'Supporting',
-  villain: 'Villain',
-  hero: 'Hero',
-  narrator: 'Narrator',
-  ensemble: 'Ensemble',
-};
 
 export const SEX_LABELS: Record<TalentSex, string> = {
   male: 'Male',
@@ -72,7 +51,7 @@ export const SEX_LABELS: Record<TalentSex, string> = {
   nonbinary: 'Non-binary',
 };
 
-export const ETHNICITY_LABELS: Record<TalentEthnicity, string> = {
+export const RACE_LABELS: Record<TalentRace, string> = {
   'east-asian': 'East Asian',
   'south-asian': 'South Asian',
   'black': 'Black',
@@ -116,18 +95,6 @@ export const STYLE_LABELS: Record<TalentStyle, string> = {
   stylized: 'Stylized',
 };
 
-export const GENRE_LABELS: Record<TalentGenre, string> = {
-  action: 'Action',
-  drama: 'Drama',
-  comedy: 'Comedy',
-  'sci-fi': 'Sci-Fi',
-  thriller: 'Thriller',
-  romance: 'Romance',
-  horror: 'Horror',
-  political: 'Political',
-  indie: 'Indie',
-};
-
 // ── Filter config (used by roster UI) ────────────────────────────────
 
 export const FILTER_GROUPS = [
@@ -137,9 +104,9 @@ export const FILTER_GROUPS = [
     options: Object.entries(SEX_LABELS).map(([value, label]) => ({ value, label })),
   },
   {
-    key: 'ethnicities' as const,
-    label: 'Ethnicity',
-    options: Object.entries(ETHNICITY_LABELS).map(([value, label]) => ({ value, label })),
+    key: 'race' as const,
+    label: 'Race',
+    options: Object.entries(RACE_LABELS).map(([value, label]) => ({ value, label })),
   },
   {
     key: 'ageRange' as const,
@@ -192,15 +159,12 @@ export const talents: Talent[] = [
     slug: "elara-voss",
     vibe: "Cool-headed corporate exec with a hidden edge. Sharp suits, sharper wit.",
     img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
-    roles: ['lead'],
     sex: 'female',
-    ethnicities: ['white'],
+    race: ['white'],
     ageRange: '30s',
     build: 'slim',
     height: 'tall',
     style: 'realistic',
-    genres: ['drama', 'thriller', 'political'],
-    languages: ['EN', 'FR'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -213,15 +177,12 @@ export const talents: Talent[] = [
     slug: "marco-drev",
     vibe: "Rugged field operative. Weathered, world-weary, and completely reliable.",
     img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80",
-    roles: ['hero'],
     sex: 'male',
-    ethnicities: ['white'],
+    race: ['white'],
     ageRange: '40s',
     build: 'athletic',
     height: 'tall',
     style: 'realistic',
-    genres: ['action', 'thriller'],
-    languages: ['EN', 'ES'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -234,15 +195,12 @@ export const talents: Talent[] = [
     slug: "nova-sinclair",
     vibe: "Gen-Z hacker with an aesthetic. Neon-lit rooms, effortless confidence.",
     img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&q=80",
-    roles: ['supporting'],
     sex: 'female',
-    ethnicities: ['white', 'mixed'],
+    race: ['white', 'mixed'],
     ageRange: '20s',
     build: 'slim',
     height: 'average',
     style: 'realistic',
-    genres: ['sci-fi', 'thriller', 'action'],
-    languages: ['EN', 'JA'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -255,15 +213,12 @@ export const talents: Talent[] = [
     slug: "viktor-hale",
     vibe: "The one you don't see coming. Charming surface, calculated interior.",
     img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
-    roles: ['villain'],
     sex: 'male',
-    ethnicities: ['white'],
+    race: ['white'],
     ageRange: '40s',
     build: 'average',
     height: 'tall',
     style: 'realistic',
-    genres: ['drama', 'thriller', 'political'],
-    languages: ['EN', 'DE'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -276,15 +231,12 @@ export const talents: Talent[] = [
     slug: "sera-moss",
     vibe: "Small-town idealist turned big-city disruptor. Raw, relatable, magnetic.",
     img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80",
-    roles: ['lead'],
     sex: 'female',
-    ethnicities: ['black', 'mixed'],
+    race: ['black', 'mixed'],
     ageRange: '20s',
     build: 'average',
     height: 'average',
     style: 'realistic',
-    genres: ['drama', 'indie', 'romance'],
-    languages: ['EN'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -297,15 +249,12 @@ export const talents: Talent[] = [
     slug: "cain-rhoades",
     vibe: "Ex-military turned morally grey antihero. Stoic, scarred, survivalist.",
     img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80",
-    roles: ['villain', 'lead'],
     sex: 'male',
-    ethnicities: ['white'],
+    race: ['white'],
     ageRange: '30s',
     build: 'athletic',
     height: 'tall',
     style: 'realistic',
-    genres: ['action', 'thriller', 'drama'],
-    languages: ['EN', 'RU'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -318,15 +267,12 @@ export const talents: Talent[] = [
     slug: "lyra-chen",
     vibe: "Brilliant scientist who skipped social cues entirely. Awkward genius energy.",
     img: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=80",
-    roles: ['supporting'],
     sex: 'female',
-    ethnicities: ['east-asian'],
+    race: ['east-asian'],
     ageRange: '30s',
     build: 'slim',
     height: 'short',
     style: 'realistic',
-    genres: ['sci-fi', 'comedy', 'drama'],
-    languages: ['EN', 'ZH'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -339,15 +285,12 @@ export const talents: Talent[] = [
     slug: "axel-dunn",
     vibe: "Silver-tongued politician with something to hide. Power suit, perfect teeth.",
     img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=80",
-    roles: ['villain'],
     sex: 'male',
-    ethnicities: ['white'],
+    race: ['white'],
     ageRange: '50s',
     build: 'average',
     height: 'average',
     style: 'realistic',
-    genres: ['political', 'thriller', 'drama'],
-    languages: ['EN', 'FR'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -360,15 +303,12 @@ export const talents: Talent[] = [
     slug: "zara-nile",
     vibe: "Fearless investigative journalist. Sees through everyone. No filter.",
     img: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&q=80",
-    roles: ['hero', 'lead'],
     sex: 'female',
-    ethnicities: ['black'],
+    race: ['black'],
     ageRange: '30s',
     build: 'athletic',
     height: 'tall',
     style: 'realistic',
-    genres: ['drama', 'thriller', 'political'],
-    languages: ['EN', 'AR'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -381,15 +321,12 @@ export const talents: Talent[] = [
     slug: "jasper-reid",
     vibe: "Charming everyman navigating extraordinary circumstances. You root for him.",
     img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&q=80",
-    roles: ['lead'],
     sex: 'male',
-    ethnicities: ['white'],
+    race: ['white'],
     ageRange: '20s',
     build: 'average',
     height: 'average',
     style: 'realistic',
-    genres: ['romance', 'drama', 'comedy'],
-    languages: ['EN'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -402,15 +339,12 @@ export const talents: Talent[] = [
     slug: "mira-sol",
     vibe: "Free-spirited wanderer with depth. Warm, artistic, quietly wise.",
     img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
-    roles: ['supporting'],
     sex: 'female',
-    ethnicities: ['latino'],
+    race: ['latino'],
     ageRange: '20s',
     build: 'slim',
     height: 'average',
     style: 'realistic',
-    genres: ['romance', 'indie', 'drama'],
-    languages: ['EN', 'PT'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },
@@ -423,15 +357,12 @@ export const talents: Talent[] = [
     slug: "omar-steele",
     vibe: "Legendary mentor figure. Every word lands. Every scene, he owns.",
     img: "https://images.unsplash.com/photo-1542178243-bc20204b769f?w=600&q=80",
-    roles: ['lead', 'narrator'],
     sex: 'male',
-    ethnicities: ['black'],
+    race: ['black'],
     ageRange: '60s+',
     build: 'stocky',
     height: 'tall',
     style: 'realistic',
-    genres: ['drama', 'action', 'thriller'],
-    languages: ['EN'],
     prices: [
       { name: "Single Project", price: "$50", amount: 50 },
       { name: "Studio License", price: "$250", amount: 250 },

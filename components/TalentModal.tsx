@@ -6,11 +6,10 @@ import {
   Talent,
 
   SEX_LABELS,
-  ETHNICITY_LABELS,
+  RACE_LABELS,
   AGE_LABELS,
   BUILD_LABELS,
   HEIGHT_LABELS,
-  GENRE_LABELS,
 } from '@/lib/talent';
 
 const FREE_LICENSE_IDX = -1;
@@ -77,7 +76,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
   const tags = [
     SEX_LABELS[talent.sex],
     AGE_LABELS[talent.ageRange],
-    ...talent.ethnicities.map((e) => ETHNICITY_LABELS[e]),
+    ...talent.race.map((r) => RACE_LABELS[r]),
   ];
 
   const handleBuy = async () => {
@@ -233,15 +232,6 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
                 <span className="text-gray-400 font-medium">{a.label}</span>
                 <span className="text-gray-800 font-semibold">{a.value}</span>
               </div>
-            ))}
-          </div>
-
-          {/* Genres */}
-          <div className="flex flex-wrap gap-1 mb-5">
-            {talent.genres.map((g) => (
-              <span key={g} className="text-[10px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full capitalize">
-                {GENRE_LABELS[g]}
-              </span>
             ))}
           </div>
 

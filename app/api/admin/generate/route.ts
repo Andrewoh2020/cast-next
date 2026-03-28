@@ -5,6 +5,11 @@ import { appendGenerationLog, GENERATION_COST } from '@/lib/generation-log.serve
 
 fal.config({ credentials: process.env.FAL_API_KEY });
 
+const KIE_API_URL = 'https://api.kie.ai/api/v1/jobs/createTask';
+const KIE_STATUS_URL = 'https://api.kie.ai/api/v1/jobs/recordInfo';
+const KIE_POLL_INTERVAL = 2000; // 2 seconds
+const KIE_MAX_POLL_TIME = 120_000; // 2 minutes
+
 const REFERENCE_SHEET_PROMPT = (description: string) =>
   `Create a professional 8-panel character reference sheet of ${description}. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays.
 
@@ -30,7 +35,7 @@ const PROFILE_PROMPT = (description: string) =>
   `Full-body standing studio portrait, head to toe visible. The subject is ${description}, standing upright in a relaxed natural pose, slight 3/4 angle to camera, arms relaxed at sides or one hand in pocket. Wearing smart casual or professional business attire — dark blazer over a fitted top, tailored trousers or dress pants. Plain seamless light warm-gray paper backdrop, completely flat and uniform, solid color, no texture, no bokeh, no depth-of-field blur, no patterns. Soft even diffused studio lighting, clean catchlights, no harsh shadows. Sharp photorealistic DSLR photography, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays, no borders, no lines, no frames. HD quality. Not outdoors. No sports clothing, gym wear, uniforms, scrubs, jerseys, or occupation-specific costumes. No outdoor backgrounds, sports fields, gyms, kitchens, hospitals, offices, furniture, or architectural elements. No bokeh. No blurred background.`;
 
 /**
- * Convert a profile image URL to a base64 data URI for fal.ai.
+ * Convert a profile image URL to a base64 data URI.
  * Handles relative /api/media?p=... URLs by fetching from blob storage,
  * and absolute URLs by fetching directly.
  */
@@ -38,7 +43,6 @@ async function toDataUri(url: string): Promise<string> {
   let buffer: ArrayBuffer;
   let contentType = 'image/jpeg';
 
-  // Extract blob pathname from /api/media?p=...
   const match = url.match(/[?&]p=([^&]+)/);
   if (match) {
     const blobPath = decodeURIComponent(match[1]);
@@ -62,10 +66,128 @@ function bufferToDataUri(buf: ArrayBuffer, contentType = 'image/jpeg'): string {
   return `data:${contentType};base64,${Buffer.from(buf).toString('base64')}`;
 }
 
+// ── Kie.ai API helpers ─────────────────────────────────────────────────────
+
+async function kieCreateTask(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  imageInput?: string[],
+): Promise<string> {
+  const apiKey = process.env.KIE_API_KEY;
+  if (!apiKey) throw new Error('KIE_API_KEY not configured');
+
+  const input: Record<string, unknown> = {
+    prompt,
+    aspect_ratio: aspectRatio,
+    resolution,
+    output_format: 'jpg',
+  };
+  if (imageInput?.length) {
+    input.image_input = imageInput;
+  }
+
+  const res = await fetch(KIE_API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ model: 'nano-banana-2', input }),
+  });
+
+  const data = await res.json();
+  if (!res.ok || data.code !== 200) {
+    const msg = data.msg || `Kie.ai error ${res.status}`;
+    throw new Error(`Kie.ai: ${msg}`);
+  }
+
+  const taskId = data.data?.taskId;
+  if (!taskId) throw new Error('Kie.ai: no taskId in response');
+  return taskId;
+}
+
+async function kiePollResult(taskId: string): Promise<string> {
+  const apiKey = process.env.KIE_API_KEY!;
+  const start = Date.now();
+
+  while (Date.now() - start < KIE_MAX_POLL_TIME) {
+    const res = await fetch(`${KIE_STATUS_URL}?taskId=${taskId}`, {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+    });
+    const data = await res.json();
+
+    if (data.data?.state === 'success') {
+      const resultJson = JSON.parse(data.data.resultJson || '{}');
+      const imageUrl = resultJson.resultUrls?.[0];
+      if (!imageUrl) throw new Error('Kie.ai: no image URL in completed task');
+      return imageUrl;
+    }
+
+    if (data.data?.state === 'fail') {
+      const failMsg = data.data.failMsg || 'Generation failed';
+      throw new Error(`Kie.ai: ${failMsg}`);
+    }
+
+    // Still processing — wait and poll again
+    await new Promise((r) => setTimeout(r, KIE_POLL_INTERVAL));
+  }
+
+  throw new Error('Kie.ai: generation timed out after 2 minutes');
+}
+
+async function kieGenerate(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  imageInput?: string[],
+): Promise<string> {
+  const taskId = await kieCreateTask(prompt, aspectRatio, resolution, imageInput);
+  return kiePollResult(taskId);
+}
+
+// ── Fal.ai fallback ────────────────────────────────────────────────────────
+
+async function falGenerate(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  referenceImageUrls?: string[],
+): Promise<string> {
+  const endpoint = referenceImageUrls?.length
+    ? 'fal-ai/nano-banana-2/edit' as const
+    : 'fal-ai/nano-banana-2' as const;
+
+  const input: Record<string, unknown> = {
+    prompt,
+    num_images: 1,
+    aspect_ratio: aspectRatio,
+    resolution,
+    output_format: 'jpeg',
+  };
+  if (referenceImageUrls?.length) {
+    input.image_urls = referenceImageUrls;
+  }
+
+  const result = await fal.subscribe(endpoint, { input }) as unknown as {
+    data?: { images: { url: string }[] };
+    images?: { url: string }[];
+  };
+
+  const images = result.data?.images ?? result.images;
+  if (!images?.[0]?.url) {
+    throw new Error(`Unexpected fal.ai response: ${JSON.stringify(result)}`);
+  }
+  return images[0].url;
+}
+
+// ── Generate with Kie.ai primary, Fal.ai fallback ─────────────────────────
+
 interface GenerateResult {
   url: string;
   rawBuffer: ArrayBuffer;
   cost: number;
+  provider: 'kie' | 'fal';
 }
 
 async function generateAndUpload(
@@ -77,38 +199,25 @@ async function generateAndUpload(
   meta: { characterId?: number; characterName?: string; characterSlug?: string; claudeCost?: number },
   referenceImageUrls?: string[],
 ): Promise<GenerateResult> {
-  const cost = GENERATION_COST[type];
   const startedAt = Date.now();
-
   let resultUrl: string | undefined;
+  let provider: 'kie' | 'fal' = 'kie';
+
   try {
-    // Use the edit endpoint (img2img) when reference images are provided
-    const endpoint = referenceImageUrls?.length
-      ? 'fal-ai/nano-banana-2/edit' as const
-      : 'fal-ai/nano-banana-2' as const;
-
-    const input: Record<string, unknown> = {
-      prompt,
-      num_images: 1,
-      aspect_ratio: aspectRatio,
-      resolution,
-      output_format: 'jpeg',
-    };
-
-    if (referenceImageUrls?.length) {
-      input.image_urls = referenceImageUrls;
+    // Try Kie.ai first (cheaper)
+    let imageUrl: string;
+    try {
+      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'kie';
+    } catch (kieErr) {
+      console.warn(`Kie.ai failed, falling back to fal.ai: ${kieErr instanceof Error ? kieErr.message : kieErr}`);
+      imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'fal';
     }
 
-    const result = await fal.subscribe(endpoint, {
-      input,
-    }) as unknown as { data?: { images: { url: string }[] }; images?: { url: string }[] };
+    const cost = GENERATION_COST[provider][type];
 
-    const images = result.data?.images ?? result.images;
-    if (!images?.[0]?.url) {
-      throw new Error(`Unexpected fal.ai response: ${JSON.stringify(result)}`);
-    }
-
-    const imageUrl = images[0].url;
+    // Download and store in Vercel Blob
     const imageRes = await fetch(imageUrl);
     const buffer = await imageRes.arrayBuffer();
     const filename = `characters/${slug}-${type}-${Date.now()}.jpg`;
@@ -133,21 +242,23 @@ async function generateAndUpload(
       durationMs: Date.now() - startedAt,
       url: resultUrl,
       failed: false,
+      provider,
     });
 
-    return { url: resultUrl, rawBuffer: buffer, cost };
+    return { url: resultUrl, rawBuffer: buffer, cost, provider };
   } catch (err) {
     await appendGenerationLog({
       characterId: meta.characterId,
       characterName: meta.characterName,
       characterSlug: meta.characterSlug,
       type,
-      cost,
+      cost: GENERATION_COST.kie[type],
       claudeCost: meta.claudeCost,
       generatedAt: new Date().toISOString(),
       url: resultUrl,
       failed: true,
       error: err instanceof Error ? err.message : String(err),
+      provider,
     });
     throw err;
   }
@@ -164,31 +275,29 @@ export async function POST(req: NextRequest) {
     const meta = { characterId, characterName, characterSlug: safeSlug, claudeCost: claudeCost ?? 0 };
 
     if (mode === 'profile') {
-      const { url: profileUrl, cost: profileCost } = await generateAndUpload(
-        PROFILE_PROMPT(description), '2:3', '2K', safeSlug, 'profile', meta,
+      const { url: profileUrl, cost: profileCost, provider } = await generateAndUpload(
+        PROFILE_PROMPT(description), '2:3', '4K', safeSlug, 'profile', meta,
       );
-      return NextResponse.json({ profileUrl, costs: { profile: profileCost, total: profileCost } });
+      return NextResponse.json({ profileUrl, costs: { profile: profileCost, total: profileCost }, provider });
     }
 
     if (mode === 'refsheet') {
       if (!profileImageUrl) {
         return NextResponse.json({ error: 'A profile photo is required before generating a reference sheet' }, { status: 400 });
       }
-      // Convert profile image to data URI so fal.ai can read it (blob URLs are private)
       const profileDataUri = await toDataUri(profileImageUrl);
-      const { url: refSheetUrl, cost: refCost } = await generateAndUpload(
+      const { url: refSheetUrl, cost: refCost, provider } = await generateAndUpload(
         REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta,
         [profileDataUri],
       );
-      return NextResponse.json({ refSheetUrl, costs: { refsheet: refCost, total: refCost } });
+      return NextResponse.json({ refSheetUrl, costs: { refsheet: refCost, total: refCost }, provider });
     }
 
     // mode === 'both' — generate profile first, then use it as reference for refsheet
     const profileResult = await generateAndUpload(
-      PROFILE_PROMPT(description), '2:3', '2K', safeSlug, 'profile', meta,
+      PROFILE_PROMPT(description), '2:3', '4K', safeSlug, 'profile', meta,
     );
 
-    // Convert the just-generated profile buffer to a data URI for fal.ai
     const profileDataUri = bufferToDataUri(profileResult.rawBuffer);
     const refResult = await generateAndUpload(
       REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta,
@@ -203,6 +312,7 @@ export async function POST(req: NextRequest) {
         refsheet: refResult.cost,
         total: profileResult.cost + refResult.cost,
       },
+      provider: { profile: profileResult.provider, refsheet: refResult.provider },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

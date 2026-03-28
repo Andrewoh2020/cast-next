@@ -12,7 +12,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const body = await req.json() as Omit<Talent, 'id'>;
   const characters = await readCharacters();
-  const newCharacter: Talent = { ...body, id: nextId(characters) };
+  const newCharacter: Talent = { ...body, id: nextId(characters), createdAt: new Date().toISOString() };
   await writeCharacters([...characters, newCharacter]);
   return NextResponse.json(newCharacter, { status: 201 });
 }
