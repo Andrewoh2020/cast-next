@@ -30,7 +30,7 @@ export default function CharacterReferenceSheet({
     { label: 'Age Range', value: AGE_LABELS[talent.ageRange] },
     { label: 'Build', value: BUILD_LABELS[talent.build] },
     { label: 'Height', value: HEIGHT_LABELS[talent.height] },
-    { label: 'Race', value: talent.race.map((r) => RACE_LABELS[r]).join(', ') || '—' },
+    { label: 'Race', value: (talent.race || []).map((r) => RACE_LABELS[r]).join(', ') || '—' },
     { label: 'Ethnicity', value: talent.ethnicity || '—' },
   ];
 

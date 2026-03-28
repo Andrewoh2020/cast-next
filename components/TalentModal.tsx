@@ -76,7 +76,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
   const tags = [
     SEX_LABELS[talent.sex],
     AGE_LABELS[talent.ageRange],
-    ...talent.race.map((r) => RACE_LABELS[r]),
+    ...(talent.race || []).map((r) => RACE_LABELS[r]),
   ];
 
   const handleBuy = async () => {

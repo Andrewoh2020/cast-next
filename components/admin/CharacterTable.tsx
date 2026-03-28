@@ -128,7 +128,7 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
 
                   <td className="px-5 py-4 hidden lg:table-cell">
                     <div className="flex flex-wrap gap-1">
-                      {c.race.map((r) => (
+                      {(c.race || []).map((r) => (
                         <span key={r} className="text-[11px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">
                           {RACE_LABELS[r]}
                         </span>

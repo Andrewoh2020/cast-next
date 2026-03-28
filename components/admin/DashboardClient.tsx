@@ -183,7 +183,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
     const numActive = activeFilterCount(f);
     let result = numActive === 0 ? [...characters] : characters.filter((c) => {
       if (f.sex.length && !f.sex.includes(c.sex)) return false;
-      if (f.race.length && !f.race.some((r) => c.race.includes(r as never))) return false;
+      if (f.race.length && !f.race.some((r) => (c.race || []).includes(r as never))) return false;
       if (f.ageRange.length && !f.ageRange.includes(c.ageRange)) return false;
       if (f.style.length && !f.style.includes(c.style)) return false;
       if (f.exclusivelyLicensed && !c.exclusive) return false;
