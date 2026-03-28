@@ -30,27 +30,41 @@ const PROFILE_PROMPT = (description: string) =>
   `Full-body standing studio portrait, head to toe visible. The subject is ${description}, standing upright in a relaxed natural pose, slight 3/4 angle to camera, arms relaxed at sides or one hand in pocket. Wearing smart casual or professional business attire — dark blazer over a fitted top, tailored trousers or dress pants. Plain seamless light warm-gray paper backdrop, completely flat and uniform, solid color, no texture, no bokeh, no depth-of-field blur, no patterns. Soft even diffused studio lighting, clean catchlights, no harsh shadows. Sharp photorealistic DSLR photography, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays, no borders, no lines, no frames. HD quality. Not outdoors. No sports clothing, gym wear, uniforms, scrubs, jerseys, or occupation-specific costumes. No outdoor backgrounds, sports fields, gyms, kitchens, hospitals, offices, furniture, or architectural elements. No bokeh. No blurred background.`;
 
 /**
- * Resolve a profile image URL to a publicly fetchable URL for fal.ai.
- * Handles relative /api/media?p=... URLs by looking up the blob directly,
- * and passes through absolute URLs as-is.
+ * Convert a profile image URL to a base64 data URI for fal.ai.
+ * Handles relative /api/media?p=... URLs by fetching from blob storage,
+ * and absolute URLs by fetching directly.
  */
-async function resolveToPublicUrl(url: string): Promise<string> {
-  if (url.startsWith('http')) return url;
+async function toDataUri(url: string): Promise<string> {
+  let buffer: ArrayBuffer;
+  let contentType = 'image/jpeg';
 
   // Extract blob pathname from /api/media?p=...
   const match = url.match(/[?&]p=([^&]+)/);
   if (match) {
     const blobPath = decodeURIComponent(match[1]);
     const result = await get(blobPath, { access: 'private' });
-    if (result?.blob?.url) return result.blob.url;
+    if (!result?.stream) throw new Error('Could not fetch profile image from blob storage');
+    contentType = result.blob.contentType ?? 'image/jpeg';
+    buffer = await new Response(result.stream).arrayBuffer();
+  } else {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Could not fetch profile image: ${res.status}`);
+    contentType = res.headers.get('content-type') ?? 'image/jpeg';
+    buffer = await res.arrayBuffer();
   }
 
-  return url;
+  const base64 = Buffer.from(buffer).toString('base64');
+  return `data:${contentType};base64,${base64}`;
+}
+
+/** Convert a raw image buffer to a data URI */
+function bufferToDataUri(buf: ArrayBuffer, contentType = 'image/jpeg'): string {
+  return `data:${contentType};base64,${Buffer.from(buf).toString('base64')}`;
 }
 
 interface GenerateResult {
   url: string;
-  blobUrl: string;
+  rawBuffer: ArrayBuffer;
   cost: number;
 }
 
@@ -107,7 +121,6 @@ async function generateAndUpload(
     });
 
     resultUrl = `/api/media?p=${encodeURIComponent(blob.pathname)}`;
-    const blobDirectUrl = blob.url;
 
     await appendGenerationLog({
       characterId: meta.characterId,
@@ -122,7 +135,7 @@ async function generateAndUpload(
       failed: false,
     });
 
-    return { url: resultUrl, blobUrl: blobDirectUrl, cost };
+    return { url: resultUrl, rawBuffer: buffer, cost };
   } catch (err) {
     await appendGenerationLog({
       characterId: meta.characterId,
@@ -161,11 +174,11 @@ export async function POST(req: NextRequest) {
       if (!profileImageUrl) {
         return NextResponse.json({ error: 'A profile photo is required before generating a reference sheet' }, { status: 400 });
       }
-      // Resolve to a publicly fetchable URL for fal.ai
-      const publicProfileUrl = await resolveToPublicUrl(profileImageUrl);
+      // Convert profile image to data URI so fal.ai can read it (blob URLs are private)
+      const profileDataUri = await toDataUri(profileImageUrl);
       const { url: refSheetUrl, cost: refCost } = await generateAndUpload(
         REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta,
-        [publicProfileUrl],
+        [profileDataUri],
       );
       return NextResponse.json({ refSheetUrl, costs: { refsheet: refCost, total: refCost } });
     }
@@ -175,10 +188,11 @@ export async function POST(req: NextRequest) {
       PROFILE_PROMPT(description), '2:3', '2K', safeSlug, 'profile', meta,
     );
 
-    // Use the direct blob URL (publicly fetchable by fal.ai)
+    // Convert the just-generated profile buffer to a data URI for fal.ai
+    const profileDataUri = bufferToDataUri(profileResult.rawBuffer);
     const refResult = await generateAndUpload(
       REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta,
-      [profileResult.blobUrl],
+      [profileDataUri],
     );
 
     return NextResponse.json({
