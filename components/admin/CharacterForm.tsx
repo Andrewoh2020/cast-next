@@ -309,6 +309,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
           characterId: form.id,
           characterName: form.name || aiDescription.split(' ').slice(0, 3).join(' '),
           claudeCost: sessionClaudeCost,
+          profileImageUrl: form.img || undefined,
         }),
       });
       const data = await res.json();
@@ -455,8 +456,9 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               </button>
               <button
                 type="button"
-                disabled={!aiDescription.trim() || !!generating || !!describingMode}
+                disabled={!form.img || !aiDescription.trim() || !!generating || !!describingMode}
                 onClick={() => handleGenerate('refsheet')}
+                title={!form.img ? 'Generate a profile photo first' : undefined}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
               >
                 {generating === 'refsheet' ? <span className="animate-spin">⟳</span> : '📋'}
@@ -472,6 +474,9 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 {generating === 'both' ? 'Generating…' : (form.img || form.referenceSheetUrl) ? 'Regenerate Both' : 'Generate Both'}
               </button>
             </div>
+            {!form.img && !generating && (
+              <p className="text-[10px] text-amber-500 font-medium">Generate a profile photo first — the reference sheet uses it for character consistency.</p>
+            )}
             {generating && (
               <div className="mt-2">
                 <div className="flex justify-between text-[10px] text-indigo-400 font-semibold mb-1">
@@ -689,8 +694,9 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    disabled={!!generating || !!describingMode}
+                    disabled={!form.img || !!generating || !!describingMode}
                     onClick={() => handleGenerate('refsheet')}
+                    title={!form.img ? 'Generate a profile photo first' : undefined}
                     className="flex-1 flex items-center justify-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
                   >
                     {generating === 'refsheet' ? <span className="animate-spin">⟳</span> : '📋'}

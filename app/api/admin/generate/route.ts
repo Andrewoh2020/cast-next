@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
-import { put } from '@vercel/blob';
+import { put, get } from '@vercel/blob';
 import { appendGenerationLog, GENERATION_COST } from '@/lib/generation-log.server';
 
 fal.config({ credentials: process.env.FAL_API_KEY });
@@ -29,8 +29,28 @@ Consistent identity across all 8 panels. Consistent lighting across all panels: 
 const PROFILE_PROMPT = (description: string) =>
   `Full-body standing studio portrait, head to toe visible. The subject is ${description}, standing upright in a relaxed natural pose, slight 3/4 angle to camera, arms relaxed at sides or one hand in pocket. Wearing smart casual or professional business attire — dark blazer over a fitted top, tailored trousers or dress pants. Plain seamless light warm-gray paper backdrop, completely flat and uniform, solid color, no texture, no bokeh, no depth-of-field blur, no patterns. Soft even diffused studio lighting, clean catchlights, no harsh shadows. Sharp photorealistic DSLR photography, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays, no borders, no lines, no frames. HD quality. Not outdoors. No sports clothing, gym wear, uniforms, scrubs, jerseys, or occupation-specific costumes. No outdoor backgrounds, sports fields, gyms, kitchens, hospitals, offices, furniture, or architectural elements. No bokeh. No blurred background.`;
 
+/**
+ * Resolve a profile image URL to a publicly fetchable URL for fal.ai.
+ * Handles relative /api/media?p=... URLs by looking up the blob directly,
+ * and passes through absolute URLs as-is.
+ */
+async function resolveToPublicUrl(url: string): Promise<string> {
+  if (url.startsWith('http')) return url;
+
+  // Extract blob pathname from /api/media?p=...
+  const match = url.match(/[?&]p=([^&]+)/);
+  if (match) {
+    const blobPath = decodeURIComponent(match[1]);
+    const result = await get(blobPath, { access: 'private' });
+    if (result?.blob?.url) return result.blob.url;
+  }
+
+  return url;
+}
+
 interface GenerateResult {
   url: string;
+  blobUrl: string;
   cost: number;
 }
 
@@ -41,20 +61,32 @@ async function generateAndUpload(
   slug: string,
   type: 'profile' | 'refsheet',
   meta: { characterId?: number; characterName?: string; characterSlug?: string; claudeCost?: number },
+  referenceImageUrls?: string[],
 ): Promise<GenerateResult> {
   const cost = GENERATION_COST[type];
   const startedAt = Date.now();
 
   let resultUrl: string | undefined;
   try {
-    const result = await fal.subscribe('fal-ai/nano-banana-2', {
-      input: {
-        prompt,
-        num_images: 1,
-        aspect_ratio: aspectRatio,
-        resolution,
-        output_format: 'jpeg',
-      },
+    // Use the edit endpoint (img2img) when reference images are provided
+    const endpoint = referenceImageUrls?.length
+      ? 'fal-ai/nano-banana-2/edit' as const
+      : 'fal-ai/nano-banana-2' as const;
+
+    const input: Record<string, unknown> = {
+      prompt,
+      num_images: 1,
+      aspect_ratio: aspectRatio,
+      resolution,
+      output_format: 'jpeg',
+    };
+
+    if (referenceImageUrls?.length) {
+      input.image_urls = referenceImageUrls;
+    }
+
+    const result = await fal.subscribe(endpoint, {
+      input,
     }) as unknown as { data?: { images: { url: string }[] }; images?: { url: string }[] };
 
     const images = result.data?.images ?? result.images;
@@ -75,6 +107,7 @@ async function generateAndUpload(
     });
 
     resultUrl = `/api/media?p=${encodeURIComponent(blob.pathname)}`;
+    const blobDirectUrl = blob.url;
 
     await appendGenerationLog({
       characterId: meta.characterId,
@@ -89,7 +122,7 @@ async function generateAndUpload(
       failed: false,
     });
 
-    return { url: resultUrl, cost };
+    return { url: resultUrl, blobUrl: blobDirectUrl, cost };
   } catch (err) {
     await appendGenerationLog({
       characterId: meta.characterId,
@@ -109,7 +142,7 @@ async function generateAndUpload(
 
 export async function POST(req: NextRequest) {
   try {
-    const { description, slug, mode, characterId, characterName, claudeCost } = await req.json();
+    const { description, slug, mode, characterId, characterName, claudeCost, profileImageUrl } = await req.json();
     if (!description || !slug) {
       return NextResponse.json({ error: 'description and slug are required' }, { status: 400 });
     }
@@ -125,17 +158,28 @@ export async function POST(req: NextRequest) {
     }
 
     if (mode === 'refsheet') {
+      if (!profileImageUrl) {
+        return NextResponse.json({ error: 'A profile photo is required before generating a reference sheet' }, { status: 400 });
+      }
+      // Resolve to a publicly fetchable URL for fal.ai
+      const publicProfileUrl = await resolveToPublicUrl(profileImageUrl);
       const { url: refSheetUrl, cost: refCost } = await generateAndUpload(
         REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta,
+        [publicProfileUrl],
       );
       return NextResponse.json({ refSheetUrl, costs: { refsheet: refCost, total: refCost } });
     }
 
-    // mode === 'both' — generate in parallel
-    const [profileResult, refResult] = await Promise.all([
-      generateAndUpload(PROFILE_PROMPT(description), '2:3', '2K', safeSlug, 'profile', meta),
-      generateAndUpload(REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta),
-    ]);
+    // mode === 'both' — generate profile first, then use it as reference for refsheet
+    const profileResult = await generateAndUpload(
+      PROFILE_PROMPT(description), '2:3', '2K', safeSlug, 'profile', meta,
+    );
+
+    // Use the direct blob URL (publicly fetchable by fal.ai)
+    const refResult = await generateAndUpload(
+      REFERENCE_SHEET_PROMPT(description), '21:9', '4K', safeSlug, 'refsheet', meta,
+      [profileResult.blobUrl],
+    );
 
     return NextResponse.json({
       profileUrl: profileResult.url,
