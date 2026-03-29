@@ -1,3 +1,10 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'Castability is an AI character casting agency by Ability AI Technologies. Browse and license 100% AI-generated characters for film and video production.',
+};
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white pt-24 pb-20">

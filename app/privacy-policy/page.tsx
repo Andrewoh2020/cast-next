@@ -1,3 +1,10 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How Castability collects, uses, and protects your personal data. PDPA-compliant privacy practices for our AI character licensing platform.',
+};
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-20">

@@ -1,3 +1,10 @@
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Copyright FAQ',
+  description: 'Frequently asked questions about AI character copyright, ownership, licensing, and commercial use on Castability.',
+};
+
 export default function CopyrightFAQPage() {
   const faqs = [
     {

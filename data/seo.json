@@ -1,10 +1,10 @@
 {
-  "siteTitle": "Cast",
-  "titleTemplate": "%s | Cast",
+  "siteTitle": "Castability",
+  "titleTemplate": "%s | Castability",
   "description": "Browse and license 100% AI-generated characters for your video productions. No prompts, no rights issues, instant delivery.",
-  "keywords": ["AI actors", "AI characters", "AI casting agency", "AI film casting", "license AI characters", "copyright-safe actors", "AI video production"],
-  "canonicalUrl": "https://cast-next-silk.vercel.app",
-  "ogImage": "https://cast-next-silk.vercel.app/og-image.png",
+  "keywords": ["AI actors", "AI characters", "AI casting agency", "AI film casting", "license AI characters", "copyright-safe actors", "AI video production", "AI talent", "virtual actors", "AI video cast"],
+  "canonicalUrl": "https://www.castability.ai",
+  "ogImage": "https://www.castability.ai/og-image.png",
   "twitterHandle": "@castai",
   "googleAnalyticsId": ""
 }
