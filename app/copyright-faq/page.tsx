@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 export default function CopyrightFAQPage() {
-  const faqs = [
+  const faqs: { q: string; a: string }[] = [
     {
       q: 'Who owns the characters on Cast?',
       a: 'All characters are created by and owned by Ability AI Technologies Private Limited. They are either fully AI-generated or created with explicit permission from any individual whose likeness was used. Ownership remains with us unless you purchase an Exclusive Rights license, at which point full intellectual property rights transfer to you.',
@@ -65,8 +65,25 @@ export default function CopyrightFAQPage() {
     },
   ];
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.a,
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="max-w-3xl mx-auto px-6">
         <p className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-3">Legal</p>
         <h1 className="text-4xl font-black tracking-tighter text-black mb-2">Copyright FAQ</h1>

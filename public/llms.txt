@@ -1,0 +1,53 @@
+# Cast — AI Character Licensing Platform
+
+> Cast is a curated marketplace of 100% AI-generated characters, licensed for commercial use in film, video, and advertising productions.
+
+## What Cast Does
+
+Cast provides filmmakers, studios, and content creators with ready-to-use AI-generated characters — each with clear, enforceable license terms. No prompting required. No rights headaches.
+
+## Who It's For
+
+- AI filmmakers and video creators
+- Studios and production companies
+- Advertising agencies
+- Social media content creators
+- Anyone producing AI-generated video content
+
+## Products & Pricing
+
+Cast offers four license tiers for each character:
+
+- **Free (Attribution)**: Use any character at no cost with visible credit to Cast. Valid 12 months.
+- **Single Project License — $50 USD**: Use a character in one production. No attribution required. Valid 12 months.
+- **Studio License — $250 USD**: Use a character across unlimited productions. No attribution required. Valid 12 months.
+- **Exclusive Rights — $1,000 USD**: Full IP transfer. Character removed from marketplace permanently. Perpetual rights.
+
+All licenses are worldwide and platform-agnostic (YouTube, TikTok, Instagram, Netflix, broadcast TV, etc.).
+
+## Character Roster
+
+Cast currently features 100+ curated AI characters spanning:
+
+- Diverse ethnicities: East Asian, South Asian, Black, Latino/Hispanic, Middle Eastern, White, Southeast Asian, Mixed Heritage
+- Age ranges: 20s through 60s+
+- Body types: Slim, Athletic, Average, Stocky, Curvy, Plus-size
+- Visual styles: Realistic, Anime, Cartoon, 3D/CGI, Stylized
+
+Each character includes a unique name, personality description, profile image, and reference sheet for production consistency.
+
+## Key Pages
+
+- Homepage & Roster: https://www.castability.ai
+- About: https://www.castability.ai/about
+- License Terms: https://www.castability.ai/license-terms
+- Copyright FAQ: https://www.castability.ai/copyright-faq
+- Privacy Policy: https://www.castability.ai/privacy-policy
+
+## Company
+
+Cast is a product of Ability AI Technologies Private Limited, incorporated in Singapore (UEN: 202548889G).
+
+## Contact
+
+admin@ability.new
