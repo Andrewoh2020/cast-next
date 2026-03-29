@@ -39,6 +39,7 @@ const STEPS = [
 export default function ImmersiveLayout() {
   const { user } = useUser();
   const [allTalents, setAllTalents] = useState<Talent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ActiveFilters>({});
   const [selectedTalent, setSelectedTalent] = useState<Talent | null>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -47,7 +48,7 @@ export default function ImmersiveLayout() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
-    fetch('/api/characters').then((r) => r.json()).then((data) => setAllTalents(data.filter((t: Talent) => !t.exclusive)));
+    fetch('/api/characters').then((r) => r.json()).then((data) => { setAllTalents(data.filter((t: Talent) => !t.exclusive)); setLoading(false); });
   }, []);
 
   useEffect(() => {
@@ -200,7 +201,7 @@ export default function ImmersiveLayout() {
           </div>
 
           <div className="border-t border-gray-100 pt-5 flex-1">
-            <FilterSidebar filters={filters} onChange={setFilters} resultCount={filtered.length} />
+            <FilterSidebar filters={filters} onChange={setFilters} resultCount={loading ? -1 : filtered.length} />
           </div>
         </aside>
 
@@ -231,7 +232,13 @@ export default function ImmersiveLayout() {
 
           {/* Grid */}
           <div className="p-4 lg:p-5">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} className="relative w-full rounded-2xl bg-gray-200 animate-pulse" style={{ paddingBottom: '133%' }} />
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="text-center py-20 text-gray-400">
                 <div className="text-4xl mb-3">🎭</div>
                 <div className="font-semibold text-gray-600 mb-1">No characters match your filters</div>
@@ -265,9 +272,9 @@ export default function ImmersiveLayout() {
               <span className="text-base font-bold text-black">Filters</span>
               <button onClick={() => setMobileFiltersOpen(false)} className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">×</button>
             </div>
-            <FilterSidebar filters={filters} onChange={setFilters} resultCount={filtered.length} />
+            <FilterSidebar filters={filters} onChange={setFilters} resultCount={loading ? -1 : filtered.length} />
             <button onClick={() => setMobileFiltersOpen(false)} className="mt-5 w-full bg-indigo-500 text-white font-bold py-3.5 rounded-xl">
-              Show {filtered.length} results
+              {loading ? 'Loading...' : `Show ${filtered.length} results`}
             </button>
           </div>
         </div>

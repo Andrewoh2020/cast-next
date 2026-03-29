@@ -47,7 +47,7 @@ export default function FilterSidebar({ filters, onChange, resultCount }: Props)
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-400">{resultCount} results</span>
+          <span className="text-xs text-gray-400">{resultCount < 0 ? 'Loading...' : `${resultCount} results`}</span>
           {totalActive > 0 && (
             <button
               onClick={clearAll}
