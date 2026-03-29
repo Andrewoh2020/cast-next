@@ -110,7 +110,7 @@ export const FILTER_GROUPS = [
   {
     key: 'sex' as const,
     label: 'Sex',
-    options: Object.entries(SEX_LABELS).map(([value, label]) => ({ value, label })),
+    options: Object.entries(SEX_LABELS).filter(([value]) => value !== 'nonbinary').map(([value, label]) => ({ value, label })),
   },
   {
     key: 'race' as const,
