@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'License Terms',
-  description: 'License terms for AI characters on Castability. Understand your rights for Single Project, Studio, and Exclusive Rights licenses.',
+  description: 'License terms for AI characters on Cast. Understand your rights for Single Project, Studio, and Exclusive Rights licenses.',
 };
 
 export default function LicenseTermsPage() {

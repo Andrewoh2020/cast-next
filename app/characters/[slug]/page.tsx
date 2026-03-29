@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     openGraph: {
-      title: `${character.name} | Castability`,
+      title: `${character.name} | Cast`,
       description,
       url: `${base}/characters/${slug}`,
       images: character.img ? [{ url: character.img, width: 800, height: 1067 }] : [],
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${character.name} | Castability`,
+      title: `${character.name} | Cast`,
       description,
       images: character.img ? [character.img] : [],
     },
@@ -81,7 +81,7 @@ export default async function CharacterPage({ params }: Props) {
     description: character.vibe,
     image: character.img,
     url: `${base}/characters/${slug}`,
-    brand: { '@type': 'Organization', name: 'Castability' },
+    brand: { '@type': 'Organization', name: 'Cast' },
     offers: character.prices.map((p) => ({
       '@type': 'Offer',
       name: p.name,
