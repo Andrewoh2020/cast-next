@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import { readSeo } from "@/lib/seo.server";
 import { ClerkProvider } from "@clerk/nextjs";
+import Script from "next/script";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -82,17 +83,18 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {seo.googleAnalyticsId && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${seo.googleAnalyticsId}`} />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${seo.googleAnalyticsId}');`,
-              }}
-            />
-          </>
-        )}
       </head>
+      {seo.googleAnalyticsId && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${seo.googleAnalyticsId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${seo.googleAnalyticsId}');`}
+          </Script>
+        </>
+      )}
       <body className={`${geist.variable} antialiased`}>
         <Nav />
         {children}
