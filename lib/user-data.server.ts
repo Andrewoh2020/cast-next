@@ -13,9 +13,18 @@ export interface PurchaseRecord {
   sessionId?: string;
 }
 
+export interface CreditPurchaseRecord {
+  credits: number;
+  amount: number; // USD cents
+  purchasedAt: string;
+  sessionId: string;
+}
+
 export interface UserData {
   favorites: number[]; // character IDs
   purchases: PurchaseRecord[];
+  credits: number;
+  creditPurchases: CreditPurchaseRecord[];
 }
 
 function userKey(userId: string, file: string) {
@@ -45,7 +54,7 @@ async function writeUserBlob(pathname: string, data: unknown): Promise<void> {
 }
 
 export async function getUserData(userId: string): Promise<UserData> {
-  return readUserBlob<UserData>(userKey(userId, 'data.json'), { favorites: [], purchases: [] });
+  return readUserBlob<UserData>(userKey(userId, 'data.json'), { favorites: [], purchases: [], credits: 0, creditPurchases: [] });
 }
 
 export async function toggleFavorite(userId: string, characterId: number): Promise<number[]> {
@@ -56,6 +65,32 @@ export async function toggleFavorite(userId: string, characterId: number): Promi
     : [...data.favorites, characterId];
   await writeUserBlob(userKey(userId, 'data.json'), { ...data, favorites: next });
   return next;
+}
+
+export async function addCredits(userId: string, credits: number, amount: number, sessionId: string): Promise<number> {
+  const data = await getUserData(userId);
+  if ((data.creditPurchases ?? []).some((p) => p.sessionId === sessionId)) return data.credits ?? 0;
+  const updated: UserData = {
+    ...data,
+    credits: (data.credits ?? 0) + credits,
+    creditPurchases: [{ credits, amount, purchasedAt: new Date().toISOString(), sessionId }, ...(data.creditPurchases ?? [])],
+  };
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return updated.credits;
+}
+
+export async function deductCredit(userId: string): Promise<number> {
+  const data = await getUserData(userId);
+  const current = data.credits ?? 0;
+  if (current <= 0) throw new Error('No credits available');
+  const updated: UserData = { ...data, credits: current - 1 };
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return updated.credits;
+}
+
+export async function getCredits(userId: string): Promise<number> {
+  const data = await getUserData(userId);
+  return data.credits ?? 0;
 }
 
 export async function recordPurchase(userId: string, purchase: PurchaseRecord): Promise<void> {

@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 import { readSeo } from '@/lib/seo.server';
-import { readCharacters } from '@/lib/characters.server';
+import { readVisibleCharacters } from '@/lib/characters.server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [seo, characters] = await Promise.all([readSeo(), readCharacters()]);
+  const [seo, characters] = await Promise.all([readSeo(), readVisibleCharacters()]);
   const base = seo.canonicalUrl || 'https://www.castability.ai';
 
   const staticRoutes: MetadataRoute.Sitemap = [

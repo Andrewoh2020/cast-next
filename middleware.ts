@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const isAdminRoute = createRouteMatcher(['/admin/dashboard/:path*']);
 const isAccountRoute = createRouteMatcher(['/account/:path*', '/account']);
+const isCreateRoute = createRouteMatcher(['/create/:path*', '/create']);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  // Protect account routes with Clerk
-  if (isAccountRoute(req)) {
+  // Protect account and create routes with Clerk
+  if (isAccountRoute(req) || isCreateRoute(req)) {
     await auth.protect();
   }
 

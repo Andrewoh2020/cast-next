@@ -1,11 +1,12 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { readCharacters, writeCharacters, nextId } from '@/lib/characters.server';
+import { readCharacters, readVisibleCharacters, writeCharacters, nextId } from '@/lib/characters.server';
 import { Talent } from '@/lib/talent';
 
-export async function GET() {
-  const characters = await readCharacters();
+export async function GET(req: NextRequest) {
+  const showAll = req.nextUrl.searchParams.get('all') === '1';
+  const characters = showAll ? await readCharacters() : await readVisibleCharacters();
   return NextResponse.json(characters);
 }
 
@@ -15,6 +16,16 @@ export async function POST(req: NextRequest) {
   const newCharacter: Talent = { ...body, id: nextId(characters), createdAt: new Date().toISOString() };
   await writeCharacters([...characters, newCharacter]);
   return NextResponse.json(newCharacter, { status: 201 });
+}
+
+export async function PATCH(req: NextRequest) {
+  const { ids, update } = await req.json() as { ids: number[]; update: Partial<Talent> };
+  if (!ids?.length) return NextResponse.json({ error: 'No ids provided' }, { status: 400 });
+  const characters = await readCharacters();
+  const idSet = new Set(ids);
+  const updated = characters.map((c) => idSet.has(c.id) ? { ...c, ...update, id: c.id } : c);
+  await writeCharacters(updated);
+  return NextResponse.json({ ok: true, updated: ids.length });
 }
 
 export async function DELETE(req: NextRequest) {

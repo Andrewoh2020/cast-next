@@ -329,10 +329,12 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
         vibe: autoVibe,
         ...(data.profileUrl ? {
           img: data.profileUrl,
+          imgThumbnail: data.imgThumbnail,
           imgHistory: form.img ? [...(form.imgHistory ?? []), form.img] : (form.imgHistory ?? []),
         } : {}),
         ...(data.refSheetUrl ? {
           referenceSheetUrl: data.refSheetUrl,
+          refSheetThumbnail: data.refSheetThumbnail,
           referenceSheetHistory: form.referenceSheetUrl
             ? [...(form.referenceSheetHistory ?? []), form.referenceSheetUrl]
             : (form.referenceSheetHistory ?? []),
@@ -953,6 +955,19 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 checked={!!form.exclusiveDisabled}
                 onChange={(e) => set('exclusiveDisabled', e.target.checked)}
                 className="w-5 h-5 accent-amber-500 flex-shrink-0 ml-4"
+              />
+            </label>
+
+            <label className="flex items-center justify-between bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 cursor-pointer">
+              <div>
+                <p className="text-sm font-bold text-rose-900">Hide from Marketplace</p>
+                <p className="text-xs text-rose-700 mt-0.5">Hidden characters won&apos;t appear in the public roster, search, or sitemap. They remain accessible in the admin dashboard.</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={!!form.hidden}
+                onChange={(e) => set('hidden', e.target.checked)}
+                className="w-5 h-5 accent-rose-500 flex-shrink-0 ml-4"
               />
             </label>
           </Section>

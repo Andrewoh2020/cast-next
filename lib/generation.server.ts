@@ -1,0 +1,455 @@
+import { fal } from '@fal-ai/client';
+import { put, get } from '@vercel/blob';
+import sharp from 'sharp';
+import { appendGenerationLog, GENERATION_COST } from '@/lib/generation-log.server';
+
+fal.config({ credentials: process.env.FAL_API_KEY });
+
+const KIE_API_URL = 'https://api.kie.ai/api/v1/jobs/createTask';
+const KIE_STATUS_URL = 'https://api.kie.ai/api/v1/jobs/recordInfo';
+const KIE_POLL_INTERVAL = 2000;
+const KIE_MAX_POLL_TIME = 120_000;
+const FAL_TIMEOUT = 180_000; // 3 minutes
+
+// ── Prompts ──────────────────────────────────────────────────────────────
+
+export const REFERENCE_SHEET_PROMPT = (description: string) =>
+  `Create a professional 8-panel character reference sheet of ${description}. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays.
+
+CRITICAL RULE: Every panel must show a STRICTLY DIFFERENT camera angle. No two panels may share the same angle or orientation. Do not repeat any view. The 4 close-up panels must each show a clearly distinct direction — front, right 3/4, left 3/4, and back of head.
+
+Arrange as follows:
+
+TOP ROW — 4 full-body standing shots, subject in relaxed A-pose, head to toe:
+Panel 1: Camera DIRECTLY IN FRONT — subject faces straight into lens, full front view.
+Panel 2: Camera 90 degrees to subject's LEFT — subject's LEFT side of body faces camera, right side hidden, strict 90-degree side profile showing left ear, left shoulder, left arm only.
+Panel 3: Camera 90 degrees to subject's RIGHT — subject's RIGHT side of body faces camera, left side hidden, strict 90-degree side profile showing right ear, right shoulder, right arm only. THIS MUST BE A MIRROR OPPOSITE OF PANEL 2.
+Panel 4: Camera DIRECTLY BEHIND — subject's back faces lens, back of head and back of clothing fully visible, zero front-facing elements.
+
+RIGHT SIDE — 4 tight close-up portrait shots arranged in a 2x2 grid, shoulders and head only. All 4 must show a completely different camera angle:
+Panel 5 (top-left): Camera directly in front — subject looks straight into lens, face perfectly centered and symmetrical. Full front view.
+Panel 6 (top-right): Camera angled 45 degrees to subject's RIGHT — subject's RIGHT cheek and ear are prominent, left cheek partially visible. Clear 3/4 right view. Face must be noticeably turned RIGHT compared to Panel 5.
+Panel 7 (bottom-left): Camera angled 45 degrees to subject's LEFT — subject's LEFT cheek and ear are prominent, right cheek partially visible. Clear 3/4 left view. Face must be noticeably turned LEFT, OPPOSITE direction to Panel 6.
+Panel 8 (bottom-right): Camera positioned directly BEHIND the subject's head — back of skull and back of neck fully visible, zero front-facing features, hair visible from behind. Complete rear view of the head.
+
+Consistent identity across all 8 panels. Consistent lighting across all panels: soft diffused studio light, even fill, no harsh shadows. Uniform spacing between panels. Consistent head height across top row, consistent face scale across bottom row. Crisp print-ready output. No visible panel borders, no dividing lines, no grid lines, no white lines, no black lines between panels. Panels are separated only by the background color — no drawn separators of any kind.`;
+
+export const PROFILE_PROMPT = (description: string) =>
+  `Full-body portrait of ${description}, head to toe visible. Clean neutral background, natural relaxed pose, sharp photorealistic DSLR photography style, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, even studio lighting, no text overlays. HD quality.`;
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+/** Fetch an image from private blob storage (via /api/media?p=...) or a remote URL and return the raw buffer. */
+async function fetchImageBuffer(url: string): Promise<{ buffer: ArrayBuffer; contentType: string }> {
+  const match = url.match(/[?&]p=([^&]+)/);
+  if (match) {
+    const blobPath = decodeURIComponent(match[1]);
+    const result = await get(blobPath, { access: 'private' });
+    if (!result?.stream) throw new Error('Could not fetch image from blob storage');
+    const contentType = result.blob.contentType ?? 'image/jpeg';
+    const buffer = await new Response(result.stream).arrayBuffer();
+    return { buffer, contentType };
+  }
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Could not fetch image: ${res.status}`);
+  return { buffer: await res.arrayBuffer(), contentType: res.headers.get('content-type') ?? 'image/jpeg' };
+}
+
+/** Upload an image buffer to fal.ai's CDN. Returns a publicly accessible URL usable by any external API. */
+async function uploadToFalCdn(buffer: ArrayBuffer, contentType = 'image/jpeg'): Promise<string> {
+  const blob = new Blob([buffer], { type: contentType });
+  const file = new File([blob], `ref-${Date.now()}.jpg`, { type: contentType });
+  return await fal.storage.upload(file);
+}
+
+// Keep these for backward compatibility with admin generation
+export async function toDataUri(url: string): Promise<string> {
+  const { buffer, contentType } = await fetchImageBuffer(url);
+  const base64 = Buffer.from(buffer).toString('base64');
+  return `data:${contentType};base64,${base64}`;
+}
+
+export function bufferToDataUri(buf: ArrayBuffer, contentType = 'image/jpeg'): string {
+  return `data:${contentType};base64,${Buffer.from(buf).toString('base64')}`;
+}
+
+// ── Kie.ai API ──────────────────────────────────────────────────────────
+
+async function kieCreateTask(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  imageInput?: string[],
+): Promise<string> {
+  const apiKey = process.env.KIE_API_KEY;
+  if (!apiKey) throw new Error('KIE_API_KEY not configured');
+
+  const input: Record<string, unknown> = {
+    prompt,
+    aspect_ratio: aspectRatio,
+    resolution,
+    output_format: 'jpg',
+  };
+  if (imageInput?.length) {
+    input.image_input = imageInput;
+  }
+
+  const res = await fetch(KIE_API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ model: 'nano-banana-2', input }),
+  });
+
+  const text = await res.text();
+  let data: Record<string, unknown>;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Kie.ai: invalid response (${res.status}): ${text.slice(0, 200)}`);
+  }
+  if (!res.ok || data.code !== 200) {
+    const msg = (data.msg as string) || `Kie.ai error ${res.status}`;
+    throw new Error(`Kie.ai: ${msg}`);
+  }
+
+  const taskId = (data.data as Record<string, unknown> | undefined)?.taskId as string | undefined;
+  if (!taskId) throw new Error('Kie.ai: no taskId in response');
+  return taskId;
+}
+
+async function kiePollResult(taskId: string): Promise<string> {
+  const apiKey = process.env.KIE_API_KEY!;
+  const start = Date.now();
+
+  while (Date.now() - start < KIE_MAX_POLL_TIME) {
+    const res = await fetch(`${KIE_STATUS_URL}?taskId=${taskId}`, {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+    });
+    const data = await res.json();
+
+    if (data.data?.state === 'success') {
+      const resultJson = JSON.parse(data.data.resultJson || '{}');
+      const imageUrl = resultJson.resultUrls?.[0];
+      if (!imageUrl) throw new Error('Kie.ai: no image URL in completed task');
+      return imageUrl;
+    }
+
+    if (data.data?.state === 'fail') {
+      const failMsg = data.data.failMsg || 'Generation failed';
+      throw new Error(`Kie.ai: ${failMsg}`);
+    }
+
+    await new Promise((r) => setTimeout(r, KIE_POLL_INTERVAL));
+  }
+
+  throw new Error('Kie.ai: generation timed out after 2 minutes');
+}
+
+async function kieGenerate(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  imageInput?: string[],
+): Promise<string> {
+  const taskId = await kieCreateTask(prompt, aspectRatio, resolution, imageInput);
+  return kiePollResult(taskId);
+}
+
+// ── Fal.ai fallback ─────────────────────────────────────────────────────
+
+async function falGenerate(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  referenceImageUrls?: string[],
+): Promise<string> {
+  const endpoint = referenceImageUrls?.length
+    ? 'fal-ai/nano-banana-2/edit' as const
+    : 'fal-ai/nano-banana-2' as const;
+
+  const input: Record<string, unknown> = {
+    prompt,
+    num_images: 1,
+    aspect_ratio: aspectRatio,
+    resolution,
+    output_format: 'jpeg',
+  };
+  if (referenceImageUrls?.length) {
+    input.image_urls = referenceImageUrls;
+  }
+
+  const result = await Promise.race([
+    fal.subscribe(endpoint, { input }),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('fal.ai: generation timed out after 3 minutes')), FAL_TIMEOUT)),
+  ]) as unknown as {
+    data?: { images: { url: string }[] };
+    images?: { url: string }[];
+  };
+
+  const images = result.data?.images ?? result.images;
+  if (!images?.[0]?.url) {
+    throw new Error(`Unexpected fal.ai response: ${JSON.stringify(result)}`);
+  }
+  return images[0].url;
+}
+
+// ── Core generation function ────────────────────────────────────────────
+
+export interface GenerateResult {
+  url: string;
+  rawBuffer: ArrayBuffer;
+  cost: number;
+  provider: 'kie' | 'fal';
+}
+
+export interface GenerateMeta {
+  characterId?: number;
+  characterName?: string;
+  characterSlug?: string;
+  claudeCost?: number;
+}
+
+/**
+ * Generate an image using Kie.ai (primary) or Fal.ai (fallback),
+ * upload to Vercel Blob, and log the generation.
+ *
+ * referenceImageUrls should be publicly accessible URLs (e.g. fal CDN URLs).
+ * Both Kie.ai and fal.ai require real HTTP URLs — not data URIs or private blob paths.
+ */
+export async function generateAndUpload(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  slug: string,
+  type: 'profile' | 'refsheet',
+  meta: GenerateMeta,
+  referenceImageUrls?: string[],
+  blobPrefix = 'characters',
+): Promise<GenerateResult> {
+  const startedAt = Date.now();
+  let resultUrl: string | undefined;
+  let provider: 'kie' | 'fal' = 'kie';
+
+  try {
+    let imageUrl: string;
+    try {
+      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'kie';
+    } catch (kieErr) {
+      console.warn(`Kie.ai failed, falling back to fal.ai: ${kieErr instanceof Error ? kieErr.message : kieErr}`);
+      imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'fal';
+    }
+
+    const cost = GENERATION_COST[provider][type];
+
+    const imageRes = await fetch(imageUrl);
+    const buffer = await imageRes.arrayBuffer();
+    const filename = `${blobPrefix}/${slug}-${type}-${Date.now()}.jpg`;
+
+    const blob = await put(filename, Buffer.from(buffer), {
+      access: 'private',
+      contentType: 'image/jpeg',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    });
+
+    resultUrl = `/api/media?p=${encodeURIComponent(blob.pathname)}`;
+
+    await appendGenerationLog({
+      characterId: meta.characterId,
+      characterName: meta.characterName,
+      characterSlug: meta.characterSlug,
+      type,
+      cost,
+      claudeCost: meta.claudeCost,
+      generatedAt: new Date().toISOString(),
+      durationMs: Date.now() - startedAt,
+      url: resultUrl,
+      failed: false,
+      provider,
+    });
+
+    return { url: resultUrl, rawBuffer: buffer, cost, provider };
+  } catch (err) {
+    await appendGenerationLog({
+      characterId: meta.characterId,
+      characterName: meta.characterName,
+      characterSlug: meta.characterSlug,
+      type,
+      cost: GENERATION_COST.kie[type],
+      claudeCost: meta.claudeCost,
+      generatedAt: new Date().toISOString(),
+      url: resultUrl,
+      failed: true,
+      error: err instanceof Error ? err.message : String(err),
+      provider,
+    });
+    throw err;
+  }
+}
+
+// ── High-level generation functions ─────────────────────────────────────
+
+export async function generateProfile(
+  description: string,
+  slug: string,
+  meta: GenerateMeta,
+  blobPrefix = 'characters',
+): Promise<GenerateResult> {
+  return generateAndUpload(
+    PROFILE_PROMPT(description), '2:3', '4K', slug, 'profile', meta, undefined, blobPrefix,
+  );
+}
+
+async function applyWatermark(imageBuffer: ArrayBuffer): Promise<Buffer> {
+  const img = sharp(Buffer.from(imageBuffer));
+  const { width = 720, height = 1080 } = await img.metadata();
+
+  const fontSize = Math.round(width * 0.07);
+  const lineSpacing = Math.round(fontSize * 3.5);
+  const rows = Math.ceil((height * 2) / lineSpacing);
+  const cols = Math.ceil((width * 2) / lineSpacing);
+
+  const textElements: string[] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = c * lineSpacing - width * 0.3;
+      const y = r * lineSpacing - height * 0.3;
+      textElements.push(
+        `<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="white" fill-opacity="0.18" transform="rotate(-35, ${x}, ${y})">CAST PREVIEW</text>`
+      );
+    }
+  }
+
+  const watermarkSvg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">${textElements.join('')}</svg>`;
+
+  return img
+    .composite([{ input: Buffer.from(watermarkSvg), top: 0, left: 0 }])
+    .jpeg({ quality: 85 })
+    .toBuffer();
+}
+
+/**
+ * Generate a 2K profile photo for preview. Returns both:
+ * - url: the watermarked preview image (for display)
+ * - sourceProfileUrl: the unwatermarked original (reused during full generation)
+ */
+export async function generatePreview(
+  description: string,
+  slug: string,
+  meta: GenerateMeta,
+  blobPrefix = 'characters',
+): Promise<GenerateResult & { sourceProfileUrl: string }> {
+  const result = await generateAndUpload(
+    PROFILE_PROMPT(description), '2:3', '2K', slug, 'profile', meta, undefined, blobPrefix,
+  );
+
+  const sourceProfileUrl = result.url;
+
+  // Watermark for preview display
+  const watermarked = await applyWatermark(result.rawBuffer);
+  const filename = `${blobPrefix}/${slug}-preview-${Date.now()}.jpg`;
+  const blob = await put(filename, watermarked, {
+    access: 'private',
+    contentType: 'image/jpeg',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+
+  return {
+    ...result,
+    url: `/api/media?p=${encodeURIComponent(blob.pathname)}`,
+    rawBuffer: watermarked.buffer as ArrayBuffer,
+    sourceProfileUrl,
+  };
+}
+
+export async function generateRefSheet(
+  description: string,
+  slug: string,
+  profileImageUrl: string,
+  meta: GenerateMeta,
+  blobPrefix = 'characters',
+): Promise<GenerateResult> {
+  const profileDataUri = await toDataUri(profileImageUrl);
+  return generateAndUpload(
+    REFERENCE_SHEET_PROMPT(description), '21:9', '4K', slug, 'refsheet', meta, [profileDataUri], blobPrefix,
+  );
+}
+
+/**
+ * Generate and upload a thumbnail (200px wide JPEG) from a raw image buffer.
+ */
+export async function generateThumbnail(
+  rawBuffer: ArrayBuffer,
+  slug: string,
+  type: 'profile' | 'refsheet',
+  blobPrefix = 'characters',
+): Promise<string> {
+  const thumb = await sharp(Buffer.from(rawBuffer))
+    .resize(200, undefined, { withoutEnlargement: true })
+    .jpeg({ quality: 75 })
+    .toBuffer();
+
+  const filename = `${blobPrefix}/${slug}-${type}-thumb-${Date.now()}.jpg`;
+  const blob = await put(filename, thumb, {
+    access: 'private',
+    contentType: 'image/jpeg',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+
+  return `/api/media?p=${encodeURIComponent(blob.pathname)}`;
+}
+
+/**
+ * Full generation: reuse the existing profile from preview, generate only the reference sheet.
+ *
+ * 1. Fetch the existing profile from private blob storage
+ * 2. Upload it to fal's CDN so both Kie.ai and fal.ai can access it
+ * 3. Generate the 4K reference sheet using the profile as reference
+ * 4. Generate thumbnails for both
+ */
+export async function generateFull(
+  description: string,
+  slug: string,
+  meta: GenerateMeta,
+  blobPrefix = 'characters',
+  sourceProfileUrl?: string,
+): Promise<{ profile: GenerateResult; refSheet: GenerateResult; profileThumbUrl: string; refSheetThumbUrl: string }> {
+  let profile: GenerateResult;
+  let publicProfileUrl: string;
+
+  if (sourceProfileUrl) {
+    // Reuse the 2K profile from preview — no regeneration needed
+    const { buffer, contentType } = await fetchImageBuffer(sourceProfileUrl);
+    profile = { url: sourceProfileUrl, rawBuffer: buffer, cost: 0, provider: 'kie' };
+    publicProfileUrl = await uploadToFalCdn(buffer, contentType);
+  } else {
+    // Fallback: generate a new 4K profile (e.g. admin flow or missing sourceProfileUrl)
+    profile = await generateAndUpload(
+      PROFILE_PROMPT(description), '2:3', '4K', slug, 'profile', meta, undefined, blobPrefix,
+    );
+    publicProfileUrl = await uploadToFalCdn(profile.rawBuffer);
+  }
+
+  // Generate 4K reference sheet using the public profile URL as reference
+  const refSheet = await generateAndUpload(
+    REFERENCE_SHEET_PROMPT(description), '21:9', '4K', slug, 'refsheet', meta, [publicProfileUrl], blobPrefix,
+  );
+
+  // Generate thumbnails in parallel
+  const [profileThumbUrl, refSheetThumbUrl] = await Promise.all([
+    generateThumbnail(profile.rawBuffer, slug, 'profile', blobPrefix),
+    generateThumbnail(refSheet.rawBuffer, slug, 'refsheet', blobPrefix),
+  ]);
+
+  return { profile, refSheet, profileThumbUrl, refSheetThumbUrl };
+}
+
+/** Alias for admin flow — generates both profile and reference sheet from scratch. */
+export const generateBoth = generateFull;

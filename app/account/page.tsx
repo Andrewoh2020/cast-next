@@ -1,20 +1,23 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { getUserData } from '@/lib/user-data.server';
-import { readCharacters } from '@/lib/characters.server';
+import { readVisibleCharacters } from '@/lib/characters.server';
+import { getUserDrafts } from '@/lib/custom-characters.server';
 import AccountClient from '@/components/AccountClient';
 
 export default async function AccountPage() {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  const [user, userData, characters] = await Promise.all([
+  const [user, userData, characters, drafts] = await Promise.all([
     currentUser(),
     getUserData(userId),
-    readCharacters(),
+    readVisibleCharacters(),
+    getUserDrafts(userId),
   ]);
 
   const favoriteCharacters = characters.filter((c) => userData.favorites.includes(c.id));
+  const allDrafts = drafts;
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-16">
@@ -29,6 +32,7 @@ export default async function AccountPage() {
           initialFavorites={favoriteCharacters}
           initialPurchases={userData.purchases}
           allCharacters={characters}
+          customCharacters={allDrafts}
         />
       </div>
     </div>

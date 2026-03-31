@@ -35,7 +35,9 @@
     ],
     "ethnicity": "African American",
     "age": 42,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-profile-1774439654051-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903-thumb.jpg"
   },
   {
     "name": "Elena Voss",
@@ -73,7 +75,9 @@
     ],
     "ethnicity": "Swedish",
     "age": 48,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fa-48-year-old-white-profile-1774440910126-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fa-48-year-old-white-refsheet-1774440943756-thumb.jpg"
   },
   {
     "name": "Taylor Red",
@@ -111,7 +115,9 @@
     ],
     "ethnicity": "Irish",
     "age": 48,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fwhite-woman-profile-1774441877920-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fwhite-woman-refsheet-1774441897925-thumb.jpg"
   },
   {
     "name": "Marcus Chen",
@@ -149,45 +155,9 @@
     ],
     "ethnicity": "Chinese",
     "age": 26,
-    "createdAt": "2026-03-11T21:00:00.000Z"
-  },
-  {
-    "name": "Diego Morales",
-    "slug": "latino-man-diego-morales",
-    "vibe": "Diego Morales is a 28-year-old Mexican male athlete with a lean, muscular athletic build and dark brown eyes. He has jet-black hair styled short and close to his head, with warm tan brown skin and defined facial features including a strong jawline. He wears moisture-wicking athletic wear and sneakers, embodying the focused intensity of a competitive endurance runner.",
-    "img": "/api/media?p=characters%2Flatino-man-profile-1774442648187.jpg",
-    "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Flatino-man-refsheet-1774442654361.jpg",
-    "sex": "male",
-    "ageRange": "20s",
-    "build": "athletic",
-    "height": "average",
-    "style": "realistic",
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$50",
-        "amount": 50
-      },
-      {
-        "name": "Studio License",
-        "price": "$250",
-        "amount": 250
-      },
-      {
-        "name": "Exclusive Rights",
-        "price": "$1000",
-        "amount": 1000
-      }
-    ],
-    "exclusiveDisabled": false,
-    "id": 18,
-    "race": [
-      "latino"
-    ],
-    "ethnicity": "Mexican",
-    "age": 28,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-profile-1774442514842-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-refsheet-1774442515195-thumb.jpg"
   },
   {
     "name": "Hailey Kim",
@@ -225,7 +195,9 @@
     ],
     "ethnicity": "Korean",
     "age": 24,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-profile-1774442748991-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820-thumb.jpg"
   },
   {
     "name": "Marcus Stewart",
@@ -263,7 +235,9 @@
     ],
     "ethnicity": "African American",
     "age": 16,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fblack-man-profile-1774443406061-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-refsheet-1774443506145-thumb.jpg"
   },
   {
     "name": "James Park",
@@ -301,7 +275,9 @@
     ],
     "ethnicity": "Korean",
     "age": 24,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-profile-1774444453976-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998-thumb.jpg"
   },
   {
     "name": "Mei Chen",
@@ -339,7 +315,9 @@
     ],
     "ethnicity": "Chinese",
     "age": 14,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-mei-chen-profile-1774602307598-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-mei-chen-refsheet-1774602320855-thumb.jpg"
   },
   {
     "name": "Akira Tanaka",
@@ -383,7 +361,9 @@
     ],
     "ethnicity": "Japanese",
     "age": 28,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-profile-1774605692726-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-tanaka-refsheet-1774605871028-thumb.jpg"
   },
   {
     "name": "Akira Shimizu",
@@ -421,7 +401,9 @@
     ],
     "ethnicity": "Japanese",
     "age": 28,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-profile-1774603140717-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-1774603211197-thumb.jpg"
   },
   {
     "name": "Marcus Chen",
@@ -462,7 +444,9 @@
     ],
     "ethnicity": "Chinese",
     "age": 32,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-marcus-chen-profile-1774603415104-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-marcus-chen-refsheet-1774605356273-thumb.jpg"
   },
   {
     "name": "Priya Malhotra",
@@ -502,7 +486,9 @@
     ],
     "ethnicity": "Indian",
     "age": 28,
-    "createdAt": "2026-03-11T21:00:00.000Z"
+    "createdAt": "2026-03-11T21:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fsouth-asian-woman-priya-malhotra-profile-1774662405132-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fsouth-asian-woman-priya-malhotra-refsheet-1774662487595-thumb.jpg"
   },
   {
     "id": 27,
@@ -540,7 +526,10 @@
     ],
     "ethnicity": "African American / White",
     "age": 21,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Faaliyah-thompson-profile-1774694492905-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Faaliyah-thompson-reference-sheet-1774694495943-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 28,
@@ -576,7 +565,10 @@
     ],
     "ethnicity": "Nigerian",
     "age": 27,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fadaeze-nwosu-profile-1774694506533-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fadaeze-nwosu-reference-sheet-1774694511207-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 29,
@@ -612,7 +604,10 @@
     ],
     "ethnicity": "Japanese",
     "age": 23,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Faiko-tanaka-profile-1774694516508-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Faiko-tanaka-reference-sheet-1774694517986-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 30,
@@ -648,7 +643,10 @@
     ],
     "ethnicity": "Irish",
     "age": 32,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Falex-brennan-profile-1774694525264-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Falex-brennan-reference-sheet-1774694533464-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 31,
@@ -684,7 +682,10 @@
     ],
     "ethnicity": "Senegalese",
     "age": 22,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Famara-diallo-profile-1774694542447-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Famara-diallo-reference-sheet-1774694545390-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 32,
@@ -720,7 +721,10 @@
     ],
     "ethnicity": "Polish",
     "age": 42,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fanna-kowalski-profile-1774694552970-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fanna-kowalski-reference-sheet-1774694554882-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 33,
@@ -756,7 +760,10 @@
     ],
     "ethnicity": "Indian",
     "age": 25,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fanya-singh-profile-1774694560188-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fanya-singh-reference-sheet-1774694561820-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 34,
@@ -792,7 +799,10 @@
     ],
     "ethnicity": "Indian",
     "age": 34,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Farjun-reddy-profile-1774694568777-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Farjun-reddy-reference-sheet-1774694570271-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 35,
@@ -828,7 +838,10 @@
     ],
     "ethnicity": "Swedish",
     "age": 45,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fbjorn-eriksen-profile-1774694574090-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fbjorn-eriksen-reference-sheet-1774694576488-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 36,
@@ -864,7 +877,10 @@
     ],
     "ethnicity": "French",
     "age": 28,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fcamille-dubois-profile-1774694581855-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fcamille-dubois-reference-sheet-1774694583411-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 37,
@@ -900,7 +916,10 @@
     ],
     "ethnicity": "Colombian",
     "age": 30,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fcarlos-mendez-profile-1774694588837-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fcarlos-mendez-reference-sheet-1774694590329-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 38,
@@ -937,7 +956,10 @@
     ],
     "ethnicity": "Japanese / Australian",
     "age": 18,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fchloe-nakamura-profile-1774694604345-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fchloe-nakamura-reference-sheet-1774694607183-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 39,
@@ -973,7 +995,10 @@
     ],
     "ethnicity": "Austrian",
     "age": 38,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fclara-hoffman-profile-1774694614536-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fclara-hoffman-reference-sheet-1774694617114-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 40,
@@ -1010,7 +1035,10 @@
     ],
     "ethnicity": "Jewish / Middle Eastern",
     "age": 43,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fdaniel-abrams-profile-1774694626156-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fdaniel-abrams-reference-sheet-1774694630719-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 41,
@@ -1046,7 +1074,10 @@
     ],
     "ethnicity": "Nigerian",
     "age": 41,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fdarius-okonkwo-profile-1774694636743-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fdarius-okonkwo-reference-sheet-1774694640611-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 42,
@@ -1082,7 +1113,10 @@
     ],
     "ethnicity": "Filipino",
     "age": 44,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fdiego-reyes-profile-1774694645253-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fdiego-reyes-reference-sheet-1774694647384-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 43,
@@ -1118,7 +1152,10 @@
     ],
     "ethnicity": "Mexican",
     "age": 35,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Felena-vasquez-profile-1774694652806-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Felena-vasquez-reference-sheet-1774694654648-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 44,
@@ -1154,7 +1191,10 @@
     ],
     "ethnicity": "Haitian",
     "age": 35,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Femmanuel-baptiste-profile-1774694659809-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Femmanuel-baptiste-reference-sheet-1774694662177-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 45,
@@ -1190,7 +1230,10 @@
     ],
     "ethnicity": "Kenyan",
     "age": 47,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fesme-oduya-profile-1774694670275-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fesme-oduya-reference-sheet-1774694679872-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 46,
@@ -1226,7 +1269,10 @@
     ],
     "ethnicity": "Saudi Arabian",
     "age": 40,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Ffatima-al-rashid-profile-1774694692005-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Ffatima-al-rashid-reference-sheet-1774694694609-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 47,
@@ -1262,7 +1308,10 @@
     ],
     "ethnicity": "Swedish",
     "age": 41,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Ffreya-lindqvist-profile-1774694701690-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Ffreya-lindqvist-reference-sheet-1774694704102-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 48,
@@ -1298,7 +1347,10 @@
     ],
     "ethnicity": "French",
     "age": 53,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fgabriel-moreau-profile-1774694708638-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fgabriel-moreau-reference-sheet-1774694710461-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 49,
@@ -1334,7 +1386,10 @@
     ],
     "ethnicity": "Korean",
     "age": 20,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fhana-kim-profile-1774694716403-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fhana-kim-reference-sheet-1774694719852-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 50,
@@ -1370,7 +1425,10 @@
     ],
     "ethnicity": "German",
     "age": 48,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fhans-weber-profile-1774694725760-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fhans-weber-reference-sheet-1774694728858-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 51,
@@ -1406,7 +1464,10 @@
     ],
     "ethnicity": "Greek",
     "age": 58,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fhelena-papadopoulos-profile-1774694734206-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fhelena-papadopoulos-reference-sheet-1774694736444-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 52,
@@ -1442,7 +1503,10 @@
     ],
     "ethnicity": "Somali",
     "age": 29,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fidris-abdi-profile-1774694741230-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fidris-abdi-reference-sheet-1774694743213-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 53,
@@ -1478,7 +1542,10 @@
     ],
     "ethnicity": "Norwegian",
     "age": 52,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fingrid-dahl-profile-1774694748961-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fingrid-dahl-reference-sheet-1774694751784-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 54,
@@ -1514,7 +1581,10 @@
     ],
     "ethnicity": "Scottish",
     "age": 19,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fisla-macleod-profile-1774694757141-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fisla-macleod-reference-sheet-1774694760232-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 55,
@@ -1550,7 +1620,10 @@
     ],
     "ethnicity": "Irish American",
     "age": 60,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fjames-calloway-profile-1774694764475-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fjames-calloway-reference-sheet-1774694767603-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 56,
@@ -1586,7 +1659,10 @@
     ],
     "ethnicity": "African American",
     "age": 48,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fjerome-washington-profile-1774694774812-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fjerome-washington-reference-sheet-1774694776778-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 57,
@@ -1622,7 +1698,10 @@
     ],
     "ethnicity": "Korean",
     "age": 36,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fjin-park-profile-1774694782246-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fjin-park-reference-sheet-1774694783957-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 58,
@@ -1658,7 +1737,10 @@
     ],
     "ethnicity": "Japanese",
     "age": 62,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fkenji-watanabe-profile-1774694789525-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fkenji-watanabe-reference-sheet-1774694790770-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 59,
@@ -1694,7 +1776,10 @@
     ],
     "ethnicity": "Ghanaian",
     "age": 55,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fkofi-mensah-profile-1774694797396-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fkofi-mensah-reference-sheet-1774694799256-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 60,
@@ -1730,7 +1815,10 @@
     ],
     "ethnicity": "Ghanaian",
     "age": 33,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fkwame-asante-profile-1774694804910-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fkwame-asante-reference-sheet-1774694806673-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 61,
@@ -1766,7 +1854,10 @@
     ],
     "ethnicity": "Irish",
     "age": 27,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fliam-otoole-profile-1774694810823-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fliam-otoole-reference-sheet-1774694813156-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 62,
@@ -1802,7 +1893,10 @@
     ],
     "ethnicity": "Vietnamese",
     "age": 37,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Flinh-tran-profile-1774694818833-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Flinh-tran-reference-sheet-1774694820180-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 63,
@@ -1838,7 +1932,10 @@
     ],
     "ethnicity": "Brazilian",
     "age": 24,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fluna-silva-profile-1774694824147-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fluna-silva-reference-sheet-1774694826286-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 64,
@@ -1874,7 +1971,10 @@
     ],
     "ethnicity": "Chinese American",
     "age": 31,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fmarcus-chen-profile-1774694830836-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fmarcus-chen-reference-sheet-1774694834126-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 65,
@@ -1910,7 +2010,10 @@
     ],
     "ethnicity": "African American",
     "age": 34,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fmarcus-reid-profile-1774694840131-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fmarcus-reid-reference-sheet-1774694841736-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 66,
@@ -1946,7 +2049,10 @@
     ],
     "ethnicity": "African American",
     "age": 34,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fmaya-jackson-profile-1774694845798-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fmaya-jackson-reference-sheet-1774694847252-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 67,
@@ -1982,7 +2088,10 @@
     ],
     "ethnicity": "Chinese",
     "age": 45,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fmei-lin-zhou-profile-1774694851341-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fmei-lin-zhou-reference-sheet-1774694852735-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 68,
@@ -2018,7 +2127,10 @@
     ],
     "ethnicity": "Mexican",
     "age": 56,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fmiguel-torres-profile-1774694856817-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fmiguel-torres-reference-sheet-1774694859018-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 69,
@@ -2054,7 +2166,10 @@
     ],
     "ethnicity": "Lebanese",
     "age": 36,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fnadia-khoury-profile-1774694865242-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fnadia-khoury-reference-sheet-1774694867657-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 70,
@@ -2090,7 +2205,10 @@
     ],
     "ethnicity": "Russian",
     "age": 32,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fnatasha-ivanova-profile-1774694874291-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fnatasha-ivanova-reference-sheet-1774694876926-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 71,
@@ -2126,7 +2244,10 @@
     ],
     "ethnicity": "Nigerian Canadian",
     "age": 22,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fnoah-adebayo-profile-1774694882798-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fnoah-adebayo-reference-sheet-1774694885243-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 72,
@@ -2162,7 +2283,10 @@
     ],
     "ethnicity": "Egyptian",
     "age": 38,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fomar-hassan-profile-1774694891857-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fomar-hassan-reference-sheet-1774694893750-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 73,
@@ -2198,7 +2322,10 @@
     ],
     "ethnicity": "Indian",
     "age": 26,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fpriya-sharma-profile-1774694899143-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fpriya-sharma-reference-sheet-1774694901003-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 74,
@@ -2234,7 +2361,10 @@
     ],
     "ethnicity": "Brazilian",
     "age": 33,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Frafael-santos-profile-1774694906097-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Frafael-santos-reference-sheet-1774694907562-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 75,
@@ -2270,7 +2400,10 @@
     ],
     "ethnicity": "Indian",
     "age": 28,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fraj-patel-profile-1774694912634-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fraj-patel-reference-sheet-1774694914195-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 76,
@@ -2306,7 +2439,10 @@
     ],
     "ethnicity": "Mexican",
     "age": 65,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Frosa-gutierrez-profile-1774694917976-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Frosa-gutierrez-reference-sheet-1774694920216-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 77,
@@ -2342,7 +2478,10 @@
     ],
     "ethnicity": "Nigerian",
     "age": 25,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fsamuel-okafor-profile-1774694925524-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fsamuel-okafor-reference-sheet-1774694926902-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 78,
@@ -2378,7 +2517,10 @@
     ],
     "ethnicity": "Pakistani",
     "age": 30,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fsana-mirza-profile-1774694932120-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fsana-mirza-reference-sheet-1774694934027-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 79,
@@ -2414,7 +2556,10 @@
     ],
     "ethnicity": "Swedish",
     "age": 29,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fsofia-engberg-profile-1774694938622-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fsofia-engberg-reference-sheet-1774694940174-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 80,
@@ -2450,7 +2595,10 @@
     ],
     "ethnicity": "Japanese",
     "age": 26,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fsuki-yamamoto-profile-1774694944255-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fsuki-yamamoto-reference-sheet-1774694946284-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 81,
@@ -2486,7 +2634,10 @@
     ],
     "ethnicity": "Japanese",
     "age": 39,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Ftakeshi-mori-profile-1774694950238-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Ftakeshi-mori-reference-sheet-1774694951605-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 82,
@@ -2522,7 +2673,10 @@
     ],
     "ethnicity": "Ethiopian American",
     "age": 30,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Ftalia-abrams-profile-1774694955789-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Ftalia-abrams-reference-sheet-1774694957196-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 83,
@@ -2558,7 +2712,10 @@
     ],
     "ethnicity": "Czech",
     "age": 50,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Ftomas-novak-profile-1774694962788-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Ftomas-novak-reference-sheet-1774694964795-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 84,
@@ -2594,7 +2751,10 @@
     ],
     "ethnicity": "Ukrainian",
     "age": 37,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fviktor-petrov-profile-1774694969366-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fviktor-petrov-reference-sheet-1774694971435-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 85,
@@ -2630,7 +2790,10 @@
     ],
     "ethnicity": "Japanese",
     "age": 31,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fyuki-nakamura-profile-1774694975311-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fyuki-nakamura-reference-sheet-1774694976699-thumb.jpg",
+    "hidden": true
   },
   {
     "id": 86,
@@ -2666,7 +2829,10 @@
     ],
     "ethnicity": "Nigerian British",
     "age": 29,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fzara-obi-profile-1774694981832-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fzara-obi-reference-sheet-1774694983812-thumb.jpg",
+    "hidden": true
   },
   {
     "name": "Amara Okonkwo",
@@ -2706,6 +2872,91 @@
     "imgHistory": [],
     "referenceSheetHistory": [],
     "id": 87,
-    "createdAt": "2026-03-28T00:00:00.000Z"
+    "createdAt": "2026-03-28T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fblack-woman-amara-okonkwo-profile-1774700100072-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-woman-amara-okonkwo-refsheet-1774700235527-thumb.jpg"
+  },
+  {
+    "name": "Marcus Chen-Sullivan",
+    "slug": "east-asian-man-marcus-chen-sullivan",
+    "vibe": "Marcus is a 28-year-old mixed-race man with a warm, approachable presence. He has shoulder-length dark hair with natural wave, warm brown eyes, and soft facial features that blend his Korean mother's delicate bone structure with his Irish father's broader jaw. With an athletic but lean build and average height, he favors vintage band tees, well-fitted jeans, and minimal jewelry, presenting an effortlessly charming, artistic aesthetic.",
+    "img": "/api/media?p=characters%2Feast-asian-man-marcus-chen-sullivan-profile-1774783933754.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-marcus-chen-sullivan-refsheet-1774783992638.jpg",
+    "sex": "male",
+    "race": [
+      "east-asian",
+      "white",
+      "mixed"
+    ],
+    "ethnicity": "Korean / Irish",
+    "age": 28,
+    "ageRange": "20s",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgHistory": [],
+    "referenceSheetHistory": [],
+    "id": 88,
+    "createdAt": "2026-03-29T11:33:14.123Z",
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-marcus-chen-sullivan-profile-1774783933754-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-marcus-chen-sullivan-refsheet-1774783992638-thumb.jpg"
+  },
+  {
+    "id": 89,
+    "name": "Koa Kahale",
+    "slug": "koa-kahale",
+    "vibe": "Koa is a 34-year-old Hawaiian man with a powerful athletic build, warm brown skin, and thick black hair worn shoulder-length with natural waves. His strong jawline, deep-set dark eyes, and easy smile convey both strength and warmth. He wears casual island wear—a fitted linen shirt left partially unbuttoned, cream-colored shorts, and traditional Hawaiian jewelry including a kukui nut lei, with the relaxed confidence of someone deeply rooted in his culture.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861.jpg",
+    "sex": "male",
+    "race": [
+      "pacific-islander"
+    ],
+    "ethnicity": "Hawaiian",
+    "age": 34,
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "createdAt": "2026-03-31T02:31:56.261Z",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861-thumb.jpg"
   }
 ]

@@ -22,6 +22,7 @@ interface RosterFilters {
   exclusiveDisabled: boolean;
   missingRefSheet: boolean;
   missingProfileImage: boolean;
+  hidden: boolean;
 }
 
 const EMPTY_FILTERS: RosterFilters = {
@@ -29,11 +30,12 @@ const EMPTY_FILTERS: RosterFilters = {
   noSales: false, highViewsNoPurchase: false,
   exclusivelyLicensed: false, exclusiveDisabled: false,
   missingRefSheet: false, missingProfileImage: false,
+  hidden: false,
 };
 
 function activeFilterCount(f: RosterFilters) {
   return f.sex.length + f.race.length + f.ageRange.length + f.style.length
-    + [f.noSales, f.highViewsNoPurchase, f.exclusivelyLicensed, f.exclusiveDisabled, f.missingRefSheet, f.missingProfileImage].filter(Boolean).length;
+    + [f.noSales, f.highViewsNoPurchase, f.exclusivelyLicensed, f.exclusiveDisabled, f.missingRefSheet, f.missingProfileImage, f.hidden].filter(Boolean).length;
 }
 
 interface Props {
@@ -163,10 +165,22 @@ export default function DashboardClient({ initialCharacters }: Props) {
     await deleteByIds(ids);
   };
 
+  const handleToggleHidden = async (ids: number[], hidden: boolean) => {
+    await fetch('/api/characters', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, update: { hidden } }),
+    });
+    setCharacters((prev) =>
+      prev.map((c) => (ids.includes(c.id) ? { ...c, hidden } : c))
+    );
+  };
+
   const rosterStats = {
     total: characters.length,
     exclusive: characters.filter((c) => c.exclusive).length,
-    available: characters.filter((c) => !c.exclusive).length,
+    available: characters.filter((c) => !c.exclusive && !c.hidden).length,
+    hidden: characters.filter((c) => c.hidden).length,
   };
 
   const toggleArr = (key: 'sex' | 'race' | 'ageRange' | 'style', val: string) =>
@@ -190,6 +204,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
       if (f.exclusiveDisabled && !c.exclusiveDisabled) return false;
       if (f.missingRefSheet && c.referenceSheetUrl) return false;
       if (f.missingProfileImage && c.img) return false;
+      if (f.hidden && !c.hidden) return false;
       if (f.noSales && statsData) {
         const s = statsData.byCharacter[c.id];
         if (s?.purchases > 0) return false;
@@ -202,11 +217,11 @@ export default function DashboardClient({ initialCharacters }: Props) {
     });
 
     if (sortBy === 'newest') {
-      result.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? '') || b.id - a.id);
+      result.sort((a, b) => Number(!!a.hidden) - Number(!!b.hidden) || (b.createdAt ?? '').localeCompare(a.createdAt ?? '') || b.id - a.id);
     } else if (sortBy === 'oldest') {
-      result.sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '') || a.id - b.id);
+      result.sort((a, b) => Number(!!a.hidden) - Number(!!b.hidden) || (a.createdAt ?? '').localeCompare(b.createdAt ?? '') || a.id - b.id);
     } else {
-      result.sort((a, b) => a.name.localeCompare(b.name));
+      result.sort((a, b) => Number(!!a.hidden) - Number(!!b.hidden) || a.name.localeCompare(b.name));
     }
 
     return result;
@@ -394,6 +409,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
                       { key: 'exclusiveDisabled', label: 'Exclusive Rights Disabled' },
                       { key: 'missingRefSheet', label: 'Missing Ref Sheet' },
                       { key: 'missingProfileImage', label: 'Missing Profile Image' },
+                      { key: 'hidden', label: 'Hidden from Marketplace' },
                     ].map(({ key, label }) => (
                       <button key={key} onClick={() => toggleBool(key as keyof RosterFilters)}
                         className={cn('text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors',
@@ -414,11 +430,12 @@ export default function DashboardClient({ initialCharacters }: Props) {
               </div>
             )}
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
                 { label: 'Total Characters', value: rosterStats.total, color: 'text-indigo-600' },
                 { label: 'Available', value: rosterStats.available, color: 'text-emerald-600' },
                 { label: 'Exclusively Licensed', value: rosterStats.exclusive, color: 'text-amber-600' },
+                { label: 'Hidden', value: rosterStats.hidden, color: 'text-gray-400' },
               ].map((s) => (
                 <div key={s.label} className="bg-white border border-gray-100 rounded-2xl p-5">
                   <div className={`text-3xl font-black mb-1 ${s.color}`}>{s.value}</div>
@@ -432,6 +449,7 @@ export default function DashboardClient({ initialCharacters }: Props) {
               onEdit={openEdit}
               onDelete={(id) => setDeleteId(id)}
               onBatchDelete={handleBatchDelete}
+              onToggleHidden={handleToggleHidden}
             />
           </>
         )}

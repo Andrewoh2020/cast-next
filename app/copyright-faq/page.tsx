@@ -60,6 +60,10 @@ export default function CopyrightFAQPage() {
       a: 'If you believe a Cast character is being used without a valid license, or in violation of our Terms, please contact us at admin@ability.new with details of the alleged infringement. We take intellectual property violations seriously and will investigate promptly.',
     },
     {
+      q: 'How does Cast categorise race and ethnicity?',
+      a: 'Cast uses 12 broad racial categories for filtering and discovery: East Asian (Chinese, Japanese, Korean, Mongolian, Taiwanese), South Asian (Indian, Pakistani, Bangladeshi, Sri Lankan, Nepali), Southeast Asian (Filipino, Vietnamese, Thai, Indonesian, Malaysian, Cambodian), Pacific Islander (Hawaiian, Samoan, Tongan, Maori, Fijian), Black (African, African American, Afro-Caribbean, Afro-Latino), Latino / Hispanic (Mexican, Colombian, Brazilian, Argentine, Cuban, Puerto Rican), Middle Eastern (Arab, Persian, Turkish, Kurdish), European (French, Italian, Swedish, German, and other specific European heritage), White (broader White/Caucasian — American, Australian, South African), Indigenous (Native American, First Nations, Aboriginal Australian, Inuit), Central Asian (Kazakh, Uzbek, Kyrgyz, Turkmen, Tajik), and Mixed Heritage (any combination). Characters may belong to multiple categories. Each character also has a specific ethnicity field (e.g. "Korean", "Nigerian", "Mexican / Irish") for more precise identification. These categories are used for search and filtering — they are not intended as definitive identity labels.',
+    },
+    {
       q: 'Does Cast contain any real people\'s likenesses without permission?',
       a: 'No. All characters on Cast are either fully AI-generated with no reference to real individuals, or created with the explicit, documented consent of the individual whose likeness was used. We do not use the likeness of any real person without permission.',
     },

@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Talent } from '@/lib/talent';
+import { Talent, thumbUrl } from '@/lib/talent';
 import { PurchaseRecord } from '@/lib/user-data.server';
+import { CustomCharacterDraft } from '@/lib/custom-characters.server';
 import DownloadButton from '@/components/DownloadButton';
 
 function LicenseExpiry({ licenseName, purchasedAt }: { licenseName: string; purchasedAt: string }) {
@@ -47,10 +48,11 @@ interface Props {
   initialFavorites: Talent[];
   initialPurchases: PurchaseRecord[];
   allCharacters: Talent[];
+  customCharacters?: CustomCharacterDraft[];
 }
 
-export default function AccountClient({ initialFavorites, initialPurchases }: Props) {
-  const [tab, setTab] = useState<'favorites' | 'purchases'>('favorites');
+export default function AccountClient({ initialFavorites, initialPurchases, customCharacters = [] }: Props) {
+  const [tab, setTab] = useState<'favorites' | 'purchases' | 'characters'>('favorites');
   const [favorites, setFavorites] = useState<Talent[]>(initialFavorites);
 
   const handleRemoveFavorite = async (talent: Talent) => {
@@ -66,7 +68,7 @@ export default function AccountClient({ initialFavorites, initialPurchases }: Pr
     <div>
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit mb-8">
-        {(['favorites', 'purchases'] as const).map((t) => (
+        {(['favorites', 'purchases', 'characters'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -74,7 +76,7 @@ export default function AccountClient({ initialFavorites, initialPurchases }: Pr
               tab === t ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
             }`}
           >
-            {t}
+            {t === 'characters' ? 'My Characters' : t}
           </button>
         ))}
       </div>
@@ -97,7 +99,7 @@ export default function AccountClient({ initialFavorites, initialPurchases }: Pr
                 <Link href="/#roster" className="block">
                   <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={talent.img} alt={talent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={thumbUrl(talent.img, 400)} alt={talent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="p-3">
                     <p className="font-bold text-sm text-black">{talent.name}</p>
@@ -136,7 +138,7 @@ export default function AccountClient({ initialFavorites, initialPurchases }: Pr
               <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-5">
                 <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.characterImg} alt={p.characterName} className="w-full h-full object-cover" />
+                  <img src={thumbUrl(p.characterImg, 96)} alt={p.characterName} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-black">{p.characterName}</p>
@@ -169,6 +171,99 @@ export default function AccountClient({ initialFavorites, initialPurchases }: Pr
                     />
                   ) : null;
                 })()}
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {/* My Characters */}
+      {tab === 'characters' && (
+        customCharacters.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-4xl mb-3">✨</div>
+            <p className="font-semibold text-gray-600 mb-1">No custom characters yet</p>
+            <p className="text-sm text-gray-400 mb-5">Create your own AI character from scratch.</p>
+            <Link href="/create" className="text-sm font-semibold text-indigo-500 hover:underline">
+              Create a Character →
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {customCharacters.map((c) => (
+              <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-5">
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                  {(c.profileThumbnailUrl || c.profileImageUrl) ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={c.profileThumbnailUrl || thumbUrl(c.profileImageUrl!, 96)}
+                      alt={c.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : c.previewImageUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={thumbUrl(c.previewImageUrl, 96)}
+                      alt={c.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl font-bold">
+                      {c.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-bold text-black">{c.name}</p>
+                    {c.status !== 'complete' && (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        c.status === 'generating' ? 'bg-indigo-100 text-indigo-600' :
+                        c.status === 'preview' || c.status === 'paid' ? 'bg-amber-100 text-amber-600' :
+                        'bg-gray-100 text-gray-500'
+                      }`}>
+                        {c.status === 'generating' ? 'Generating' :
+                         c.status === 'preview' || c.status === 'paid' ? 'In Progress' :
+                         'Draft'}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 truncate">{c.description}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Created {new Date(c.completedAt || c.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </p>
+                </div>
+                {c.status === 'complete' ? (() => {
+                  const files: { url: string; filename: string }[] = [];
+                  if (c.profileImageUrl) {
+                    files.push({
+                      url: `${c.profileImageUrl}${c.profileImageUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-profile`,
+                      filename: `${c.slug}-profile`,
+                    });
+                  }
+                  if (c.referenceSheetUrl) {
+                    files.push({
+                      url: `${c.referenceSheetUrl}${c.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-reference-sheet`,
+                      filename: `${c.slug}-reference-sheet`,
+                    });
+                  }
+                  return files.length > 0 ? (
+                    <DownloadButton
+                      files={files}
+                      label="Download"
+                      className="flex-shrink-0 text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 min-w-[80px] text-center"
+                    />
+                  ) : null;
+                })() : (
+                  <Link
+                    href={`/create?draft=${c.id}`}
+                    className="flex-shrink-0 text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors min-w-[80px] text-center"
+                  >
+                    {c.status === 'generating' ? 'View' : 'Continue'}
+                  </Link>
+                )}
               </div>
             ))}
           </div>

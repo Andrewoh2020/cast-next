@@ -2,11 +2,15 @@ export type TalentSex = 'male' | 'female' | 'nonbinary';
 export type TalentRace =
   | 'east-asian'
   | 'south-asian'
+  | 'southeast-asian'
+  | 'pacific-islander'
   | 'black'
   | 'latino'
   | 'middle-eastern'
+  | 'european'
   | 'white'
-  | 'southeast-asian'
+  | 'indigenous'
+  | 'central-asian'
   | 'mixed';
 export type TalentAgeRange = 'child' | 'teen' | '20s' | '30s' | '40s' | '50s' | '60s+';
 export type TalentBuild = 'slim' | 'athletic' | 'average' | 'stocky' | 'curvy' | 'plus-size';
@@ -24,9 +28,11 @@ export interface Talent {
   slug: string;
   vibe: string;
   img: string;
+  imgThumbnail?: string;
   imgHistory?: string[];
   gallery?: string[];
   referenceSheetUrl?: string;
+  refSheetThumbnail?: string;
   referenceSheetHistory?: string[];
   // Core attributes
   sex: TalentSex;
@@ -41,6 +47,7 @@ export interface Talent {
   createdAt?: string;
   exclusive?: boolean;
   exclusiveDisabled?: boolean;
+  hidden?: boolean;
 }
 
 // ── Label maps for display ──────────────────────────────────────────
@@ -54,11 +61,15 @@ export const SEX_LABELS: Record<TalentSex, string> = {
 export const RACE_LABELS: Record<TalentRace, string> = {
   'east-asian': 'East Asian',
   'south-asian': 'South Asian',
+  'southeast-asian': 'Southeast Asian',
+  'pacific-islander': 'Pacific Islander',
   'black': 'Black',
   'latino': 'Latino / Hispanic',
   'middle-eastern': 'Middle Eastern',
+  'european': 'European',
   'white': 'White',
-  'southeast-asian': 'Southeast Asian',
+  'indigenous': 'Indigenous',
+  'central-asian': 'Central Asian',
   'mixed': 'Mixed Heritage',
 };
 

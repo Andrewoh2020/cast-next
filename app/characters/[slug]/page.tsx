@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { readCharacters } from '@/lib/characters.server';
+import { readVisibleCharacters } from '@/lib/characters.server';
 import { readSeo } from '@/lib/seo.server';
 import {
   SEX_LABELS,
@@ -18,7 +18,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [characters, seo] = await Promise.all([readCharacters(), readSeo()]);
+  const [characters, seo] = await Promise.all([readVisibleCharacters(), readSeo()]);
   const character = characters.find((c) => c.slug === slug);
   if (!character) return { title: 'Character Not Found' };
 
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CharacterPage({ params }: Props) {
   const { slug } = await params;
-  const [characters, seo] = await Promise.all([readCharacters(), readSeo()]);
+  const [characters, seo] = await Promise.all([readVisibleCharacters(), readSeo()]);
   const character = characters.find((c) => c.slug === slug);
   if (!character) notFound();
 

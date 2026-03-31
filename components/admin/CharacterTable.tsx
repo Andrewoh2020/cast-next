@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Talent, AGE_LABELS, BUILD_LABELS, RACE_LABELS, thumbUrl } from '@/lib/talent';
 
 interface Props {
@@ -8,22 +8,39 @@ interface Props {
   onEdit: (t: Talent) => void;
   onDelete: (id: number) => void;
   onBatchDelete: (ids: number[]) => void;
+  onToggleHidden: (ids: number[], hidden: boolean) => Promise<void>;
 }
 
-export default function CharacterTable({ characters, onEdit, onDelete, onBatchDelete }: Props) {
+export default function CharacterTable({ characters, onEdit, onDelete, onBatchDelete, onToggleHidden }: Props) {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [confirmBatch, setConfirmBatch] = useState(false);
   const [downloading, setDownloading] = useState<number | null>(null);
+  const [batchLoading, setBatchLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const lastClickedIdx = useRef<number | null>(null);
 
   const allSelected = characters.length > 0 && selected.size === characters.length;
   const someSelected = selected.size > 0;
 
-  const toggleOne = (id: number) =>
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+  const toggleOne = (id: number, shiftKey: boolean) => {
+    const idx = characters.findIndex((c) => c.id === id);
+    if (shiftKey && lastClickedIdx.current !== null && lastClickedIdx.current !== idx) {
+      const from = Math.min(lastClickedIdx.current, idx);
+      const to = Math.max(lastClickedIdx.current, idx);
+      setSelected((prev) => {
+        const next = new Set(prev);
+        for (let i = from; i <= to; i++) next.add(characters[i].id);
+        return next;
+      });
+    } else {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        next.has(id) ? next.delete(id) : next.add(id);
+        return next;
+      });
+    }
+    lastClickedIdx.current = idx;
+  };
 
   const toggleAll = () =>
     setSelected(allSelected ? new Set() : new Set(characters.map((c) => c.id)));
@@ -48,7 +65,7 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
     <>
       {/* Batch action bar */}
       {someSelected && (
-        <div className="flex items-center justify-between bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-2.5 mb-3">
+        <div className="fixed top-16 left-0 right-0 z-50 mx-auto max-w-5xl flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-5 py-3 shadow-lg">
           <span className="text-sm font-semibold text-indigo-700">
             {selected.size} character{selected.size !== 1 ? 's' : ''} selected
           </span>
@@ -58,6 +75,64 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
               className="text-xs font-semibold text-indigo-500 hover:text-indigo-700 transition-colors"
             >
               Clear
+            </button>
+            <button
+              onClick={() => {
+                const sel = characters.filter((c) => selected.has(c.id));
+                sel.forEach((c, ci) => {
+                  const links = [
+                    c.img && { url: `${c.img}${c.img.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-profile`, name: `${c.slug}-profile` },
+                    c.referenceSheetUrl && { url: `${c.referenceSheetUrl}${c.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-reference-sheet`, name: `${c.slug}-reference-sheet` },
+                  ].filter(Boolean) as { url: string; name: string }[];
+                  links.forEach(({ url, name }, li) => {
+                    setTimeout(() => {
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = name;
+                      a.click();
+                    }, (ci * 2 + li) * 800);
+                  });
+                });
+              }}
+              className="text-xs font-bold bg-indigo-500 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition-colors"
+            >
+              Download {selected.size}
+            </button>
+            <button
+              disabled={batchLoading}
+              onClick={async () => {
+                const ids = Array.from(selected);
+                const count = ids.length;
+                setBatchLoading(true);
+                try {
+                  await onToggleHidden(ids, true);
+                  setSelected(new Set());
+                  setToast({ message: `${count} character${count !== 1 ? 's' : ''} hidden`, type: 'success' });
+                } catch { setToast({ message: 'Failed to hide characters', type: 'error' }); }
+                setBatchLoading(false);
+                setTimeout(() => setToast(null), 3000);
+              }}
+              className="text-xs font-bold bg-rose-500 text-white px-3 py-1.5 rounded-lg hover:bg-rose-600 transition-colors disabled:opacity-50"
+            >
+              {batchLoading ? 'Processing…' : `Hide ${selected.size}`}
+            </button>
+            <button
+              disabled={batchLoading}
+              onClick={async () => {
+                const ids = Array.from(selected);
+                const count = ids.length;
+                setBatchLoading(true);
+                try {
+                  await onToggleHidden(ids, false);
+                  setSelected(new Set());
+                  setToast({ message: `${count} character${count !== 1 ? 's' : ''} unhidden`, type: 'success' });
+                } catch { setToast({ message: 'Failed to unhide characters', type: 'error' }); }
+                setBatchLoading(false);
+                setTimeout(() => setToast(null), 3000);
+              }}
+              className="text-xs font-bold bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
+            >
+              {batchLoading ? 'Processing…' : `Unhide ${selected.size}`}
             </button>
             <button
               onClick={() => setConfirmBatch(true)}
@@ -95,12 +170,12 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
             <tbody className="divide-y divide-gray-50">
               {characters.map((c) => (
                 <tr key={c.id} className={`hover:bg-gray-50 transition-colors ${selected.has(c.id) ? 'bg-indigo-50/50' : ''}`}>
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-4 cursor-pointer" onClick={(e) => toggleOne(c.id, e.shiftKey)}>
                     <input
                       type="checkbox"
                       checked={selected.has(c.id)}
-                      onChange={() => toggleOne(c.id)}
-                      className="w-4 h-4 accent-indigo-500 cursor-pointer"
+                      readOnly
+                      className="w-4 h-4 accent-indigo-500 cursor-pointer pointer-events-none"
                     />
                   </td>
 
@@ -108,10 +183,15 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
                     <div className="flex items-center gap-3">
                       <div className="relative w-12 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={thumbUrl(c.img, 96)} alt={c.name} loading="lazy" className="w-full h-full object-cover" />
+                        <img src={c.imgThumbnail || thumbUrl(c.img, 96)} alt={c.name} loading="lazy" className="w-full h-full object-cover" />
                       </div>
                       <div>
-                        <div className="font-semibold text-black">{c.name}</div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-black">{c.name}</span>
+                          {c.hidden && (
+                            <span className="text-[10px] font-bold bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded-full">Hidden</span>
+                          )}
+                        </div>
                         <div className="text-xs text-gray-400 mt-0.5 max-w-[180px] line-clamp-1">{c.vibe}</div>
                       </div>
                     </div>
@@ -160,7 +240,7 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
                   </td>
 
                   <td className="px-5 py-4">
-                    <div className="flex items-center gap-2 justify-end">
+                    <div className={`flex items-center gap-2 justify-end ${someSelected ? 'opacity-30 pointer-events-none' : ''}`}>
                       <button
                         disabled={downloading === c.id}
                         onClick={() => {
@@ -190,6 +270,16 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
                             Downloading…
                           </>
                         ) : 'Download'}
+                      </button>
+                      <button
+                        onClick={() => onToggleHidden([c.id], !c.hidden)}
+                        className={`text-xs font-semibold border px-3 py-1.5 rounded-lg transition-colors ${
+                          c.hidden
+                            ? 'text-emerald-600 border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50'
+                            : 'text-rose-500 border-gray-200 hover:border-rose-300 hover:bg-rose-50'
+                        }`}
+                      >
+                        {c.hidden ? 'Unhide' : 'Hide'}
                       </button>
                       <button
                         onClick={() => onEdit(c)}
@@ -233,6 +323,20 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast notification */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-semibold transition-all ${
+          toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+        }`}>
+          {toast.type === 'success' ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+          )}
+          {toast.message}
         </div>
       )}
     </>

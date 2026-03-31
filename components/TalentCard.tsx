@@ -54,7 +54,7 @@ export default function TalentCard({ talent, onClick, index = 0, isFavorited = f
         src={thumbUrl(talent.img, 400)}
         alt={talent.name}
         loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+        className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
       />
 
       {/* Gradient scrim */}

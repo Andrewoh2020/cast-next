@@ -66,6 +66,11 @@ export async function writeCharacters(characters: Talent[]): Promise<void> {
   }
 }
 
+export async function readVisibleCharacters(): Promise<Talent[]> {
+  const all = await readCharacters();
+  return all.filter((c) => !c.hidden);
+}
+
 export function nextId(characters: Talent[]): number {
   return characters.length > 0 ? Math.max(...characters.map((c) => c.id)) + 1 : 1;
 }

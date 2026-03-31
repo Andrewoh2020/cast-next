@@ -1,35 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { UserButton, useUser } from '@clerk/nextjs';
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const { isSignedIn } = useUser();
+  const pathname = usePathname();
+  const isHome = pathname === '/';
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) return;
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isHome]);
+
+  const transparent = isHome && !scrolled;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-black/5">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${transparent ? 'bg-transparent border-b border-transparent' : 'bg-white/90 backdrop-blur-md border-b border-black/5'}`}>
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-3xl font-black tracking-tight text-black">
+        <Link href="/" className={`text-3xl font-black tracking-tight transition-colors ${transparent ? 'text-white' : 'text-black'}`}>
           Cast<span className="text-indigo-500">.</span>
         </Link>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
+          <Link href="/create" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
+            Create
+          </Link>
           {isSignedIn ? (
             <>
-              <Link href="/account" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+              <Link href="/account" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
                 My Account
               </Link>
               <UserButton />
             </>
           ) : (
             <>
-              <Link href="/sign-in" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">
+              <Link href="/sign-in" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
                 Sign In
               </Link>
-              <Link href="/sign-up" className="text-sm font-semibold bg-black text-white px-5 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+              <Link href="/sign-up" className={`text-sm font-semibold px-5 py-2 rounded-lg transition-colors ${transparent ? 'bg-white/20 text-white border border-white/30 hover:bg-white/30' : 'bg-black text-white hover:bg-gray-800'}`}>
                 Get Started
               </Link>
             </>
@@ -42,15 +59,18 @@ export default function Nav() {
           onClick={() => setOpen(!open)}
           aria-label="Menu"
         >
-          <span className={`block w-5 h-0.5 bg-black transition-all ${open ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`block w-5 h-0.5 bg-black transition-all ${open ? 'opacity-0' : ''}`} />
-          <span className={`block w-5 h-0.5 bg-black transition-all ${open ? '-rotate-45 -translate-y-2' : ''}`} />
+          <span className={`block w-5 h-0.5 transition-all ${transparent ? 'bg-white' : 'bg-black'} ${open ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`block w-5 h-0.5 transition-all ${transparent ? 'bg-white' : 'bg-black'} ${open ? 'opacity-0' : ''}`} />
+          <span className={`block w-5 h-0.5 transition-all ${transparent ? 'bg-white' : 'bg-black'} ${open ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
       </div>
 
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-6 pb-5 flex flex-col gap-1">
+          <Link href="/create" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+            Create Character
+          </Link>
           {isSignedIn ? (
             <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
               My Account
