@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 const CREDIT_PACKAGES = [
   { credits: 1, amount: 1000, label: '1 Character' },         // $10
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_BASE_URL || 'https://www.castability.ai';
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
       line_items: [{

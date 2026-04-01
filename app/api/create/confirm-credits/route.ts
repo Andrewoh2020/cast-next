@@ -3,7 +3,9 @@ import { auth } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import { addCredits } from '@/lib/user-data.server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest) {
     const { sessionId } = await req.json();
     if (!sessionId) return NextResponse.json({ error: 'sessionId required' }, { status: 400 });
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await getStripe().checkout.sessions.retrieve(sessionId);
     if (session.payment_status !== 'paid') {
       return NextResponse.json({ error: 'Payment not completed' }, { status: 400 });
     }
