@@ -48,6 +48,7 @@ export interface Talent {
   exclusive?: boolean;
   exclusiveDisabled?: boolean;
   hidden?: boolean;
+  featured?: boolean;
 }
 
 // ── Label maps for display ──────────────────────────────────────────

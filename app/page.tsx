@@ -8,8 +8,10 @@ export default function Home() {
     <main>
       <HeroBannerOption1 />
       <ImmersiveLayout />
-      <CommunityShowcase />
-      <ExclusiveRoster />
+      <div className="lg:ml-72 xl:ml-80">
+        <CommunityShowcase />
+        <ExclusiveRoster />
+      </div>
     </main>
   );
 }

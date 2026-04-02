@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function HeroBannerOption1() {
   return (
-    <section className="relative h-[70vh] min-h-[500px] max-h-[700px] w-full overflow-hidden">
+    <section className="relative h-[85vh] sm:h-[70vh] min-h-[420px] sm:min-h-[500px] max-h-[700px] w-full overflow-hidden">
       {/* Background image */}
       <Image
         src="/hero-banner.png"
@@ -18,7 +18,7 @@ export default function HeroBannerOption1() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full max-w-5xl mx-auto px-6 pb-16">
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-5 w-fit border border-white/20">
+        <div className="hidden sm:inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-5 w-fit border border-white/20">
           100% Copyright Safe &middot; AI-Generated Talent
         </div>
 
@@ -27,7 +27,7 @@ export default function HeroBannerOption1() {
         </h1>
 
         <p className="text-base sm:text-lg text-white/70 max-w-xl mb-8 leading-relaxed">
-          Browse our curated roster of AI-generated characters — ready to cast, license,
+          Browse our curated roster of AI-generated characters in 4K — ready to cast, license,
           and bring to screen. No prompts. No uncertainty. No rights issues.
         </p>
 

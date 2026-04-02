@@ -10,7 +10,7 @@ interface Props {
 }
 
 const included = [
-  'Full-resolution reference sheets',
+  '4K reference sheets',
   'Commercial & broadcast license',
   'Style guide & color palette',
   'Copyright clearance certificate',

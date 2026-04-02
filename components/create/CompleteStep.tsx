@@ -56,17 +56,19 @@ export default function CompleteStep({ draft, generating, generationError, onRet
 
         <h2 className="text-2xl font-black tracking-tight text-black mb-1">Generating Your Assets</h2>
         <p className="text-sm text-gray-400 mb-6">
-          Creating the hi-res profile photo and 8-panel reference sheet for <strong className="text-black">{draft.name}</strong>.
+          Creating the 4K reference sheet for <strong className="text-black">{draft.name}</strong>.
         </p>
 
         <div className="max-w-sm mx-auto space-y-3 mb-6">
           <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
-            <div className="w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-            <span className="text-sm text-gray-600">Generating hi-res profile photo...</span>
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><polyline points="20 6 9 17 4 12" /></svg>
+            </div>
+            <span className="text-sm text-gray-600">2K profile photo ready</span>
           </div>
           <div className="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
-            <div className="w-5 h-5 border-2 border-gray-200 rounded-full flex-shrink-0" />
-            <span className="text-sm text-gray-400">8-panel reference sheet</span>
+            <div className="w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+            <span className="text-sm text-gray-600">Generating 4K reference sheet...</span>
           </div>
         </div>
 
@@ -122,7 +124,8 @@ export default function CompleteStep({ draft, generating, generationError, onRet
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
         {draft.profileImageUrl && (
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Profile Photo</p>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Profile Photo</p>
+            <p className="text-[10px] text-gray-400 mb-2">2K resolution</p>
             <Image
               src={thumbUrl(draft.profileImageUrl, 400)}
               alt={`${draft.name} profile`}
@@ -143,7 +146,8 @@ export default function CompleteStep({ draft, generating, generationError, onRet
         )}
         {draft.referenceSheetUrl && (
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Reference Sheet</p>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Reference Sheet</p>
+            <p className="text-[10px] text-gray-400 mb-2">4K resolution</p>
             <Image
               src={thumbUrl(draft.referenceSheetUrl, 400)}
               alt={`${draft.name} reference sheet`}

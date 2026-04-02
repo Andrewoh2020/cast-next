@@ -13,7 +13,12 @@ export async function POST(req: NextRequest) {
     const { draftId } = await req.json();
     if (!draftId) return NextResponse.json({ error: 'draftId is required' }, { status: 400 });
 
-    const draft = await getDraft(userId, draftId);
+    let draft = await getDraft(userId, draftId);
+    // Retry once after a short delay — Vercel Blob can be eventually consistent
+    if (!draft) {
+      await new Promise((r) => setTimeout(r, 1500));
+      draft = await getDraft(userId, draftId);
+    }
     if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
 
     if (!draft.description || !draft.name) {
@@ -33,12 +38,17 @@ export async function POST(req: NextRequest) {
 
     const updatedIterations = draft.previewImageUrl ? draft.iterations + 1 : 0;
     const previewImages = [...(draft.previewImages ?? []), result.url];
+    // Backfill sourceProfileUrls for old drafts that don't have it
+    const existingSourceUrls = draft.sourceProfileUrls
+      ?? (draft.previewImages ?? []).map(() => draft.sourceProfileUrl ?? '');
+    const sourceProfileUrls = [...existingSourceUrls, result.sourceProfileUrl];
     await saveDraft(userId, {
       ...draft,
       status: 'preview',
       previewImageUrl: result.url,
       previewImages,
       sourceProfileUrl: result.sourceProfileUrl,
+      sourceProfileUrls,
       iterations: updatedIterations,
     });
 

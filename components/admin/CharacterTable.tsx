@@ -9,9 +9,10 @@ interface Props {
   onDelete: (id: number) => void;
   onBatchDelete: (ids: number[]) => void;
   onToggleHidden: (ids: number[], hidden: boolean) => Promise<void>;
+  onToggleFeatured: (ids: number[], featured: boolean) => Promise<void>;
 }
 
-export default function CharacterTable({ characters, onEdit, onDelete, onBatchDelete, onToggleHidden }: Props) {
+export default function CharacterTable({ characters, onEdit, onDelete, onBatchDelete, onToggleHidden, onToggleFeatured }: Props) {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [confirmBatch, setConfirmBatch] = useState(false);
   const [downloading, setDownloading] = useState<number | null>(null);
@@ -133,6 +134,42 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
               className="text-xs font-bold bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
             >
               {batchLoading ? 'Processing…' : `Unhide ${selected.size}`}
+            </button>
+            <button
+              disabled={batchLoading}
+              onClick={async () => {
+                const ids = Array.from(selected);
+                const count = ids.length;
+                setBatchLoading(true);
+                try {
+                  await onToggleFeatured(ids, true);
+                  setSelected(new Set());
+                  setToast({ message: `${count} character${count !== 1 ? 's' : ''} featured`, type: 'success' });
+                } catch { setToast({ message: 'Failed to feature characters', type: 'error' }); }
+                setBatchLoading(false);
+                setTimeout(() => setToast(null), 3000);
+              }}
+              className="text-xs font-bold bg-amber-400 text-amber-900 px-3 py-1.5 rounded-lg hover:bg-amber-500 transition-colors disabled:opacity-50"
+            >
+              {batchLoading ? 'Processing…' : `★ Feature ${selected.size}`}
+            </button>
+            <button
+              disabled={batchLoading}
+              onClick={async () => {
+                const ids = Array.from(selected);
+                const count = ids.length;
+                setBatchLoading(true);
+                try {
+                  await onToggleFeatured(ids, false);
+                  setSelected(new Set());
+                  setToast({ message: `${count} character${count !== 1 ? 's' : ''} unfeatured`, type: 'success' });
+                } catch { setToast({ message: 'Failed to unfeature characters', type: 'error' }); }
+                setBatchLoading(false);
+                setTimeout(() => setToast(null), 3000);
+              }}
+              className="text-xs font-bold border border-amber-300 text-amber-700 px-3 py-1.5 rounded-lg hover:bg-amber-50 transition-colors disabled:opacity-50"
+            >
+              {batchLoading ? 'Processing…' : `Unfeature ${selected.size}`}
             </button>
             <button
               onClick={() => setConfirmBatch(true)}
@@ -270,6 +307,16 @@ export default function CharacterTable({ characters, onEdit, onDelete, onBatchDe
                             Downloading…
                           </>
                         ) : 'Download'}
+                      </button>
+                      <button
+                        onClick={() => onToggleFeatured([c.id], !c.featured)}
+                        className={`text-xs font-semibold border px-3 py-1.5 rounded-lg transition-colors ${
+                          c.featured
+                            ? 'text-amber-700 border-amber-300 bg-amber-50 hover:bg-amber-100'
+                            : 'text-gray-400 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                        }`}
+                      >
+                        {c.featured ? '★ Featured' : '☆'}
                       </button>
                       <button
                         onClick={() => onToggleHidden([c.id], !c.hidden)}

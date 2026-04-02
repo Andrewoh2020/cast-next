@@ -25,6 +25,7 @@ export interface CustomCharacterDraft {
   previewImages: string[];
   previewImageUrl?: string;
   sourceProfileUrl?: string;
+  sourceProfileUrls?: string[];
   profileImageUrl?: string;
   profileThumbnailUrl?: string;
   referenceSheetUrl?: string;

@@ -77,7 +77,7 @@ export default function TalentCard({ talent, onClick, index = 0, isFavorited = f
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-all backdrop-blur-sm ${
               isFavorited
                 ? 'bg-red-500 text-white shadow-sm'
-                : 'bg-white/80 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100'
+                : 'bg-white/80 text-gray-400 hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100'
             }`}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={2.5}>
@@ -91,9 +91,14 @@ export default function TalentCard({ talent, onClick, index = 0, isFavorited = f
       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
         <p className="text-white font-bold text-base tracking-tight leading-tight mb-1">{talent.name}</p>
         <div className="flex items-center justify-between">
-          <span className="text-white/70 text-xs">
-            From <span className="text-white font-semibold">{talent.prices[0]?.price}</span>
-          </span>
+          {talent.createdAt && Date.now() - new Date(talent.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000 ? (
+            <span className="flex items-center gap-1.5 text-white/70 text-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Added {Math.max(0, Math.floor((Date.now() - new Date(talent.createdAt).getTime()) / (24 * 60 * 60 * 1000)))}d ago
+            </span>
+          ) : (
+            <span />
+          )}
           <span className="text-[11px] font-bold bg-white text-black px-3 py-1 rounded-full">
             View Profile →
           </span>

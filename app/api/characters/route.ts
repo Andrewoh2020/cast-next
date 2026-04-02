@@ -7,7 +7,11 @@ import { Talent } from '@/lib/talent';
 export async function GET(req: NextRequest) {
   const showAll = req.nextUrl.searchParams.get('all') === '1';
   const characters = showAll ? await readCharacters() : await readVisibleCharacters();
-  return NextResponse.json(characters);
+  const sorted = [...characters].sort((a, b) =>
+    (b.createdAt ?? '').localeCompare(a.createdAt ?? '') ||
+    b.id - a.id
+  );
+  return NextResponse.json(sorted);
 }
 
 export async function POST(req: NextRequest) {

@@ -34,6 +34,9 @@ export default function Nav() {
           <Link href="/create" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
             Create
           </Link>
+          <Link href="/launches" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
+            Recent Launches
+          </Link>
           {isSignedIn ? (
             <>
               <Link href="/account" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
@@ -70,6 +73,9 @@ export default function Nav() {
         <div className="md:hidden border-t border-gray-100 bg-white px-6 pb-5 flex flex-col gap-1">
           <Link href="/create" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
             Create Character
+          </Link>
+          <Link href="/launches" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+            Recent Launches
           </Link>
           {isSignedIn ? (
             <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">

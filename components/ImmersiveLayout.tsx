@@ -59,6 +59,11 @@ export default function ImmersiveLayout() {
 
   const filtered = useMemo(() => filterTalent(allTalents, filters), [allTalents, filters]);
 
+  const featuredTalents = useMemo(
+    () => allTalents.filter((t) => t.featured),
+    [allTalents],
+  );
+
   const handlePurchase = async (talent: Talent, priceIdx: number) => {
     setSelectedTalent(null);
     if (priceIdx === -1) {
@@ -152,10 +157,10 @@ export default function ImmersiveLayout() {
       </div>
 
       {/* ── Desktop two-column layout ─────────────────────────── */}
-      <div id="roster" className="flex min-h-screen lg:pt-16">
+      <div id="roster" className="flex min-h-screen">
 
         {/* Left sidebar — sticky */}
-        <aside className="hidden lg:flex flex-col w-72 xl:w-80 flex-shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-100 bg-white px-6 pt-8 pb-6">
+        <aside className="hidden lg:flex flex-col w-72 xl:w-80 flex-shrink-0 sticky top-16 border-r border-gray-100 bg-white px-6 pt-5 pb-6">
 
           {/* Eyebrow */}
           <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 mb-3">
@@ -200,13 +205,13 @@ export default function ImmersiveLayout() {
             </div>
           </div>
 
-          <div className="border-t border-gray-100 pt-5 flex-1">
+          <div className="border-t border-gray-100 pt-5">
             <FilterSidebar filters={filters} onChange={setFilters} resultCount={loading ? -1 : filtered.length} />
           </div>
         </aside>
 
         {/* Right — scrollable talent grid */}
-        <div className="flex-1 bg-gray-50">
+        <div className="flex-1 min-w-0 overflow-x-hidden bg-gray-50">
 
           {/* Active filter chips */}
           {activeChips.length > 0 && (
@@ -227,6 +232,32 @@ export default function ImmersiveLayout() {
               >
                 Clear all
               </button>
+            </div>
+          )}
+
+          {/* Featured Characters strip */}
+          {!loading && featuredTalents.length > 0 && totalActive === 0 && (
+            <div className="px-4 lg:px-5 pt-4 lg:pt-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 mb-1">Cast Picks</p>
+              <p className="text-sm font-extrabold text-black mb-3">Featured Characters</p>
+              <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-hide">
+                {featuredTalents.map((talent) => (
+                  <div
+                    key={talent.id}
+                    onClick={() => setSelectedTalent(talent)}
+                    className="flex-shrink-0 w-[120px] sm:w-[140px] relative rounded-xl overflow-hidden cursor-pointer group"
+                    style={{ aspectRatio: '3/4' }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={talent.imgThumbnail || talent.img} alt={talent.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                      <p className="text-white text-xs font-bold truncate">{talent.name}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-gray-100 mb-1" />
             </div>
           )}
 

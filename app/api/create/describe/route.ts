@@ -8,7 +8,7 @@ IMPORTANT: Generate diverse characters. Vary sex, age, race, ethnicity, and buil
 
 When given a request, respond with a JSON object containing:
 - "name": A compelling, memorable character name (first name + last name). Should feel cinematic and fit the character's ethnicity and archetype. No generic names.
-- "description": A vivid 2-3 sentence character description optimized for AI image generation. Include age, gender, ethnicity, build, hair, distinctive facial features, wardrobe/style, and overall vibe. Neutral descriptive tone, no metaphors.
+- "description": A vivid 2-3 sentence character description optimized for AI image generation. Include age, gender, ethnicity, build, hair, distinctive facial features, wardrobe/style, and overall vibe. Neutral descriptive tone, no metaphors. Characters should look polished and professional — think clean tailored clothing, smart-casual or business attire, well-groomed appearance. Avoid streetwear, hoodies, graphic tees, baggy clothing, or overly casual looks.
 - "attributes": Structured fields extracted from the description:
   - "sex": one of "male", "female"
   - "race": array of applicable race categories from: "east-asian", "south-asian", "southeast-asian", "pacific-islander", "black", "latino", "middle-eastern", "european", "white", "indigenous", "central-asian", "mixed". MUST contain at least one value — pick the closest match. Use "european" for characters with specific European heritage (French, Italian, Swedish). Use "white" for broader White/Caucasian (American, Australian, South African). Use "indigenous" for Native American, First Nations, Aboriginal Australian, Inuit. Use "central-asian" for Kazakh, Uzbek, Kyrgyz, etc.

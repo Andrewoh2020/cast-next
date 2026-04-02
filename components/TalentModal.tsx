@@ -193,7 +193,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
       className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden relative flex flex-col sm:flex-row items-stretch" style={{ height: 'min(88vh, 700px)' }}>
+      <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl relative flex flex-col sm:flex-row items-stretch max-h-[90vh] overflow-y-auto sm:overflow-hidden sm:h-[88vh] sm:max-h-[700px]">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -290,7 +290,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
                 >
                   <div className="text-xs font-semibold text-gray-500 mb-0.5">Free (Attribution)</div>
                   <div className="text-xl font-black text-black tracking-tight">Free</div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">Credit Cast. in your production</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Credit Cast in your production</div>
                 </button>
 
                 {/* Single Project */}
@@ -386,12 +386,12 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
                 One condition applies
               </h3>
               <p className="text-xs text-gray-500 leading-relaxed mb-5">
-                You can use <strong>{talent.name}</strong> for free in any production as long as you credit Cast. visibly — in the video description, end credits, or as on-screen text.
+                You can use <strong>{talent.name}</strong> for free in any production as long as you credit Cast visibly — in the video description, end credits, or as on-screen text.
               </p>
 
               <div className="bg-gray-50 rounded-xl p-4 mb-5 text-[11px] text-gray-600 leading-relaxed border border-gray-200">
                 <strong className="block text-gray-800 mb-1">Example credit:</strong>
-                "AI characters provided by <span className="text-indigo-600 font-semibold">Cast.</span> — cast.ai"
+                "AI characters provided by <span className="text-indigo-600 font-semibold">Cast</span> — castability.ai"
               </div>
 
               <label className="flex items-start gap-3 cursor-pointer mb-6">
@@ -402,7 +402,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
                   className="mt-0.5 w-4 h-4 accent-green-500 flex-shrink-0"
                 />
                 <span className="text-xs text-gray-600 leading-relaxed">
-                  I agree to credit Cast. visibly in every production I use this character in.
+                  I agree to credit Cast visibly in every production I use this character in.
                 </span>
               </label>
 

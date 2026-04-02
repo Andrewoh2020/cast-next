@@ -267,7 +267,24 @@ export default function CreateClient() {
   };
 
   const handleSelectPreviewImage = (url: string) => {
-    setCurrentDraft((prev) => prev ? { ...prev, previewImageUrl: url } : prev);
+    setCurrentDraft((prev) => {
+      if (!prev) return prev;
+      // Match the sourceProfileUrl to the selected preview
+      const idx = (prev.previewImages ?? []).indexOf(url);
+      const matchedSourceUrl = idx >= 0 && prev.sourceProfileUrls?.[idx]
+        ? prev.sourceProfileUrls[idx]
+        : prev.sourceProfileUrl;
+      // Persist selection to server (fire-and-forget outside state updater)
+      const draftId = prev.id;
+      queueMicrotask(() => {
+        fetch(`/api/create/drafts/${draftId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ previewImageUrl: url, sourceProfileUrl: matchedSourceUrl }),
+        });
+      });
+      return { ...prev, previewImageUrl: url, sourceProfileUrl: matchedSourceUrl };
+    });
   };
 
   const handlePreviewComplete = (draft: CustomCharacterDraft) => {
@@ -276,7 +293,7 @@ export default function CreateClient() {
     fetch(`/api/create/drafts/${draft.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ previewImageUrl: draft.previewImageUrl }),
+      body: JSON.stringify({ previewImageUrl: draft.previewImageUrl, sourceProfileUrl: draft.sourceProfileUrl }),
     });
     setStep('payment');
   };
@@ -320,7 +337,7 @@ export default function CreateClient() {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -332,7 +349,7 @@ export default function CreateClient() {
           </div>
         </div>
 
-        <div className="flex gap-8">
+        <div className="lg:flex lg:gap-8">
           {/* Sidebar — drafts */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <DraftsList
@@ -347,7 +364,7 @@ export default function CreateClient() {
           {/* Main content */}
           <div className="flex-1 min-w-0">
             {/* Step indicator */}
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-1 sm:gap-2 mb-6">
               {(['describe', 'preview', 'payment', 'complete'] as Step[]).map((s, i) => {
                 // Determine the furthest step the draft has reached
                 const stepOrder: Step[] = ['describe', 'preview', 'payment', 'complete'];
@@ -362,15 +379,14 @@ export default function CreateClient() {
                 // Also allow going back to any step before current
                 const canNavigate = currentDraft && targetIdx <= Math.max(currentIdx, maxReachable) && s !== step;
                 const isPast = currentIdx > targetIdx;
-                const isFuture = currentIdx < targetIdx;
 
                 return (
-                  <div key={s} className="flex items-center gap-2">
+                  <div key={s} className="flex items-center gap-1 sm:gap-2">
                     <button
                       type="button"
                       disabled={!canNavigate}
                       onClick={() => canNavigate && setStep(s)}
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                      className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold flex-shrink-0 transition-colors ${
                         step === s ? 'bg-indigo-500 text-white' :
                         isPast ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200 cursor-pointer' :
                         canNavigate ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200 cursor-pointer' :
@@ -383,7 +399,7 @@ export default function CreateClient() {
                       type="button"
                       disabled={!canNavigate}
                       onClick={() => canNavigate && setStep(s)}
-                      className={`text-xs font-medium capitalize transition-colors ${
+                      className={`text-[11px] sm:text-xs font-medium capitalize whitespace-nowrap transition-colors ${
                         step === s ? 'text-black' :
                         canNavigate ? 'text-gray-500 hover:text-black cursor-pointer' :
                         'text-gray-400'
@@ -391,7 +407,7 @@ export default function CreateClient() {
                     >
                       {s === 'complete' ? 'Download' : s}
                     </button>
-                    {i < 3 && <div className="w-8 h-px bg-gray-200" />}
+                    {i < 3 && <div className="flex-1 min-w-3 sm:min-w-8 h-px bg-gray-200" />}
                   </div>
                 );
               })}

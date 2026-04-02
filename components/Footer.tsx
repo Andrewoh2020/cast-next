@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="flex gap-12 flex-wrap">
           {[
             { title: 'Product', links: [{ label: 'Talent Roster', href: '/#roster' }] },
-            { title: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Blog', href: '#' }] },
+            { title: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Contact', href: '/contact' }, { label: 'Blog', href: '#' }] },
             { title: 'Legal', links: [{ label: 'License Terms', href: '/license-terms' }, { label: 'Privacy Policy', href: '/privacy-policy' }, { label: 'Copyright FAQ', href: '/copyright-faq' }] },
           ].map((col) => (
             <div key={col.title} className="flex flex-col gap-2 min-w-[110px]">

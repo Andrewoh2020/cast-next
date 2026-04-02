@@ -39,7 +39,7 @@ export default function CommunityShowcase() {
   return (
     <section className="bg-white py-16 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-8">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 mb-1">Community</p>
             <h2 className="text-2xl font-black tracking-tighter text-black">Recently Created</h2>

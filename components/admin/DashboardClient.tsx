@@ -22,7 +22,6 @@ interface RosterFilters {
   exclusiveDisabled: boolean;
   missingRefSheet: boolean;
   missingProfileImage: boolean;
-  hidden: boolean;
 }
 
 const EMPTY_FILTERS: RosterFilters = {
@@ -30,19 +29,18 @@ const EMPTY_FILTERS: RosterFilters = {
   noSales: false, highViewsNoPurchase: false,
   exclusivelyLicensed: false, exclusiveDisabled: false,
   missingRefSheet: false, missingProfileImage: false,
-  hidden: false,
 };
 
 function activeFilterCount(f: RosterFilters) {
   return f.sex.length + f.race.length + f.ageRange.length + f.style.length
-    + [f.noSales, f.highViewsNoPurchase, f.exclusivelyLicensed, f.exclusiveDisabled, f.missingRefSheet, f.missingProfileImage, f.hidden].filter(Boolean).length;
+    + [f.noSales, f.highViewsNoPurchase, f.exclusivelyLicensed, f.exclusiveDisabled, f.missingRefSheet, f.missingProfileImage].filter(Boolean).length;
 }
 
 interface Props {
   initialCharacters: Talent[];
 }
 
-type Tab = 'roster' | 'analytics' | 'seo';
+type Tab = 'roster' | 'hidden' | 'analytics' | 'seo';
 
 interface CharacterStat {
   purchases: number;
@@ -176,6 +174,17 @@ export default function DashboardClient({ initialCharacters }: Props) {
     );
   };
 
+  const handleToggleFeatured = async (ids: number[], featured: boolean) => {
+    await fetch('/api/characters', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, update: { featured } }),
+    });
+    setCharacters((prev) =>
+      prev.map((c) => (ids.includes(c.id) ? { ...c, featured } : c))
+    );
+  };
+
   const rosterStats = {
     total: characters.length,
     exclusive: characters.filter((c) => c.exclusive).length,
@@ -195,7 +204,8 @@ export default function DashboardClient({ initialCharacters }: Props) {
   const filteredCharacters = useMemo(() => {
     const f = filters;
     const numActive = activeFilterCount(f);
-    let result = numActive === 0 ? [...characters] : characters.filter((c) => {
+    let result = characters.filter((c) => !c.hidden);
+    if (numActive > 0) result = result.filter((c) => {
       if (f.sex.length && !f.sex.includes(c.sex)) return false;
       if (f.race.length && !f.race.some((r) => (c.race || []).includes(r as never))) return false;
       if (f.ageRange.length && !f.ageRange.includes(c.ageRange)) return false;
@@ -204,7 +214,6 @@ export default function DashboardClient({ initialCharacters }: Props) {
       if (f.exclusiveDisabled && !c.exclusiveDisabled) return false;
       if (f.missingRefSheet && c.referenceSheetUrl) return false;
       if (f.missingProfileImage && c.img) return false;
-      if (f.hidden && !c.hidden) return false;
       if (f.noSales && statsData) {
         const s = statsData.byCharacter[c.id];
         if (s?.purchases > 0) return false;
@@ -217,15 +226,22 @@ export default function DashboardClient({ initialCharacters }: Props) {
     });
 
     if (sortBy === 'newest') {
-      result.sort((a, b) => Number(!!a.hidden) - Number(!!b.hidden) || (b.createdAt ?? '').localeCompare(a.createdAt ?? '') || b.id - a.id);
+      result.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? '') || b.id - a.id);
     } else if (sortBy === 'oldest') {
-      result.sort((a, b) => Number(!!a.hidden) - Number(!!b.hidden) || (a.createdAt ?? '').localeCompare(b.createdAt ?? '') || a.id - b.id);
+      result.sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '') || a.id - b.id);
     } else {
-      result.sort((a, b) => Number(!!a.hidden) - Number(!!b.hidden) || a.name.localeCompare(b.name));
+      result.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return result;
   }, [characters, filters, statsData, sortBy]);
+
+  const hiddenCharacters = useMemo(() =>
+    characters
+      .filter((c) => c.hidden)
+      .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? '') || b.id - a.id),
+    [characters]
+  );
 
   const numFilters = activeFilterCount(filters);
 
@@ -257,20 +273,26 @@ export default function DashboardClient({ initialCharacters }: Props) {
         <div className="flex items-center gap-1 mb-8 bg-gray-100 p-1 rounded-xl w-fit">
           {([
             { key: 'roster', label: 'Talent Roster' },
+            { key: 'hidden', label: 'Hidden', badge: hiddenCharacters.length },
             { key: 'analytics', label: 'Analytics' },
             { key: 'seo', label: 'SEO' },
-          ] as { key: Tab; label: string }[]).map((t) => (
+          ] as { key: Tab; label: string; badge?: number }[]).map((t) => (
             <button
               key={t.key}
               onClick={() => handleTabChange(t.key)}
               className={cn(
-                'px-5 py-2 rounded-lg text-sm font-semibold transition-all',
+                'px-5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5',
                 tab === t.key
                   ? 'bg-white text-black shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               )}
             >
               {t.label}
+              {t.badge != null && t.badge > 0 && (
+                <span className="bg-gray-300 text-gray-600 text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none">
+                  {t.badge}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -409,7 +431,6 @@ export default function DashboardClient({ initialCharacters }: Props) {
                       { key: 'exclusiveDisabled', label: 'Exclusive Rights Disabled' },
                       { key: 'missingRefSheet', label: 'Missing Ref Sheet' },
                       { key: 'missingProfileImage', label: 'Missing Profile Image' },
-                      { key: 'hidden', label: 'Hidden from Marketplace' },
                     ].map(({ key, label }) => (
                       <button key={key} onClick={() => toggleBool(key as keyof RosterFilters)}
                         className={cn('text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors',
@@ -450,7 +471,34 @@ export default function DashboardClient({ initialCharacters }: Props) {
               onDelete={(id) => setDeleteId(id)}
               onBatchDelete={handleBatchDelete}
               onToggleHidden={handleToggleHidden}
+              onToggleFeatured={handleToggleFeatured}
             />
+          </>
+        )}
+
+        {/* ── Hidden tab ── */}
+        {tab === 'hidden' && (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-2xl font-black tracking-tight text-black">Hidden Characters</h1>
+                <p className="text-sm text-gray-500 mt-1">{hiddenCharacters.length} character{hiddenCharacters.length !== 1 ? 's' : ''} hidden from marketplace · sorted by newest</p>
+              </div>
+            </div>
+            {hiddenCharacters.length === 0 ? (
+              <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center">
+                <p className="text-gray-400 font-medium">No hidden characters</p>
+              </div>
+            ) : (
+              <CharacterTable
+                characters={hiddenCharacters}
+                onEdit={openEdit}
+                onDelete={(id) => setDeleteId(id)}
+                onBatchDelete={handleBatchDelete}
+                onToggleHidden={handleToggleHidden}
+                onToggleFeatured={handleToggleFeatured}
+              />
+            )}
           </>
         )}
 

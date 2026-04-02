@@ -37,7 +37,8 @@
     "age": 42,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-profile-1774439654051-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903-thumb.jpg",
+    "featured": true
   },
   {
     "name": "Elena Voss",
@@ -197,7 +198,8 @@
     "age": 24,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-profile-1774442748991-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820-thumb.jpg",
+    "featured": true
   },
   {
     "name": "Marcus Stewart",
@@ -237,7 +239,8 @@
     "age": 16,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fblack-man-profile-1774443406061-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-refsheet-1774443506145-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-refsheet-1774443506145-thumb.jpg",
+    "featured": true
   },
   {
     "name": "James Park",
@@ -277,7 +280,8 @@
     "age": 24,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-profile-1774444453976-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998-thumb.jpg",
+    "featured": true
   },
   {
     "name": "Mei Chen",
@@ -2958,5 +2962,206 @@
     "createdAt": "2026-03-31T02:31:56.261Z",
     "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518-thumb.jpg",
     "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861-thumb.jpg"
+  },
+  {
+    "id": 90,
+    "name": "Priya Sharma",
+    "slug": "priya-sharma",
+    "vibe": "A 27-year-old South Asian woman with warm golden-brown skin, large expressive dark eyes, and long jet-black hair styled in a sleek side part that falls past her shoulders. She has a soft oval face with full lips and a delicate nose. Her build is slim and graceful. She wears a fitted emerald green blouse tucked into high-waisted cream trousers, with gold hoop earrings and a thin chain necklace. Her expression is bright and curious, radiating approachable intelligence.",
+    "img": "/api/media?p=characters%2Fpriya-sharma-profile-1775049782730.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Fpriya-sharma-refsheet-1775049895112.jpg",
+    "sex": "female",
+    "race": [
+      "south-asian"
+    ],
+    "ethnicity": "Indian",
+    "age": 27,
+    "ageRange": "20s",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "hidden": false,
+    "createdAt": "2026-04-01T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fpriya-sharma-profile-1775049901191-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fpriya-sharma-refsheet-1775049901188-thumb.jpg",
+    "featured": true
+  },
+  {
+    "id": 91,
+    "name": "Dmitri Volkov",
+    "slug": "dmitri-volkov",
+    "vibe": "A 52-year-old Eastern European man with a weathered, ruggedly handsome face, deep-set steel-blue eyes, and close-cropped salt-and-pepper hair with a neatly trimmed beard. His stocky, powerful frame fills out a charcoal wool overcoat worn over a black turtleneck. A faded scar traces his left jawline. His expression is stoic and unreadable, projecting quiet authority and a lifetime of hard-won experience.",
+    "img": "/api/media?p=characters%2Fdmitri-volkov-profile-1775049974738.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Fdmitri-volkov-refsheet-1775050069866.jpg",
+    "sex": "male",
+    "race": [
+      "european"
+    ],
+    "ethnicity": "Russian",
+    "age": 52,
+    "ageRange": "50s",
+    "build": "stocky",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "hidden": false,
+    "createdAt": "2026-04-01T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Fdmitri-volkov-profile-1775050075585-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Fdmitri-volkov-refsheet-1775050075581-thumb.jpg"
+  },
+  {
+    "id": 92,
+    "name": "Amina Hassan",
+    "slug": "amina-hassan",
+    "vibe": "A 35-year-old Middle Eastern woman with luminous olive skin, striking amber-brown eyes lined with subtle kohl, and thick dark hair pulled back in a low, elegant chignon. She has a strong bone structure with defined cheekbones and a confident set to her jaw. She wears a structured burgundy blazer over a silk ivory blouse, with understated gold cuff bracelets. Her presence is commanding yet warm — the person everyone in the room instinctively turns to.",
+    "img": "/api/media?p=characters%2Famina-hassan-profile-1775050138267.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Famina-hassan-refsheet-1775050260660.jpg",
+    "sex": "female",
+    "race": [
+      "middle-eastern"
+    ],
+    "ethnicity": "Lebanese",
+    "age": 35,
+    "ageRange": "30s",
+    "build": "average",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "hidden": false,
+    "createdAt": "2026-04-01T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Famina-hassan-profile-1775050264281-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Famina-hassan-refsheet-1775050264242-thumb.jpg"
+  },
+  {
+    "id": 93,
+    "name": "Tenzin Dorje",
+    "slug": "tenzin-dorje",
+    "vibe": "A 44-year-old Central Asian man with a broad, open face, warm bronze skin, and calm dark eyes that hold a quiet intensity. His black hair is cropped short with streaks of grey at the temples. He has an average build, sturdy and grounded. He wears a simple slate-blue Mandarin collar jacket over a white linen shirt, with a braided leather bracelet on one wrist. His demeanor radiates patience and deep inner resolve — a man who has seen much and speaks only when it matters.",
+    "img": "/api/media?p=characters%2Ftenzin-dorje-profile-1775050330915.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Ftenzin-dorje-refsheet-1775050420648.jpg",
+    "sex": "male",
+    "race": [
+      "central-asian"
+    ],
+    "ethnicity": "Tibetan",
+    "age": 44,
+    "ageRange": "40s",
+    "build": "average",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "hidden": false,
+    "createdAt": "2026-04-01T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Ftenzin-dorje-profile-1775050425553-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Ftenzin-dorje-refsheet-1775050425550-thumb.jpg"
+  },
+  {
+    "id": 94,
+    "name": "Lucia Reyes",
+    "slug": "lucia-reyes",
+    "vibe": "A 22-year-old Latina woman with rich caramel skin, bright hazel eyes, and voluminous dark curly hair that frames her face. She has a curvy, confident build and a radiant smile that lights up her round, dimpled cheeks. She wears an oversized vintage denim jacket over a sunflower-yellow crop top and high-waisted jeans, with layered silver necklaces and small hoop earrings. Her energy is infectious and unapologetically bold — equal parts dreamer and doer.",
+    "img": "/api/media?p=characters%2Flucia-reyes-profile-1775050496361.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Flucia-reyes-refsheet-1775050611917.jpg",
+    "sex": "female",
+    "race": [
+      "latino"
+    ],
+    "ethnicity": "Mexican",
+    "age": 22,
+    "ageRange": "20s",
+    "build": "curvy",
+    "height": "short",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "hidden": false,
+    "createdAt": "2026-04-01T00:00:00.000Z",
+    "imgThumbnail": "/api/media?p=characters%2Flucia-reyes-profile-1775050618355-thumb.jpg",
+    "refSheetThumbnail": "/api/media?p=characters%2Flucia-reyes-refsheet-1775050618350-thumb.jpg"
   }
 ]

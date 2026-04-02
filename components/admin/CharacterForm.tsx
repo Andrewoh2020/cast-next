@@ -970,6 +970,19 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 className="w-5 h-5 accent-rose-500 flex-shrink-0 ml-4"
               />
             </label>
+
+            <label className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 cursor-pointer">
+              <div>
+                <p className="text-sm font-bold text-amber-900">★ Featured</p>
+                <p className="text-xs text-amber-700 mt-0.5">Featured characters are pinned to the top of the marketplace and shown with a gold badge.</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={!!form.featured}
+                onChange={(e) => set('featured', e.target.checked)}
+                className="w-5 h-5 accent-amber-500 flex-shrink-0 ml-4"
+              />
+            </label>
           </Section>
 
           {/* Spacer so sticky footer doesn't cover last field */}
