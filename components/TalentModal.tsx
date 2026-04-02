@@ -10,6 +10,7 @@ import {
   AGE_LABELS,
   BUILD_LABELS,
   HEIGHT_LABELS,
+  thumbUrl,
 } from '@/lib/talent';
 
 const FREE_LICENSE_IDX = -1;
@@ -38,7 +39,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
     setAttributionAgreed(false);
     setEmail('');
     setSendError('');
-    setActiveImg(talent?.img ?? '');
+    setActiveImg(talent?.img ? thumbUrl(talent.img, 800) : '');
     document.body.style.overflow = talent ? 'hidden' : '';
 
     if (talent) {
@@ -68,6 +69,8 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
 
   const gallery = talent.gallery?.length ? talent.gallery : [];
   const allImages = [talent.img, ...gallery].filter(Boolean);
+  // Display-quality images capped at 800px — full-res only on download
+  const displayImages = allImages.map((url) => thumbUrl(url, 800));
 
   const singleIdx = talent.prices.findIndex((p) => p.name === 'Single Project');
   const studioIdx = talent.prices.findIndex((p) => p.name === 'Studio License');
@@ -236,11 +239,11 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
           </div>
 
           {/* Gallery thumbnails */}
-          {allImages.length > 1 && (
+          {displayImages.length > 1 && (
             <div className="mt-auto">
               <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Looks</p>
               <div className="grid grid-cols-3 gap-1.5">
-                {allImages.map((url, i) => (
+                {displayImages.map((url, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveImg(url)}
@@ -250,7 +253,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
                     style={{ aspectRatio: '1' }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={url} alt={`Look ${i + 1}`} className="w-full h-full object-cover" />
+                    <img src={thumbUrl(url, 200)} alt={`Look ${i + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
