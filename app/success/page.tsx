@@ -42,7 +42,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
   const email = user?.emailAddresses?.[0]?.emailAddress;
   if (email) {
     const licenseIndex = m.licenseName === 'Exclusive Rights' ? 1 : 0;
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/api/email/send-reference`, {
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.castability.ai'}/api/email/send-reference`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, characterId: Number(m.characterId), licenseIndex }),
@@ -51,7 +51,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
 
   // Mark character as exclusive if applicable
   if (m.isExclusive === 'true') {
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/api/characters/${m.characterId}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.castability.ai'}/api/characters/${m.characterId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ exclusive: true }),
