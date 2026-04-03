@@ -5,7 +5,7 @@
     "vibe": "A 42-year-old Black woman with a lean, athletic build and rich dark skin. She has natural textured hair worn in a sleek, shoulder-length loc style with silver-grey strands woven throughout. Her face is angular with high cheekbones, sharp eyes, and a determined expression. She wears a tailored charcoal blazer over a crisp white shirt, paired with minimalist silver jewelry. Her overall presence conveys quiet confidence and understated power.",
     "img": "/api/media?p=characters%2Fa-42-year-old-black-profile-1774439654051.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Fblack-woman-naomi-black-refsheet-1775208549175.jpg",
     "sex": "female",
     "ageRange": "40s",
     "build": "athletic",
@@ -37,8 +37,11 @@
     "age": 42,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-profile-1774439654051-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903-thumb.jpg",
-    "featured": true
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-woman-naomi-black-refsheet-thumb-1775208552085.jpg",
+    "featured": true,
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903.jpg"
+    ]
   },
   {
     "name": "Elena Voss",
@@ -86,7 +89,7 @@
     "vibe": "A sharp-featured woman in her late 40s with a lean, angular build and shoulder-length salt-and-pepper hair swept back severely. She has high cheekbones, piercing gray-blue eyes, and pale freckled skin with fine lines etched around her mouth from years of smoking. Her style is deliberately austere—tailored charcoal blazers, vintage silk scarves, and dark denim—with minimal jewelry except for a single ornate silver ring. She carries herself with controlled intensity and an air of guarded sophistication.",
     "img": "/api/media?p=characters%2Fwhite-woman-profile-1774441877920.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Fwhite-woman-refsheet-1774441897925.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Fwhite-woman-taylor-red-refsheet-1775212720733.jpg",
     "sex": "female",
     "ageRange": "50s",
     "build": "slim",
@@ -118,7 +121,10 @@
     "age": 48,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fwhite-woman-profile-1774441877920-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Fwhite-woman-refsheet-1774441897925-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Fwhite-woman-taylor-red-refsheet-thumb-1775212724451.jpg",
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Fwhite-woman-refsheet-1774441897925.jpg"
+    ]
   },
   {
     "name": "Marcus Chen",
@@ -166,7 +172,7 @@
     "vibe": "A 24-year-old Korean female with a lean, athletic build and sharp facial features accentuated by high cheekbones and almond-shaped eyes. She has long, straight black hair styled with a slight wave, pale luminous skin, and wears trendy streetwear that blends high-fashion and casual aesthetics—oversized designer blazers, fitted black pants, and minimalist jewelry. Her presence exudes polished confidence with an approachable elegance characteristic of contemporary K-pop styling.",
     "img": "/api/media?p=characters%2Feast-asian-woman-profile-1774442748991.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-hailey-kim-refsheet-1775209238997.jpg",
     "sex": "female",
     "ageRange": "20s",
     "build": "slim",
@@ -198,8 +204,13 @@
     "age": 24,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-profile-1774442748991-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820-thumb.jpg",
-    "featured": true
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-hailey-kim-refsheet-thumb-1775209241877.jpg",
+    "featured": true,
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820.jpg",
+      "/api/media?p=characters%2Feast-asian-woman-hailey-kim-refsheet-1775208756581.jpg",
+      "/api/media?p=characters%2Feast-asian-woman-hailey-kim-refsheet-1775208965928.jpg"
+    ]
   },
   {
     "name": "Marcus Stewart",
@@ -207,7 +218,7 @@
     "vibe": "Marcus Stewart is a 16-year-old Black male with a lean, athletic build and dark brown skin. He has closely cropped hair and sharp, angular facial features with expressive dark eyes. He typically wears oversized streetwear—hoodies, high-top sneakers, and chain accessories—with an effortlessly confident demeanor that suggests both street wisdom and untapped potential.",
     "img": "/api/media?p=characters%2Fblack-man-profile-1774443406061.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Fblack-man-refsheet-1774443506145.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Fblack-man-marcus-stewart-refsheet-1775212677812.jpg",
     "sex": "male",
     "ageRange": "teen",
     "build": "athletic",
@@ -239,8 +250,11 @@
     "age": 16,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fblack-man-profile-1774443406061-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-refsheet-1774443506145-thumb.jpg",
-    "featured": true
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-marcus-stewart-refsheet-thumb-1775212678262.jpg",
+    "featured": true,
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Fblack-man-refsheet-1774443506145.jpg"
+    ]
   },
   {
     "name": "James Park",
@@ -248,7 +262,7 @@
     "vibe": "A 24-year-old South Korean male with a lean, athletic build and sharp facial features. He has long, dark hair styled with subtle highlights, pale complexion, and intense dark eyes with a confident gaze. He wears contemporary K-pop fashion including a oversized designer hoodie, fitted black jeans, and high-end sneakers, embodying the polished, trendsetting aesthetic of a Seoul music industry elite.",
     "img": "/api/media?p=characters%2Feast-asian-man-profile-1774444453976.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-james-park-refsheet-1775212739365.jpg",
     "sex": "male",
     "ageRange": "20s",
     "build": "athletic",
@@ -280,8 +294,11 @@
     "age": 24,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-profile-1774444453976-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998-thumb.jpg",
-    "featured": true
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-james-park-refsheet-thumb-1775212742474.jpg",
+    "featured": true,
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998.jpg"
+    ]
   },
   {
     "name": "Akira Tanaka",
@@ -3877,23 +3894,20 @@
     "createdAt": "2026-04-03T06:57:38.134Z"
   },
   {
-    "id": 114,
-    "name": "Koa Kahale",
-    "slug": "koa-kahale",
-    "vibe": "A 34-year-old Hawaiian man with a broad, athletic build and warm brown skin. He has strong, expressive features — a wide jaw, deep-set dark brown eyes, and thick black hair worn in a short natural style. His presence is grounded and confident, with the calm intensity of someone deeply connected to his heritage and surroundings.",
-    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518.jpg",
-    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518-thumb.jpg",
-    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861.jpg",
-    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861-thumb.jpg",
-    "sex": "male",
+    "name": "Seo-yeon Park",
+    "slug": "woman-seo-yeon-park",
+    "vibe": "A 23-year-old Korean woman with a tall, slim build and striking angular features — high cheekbones, a strong jawline, and a cool, composed gaze. She has long, straight black hair parted in the center, falling past her shoulders. She wears an oversized charcoal wool blazer over a black scoop-neck top, with a delicate silver chain pendant necklace and small gold hoop earrings. Her expression is calm and self-assured, projecting quiet editorial confidence.",
+    "img": "/api/media?p=uploads%2F1775210546866-715u7lp4qbe.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fwoman-seo-yeon-park-refsheet-1775211351871.jpg",
+    "sex": "female",
     "race": [
-      "pacific-islander"
+      "east-asian"
     ],
-    "ethnicity": "Hawaiian",
-    "age": 34,
-    "ageRange": "30s",
-    "build": "athletic",
-    "height": "tall",
+    "ethnicity": "Korean",
+    "ageRange": "20s",
+    "build": "slim",
+    "height": "average",
     "style": "realistic",
     "prices": [
       {
@@ -3912,6 +3926,97 @@
         "amount": 1000
       }
     ],
-    "createdAt": "2026-03-30T12:07:25.062Z"
+    "exclusiveDisabled": false,
+    "id": 114,
+    "createdAt": "2026-04-03T10:03:05.148Z",
+    "age": 23,
+    "refSheetThumbnail": "/api/media?p=characters%2Fwoman-seo-yeon-park-refsheet-thumb-1775211355986.jpg",
+    "referenceSheetHistory": []
+  },
+  {
+    "name": "Marcus Okonkwo",
+    "slug": "black-man-marcus-okonkwo",
+    "vibe": "A distinguished 67-year-old man of mixed Nigerian and Irish heritage with a lean, athletic build and average height. He has warm, deep-set brown eyes with pronounced crow's feet, a strong angular jawline, and rich mahogany-toned skin with subtle gray at the temples. His thick, coily salt-and-pepper hair is styled in a neat, close-cropped cut with careful grooming. He wears a tailored linen shirt in soft sage green, partially unbuttoned at the collar, layered beneath a lightweight charcoal wool vest with subtle texture. A polished silver watch with a leather strap sits on his wrist, and a simple wooden bead bracelet adorns the other. His presence radiates quiet authority and warmth—composed, thoughtful, and commanding without aggression.",
+    "img": "/api/media?p=characters%2Fblack-man-marcus-okonkwo-profile-1775214211024.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fblack-man-marcus-okonkwo-refsheet-1775214288514.jpg",
+    "sex": "male",
+    "race": [
+      "black",
+      "european"
+    ],
+    "ethnicity": "Nigerian / Irish",
+    "age": 67,
+    "ageRange": "60s+",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Fblack-man-marcus-okonkwo-profile-thumb-1775214291733.jpg",
+    "imgHistory": [],
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-marcus-okonkwo-refsheet-thumb-1775214291728.jpg",
+    "referenceSheetHistory": [],
+    "id": 115,
+    "createdAt": "2026-04-03T11:04:53.225Z"
+  },
+  {
+    "name": "Mei Tanaka",
+    "slug": "southeast-asian-woman-mei-tanaka",
+    "vibe": "A 67-year-old Vietnamese-Japanese woman with a petite, graceful build and warm brown eyes framed by subtle crow's feet that speak to decades of laughter and life experience. Her shoulder-length silver hair is styled in a sleek, slightly textured bob with a deep side part, with a few strands of black still visible at the roots. She wears a tailored cream linen button-up shirt with subtle texture, layered under a lightweight caramel-colored silk vest, paired with tapered charcoal trousers and simple leather loafers. A delicate gold pendant necklace and reading glasses on a beaded chain complete her understated, sophisticated look. Her bearing is calm and observant, with an air of quiet dignity and composed warmth.",
+    "img": "/api/media?p=characters%2Fsoutheast-asian-woman-mei-tanaka-profile-1775214275091.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fsoutheast-asian-woman-mei-tanaka-refsheet-1775214366729.jpg",
+    "sex": "female",
+    "race": [
+      "southeast-asian",
+      "east-asian"
+    ],
+    "ethnicity": "Vietnamese / Japanese",
+    "age": 67,
+    "ageRange": "60s+",
+    "build": "slim",
+    "height": "short",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Fsoutheast-asian-woman-mei-tanaka-profile-thumb-1775214369422.jpg",
+    "imgHistory": [],
+    "refSheetThumbnail": "/api/media?p=characters%2Fsoutheast-asian-woman-mei-tanaka-refsheet-thumb-1775214369421.jpg",
+    "referenceSheetHistory": [],
+    "id": 116,
+    "createdAt": "2026-04-03T11:06:10.718Z"
   }
 ]
