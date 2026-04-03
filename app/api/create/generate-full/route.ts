@@ -75,13 +75,11 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Send receipt email (non-blocking)
-    (async () => {
-      try {
-        const email = user?.emailAddresses?.[0]?.emailAddress;
-        if (!email) return;
-
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cast-next-silk.vercel.app';
+    // Send receipt email before returning response (Vercel kills the function after response)
+    try {
+      const email = user?.emailAddresses?.[0]?.emailAddress;
+      if (email) {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.castability.ai';
         const profileDownloadUrl = `${baseUrl}${profile.url}${profile.url.includes('?') ? '&' : '?'}download=1&filename=${draft.slug}-profile`;
         const referenceSheetDownloadUrl = `${baseUrl}${refSheet.url}${refSheet.url.includes('?') ? '&' : '?'}download=1&filename=${draft.slug}-reference-sheet`;
 
@@ -102,10 +100,10 @@ export async function POST(req: NextRequest) {
             baseUrl,
           }),
         });
-      } catch (emailErr) {
-        console.error('Receipt email error:', emailErr);
       }
-    })();
+    } catch (emailErr) {
+      console.error('Receipt email error:', emailErr);
+    }
 
     return NextResponse.json({
       profileImageUrl: profile.url,
