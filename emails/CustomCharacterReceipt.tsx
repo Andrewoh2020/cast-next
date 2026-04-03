@@ -199,10 +199,10 @@ export default function CustomCharacterReceipt({
           {/* Footer */}
           <Section style={{ textAlign: 'center' }}>
             <Text style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 4px' }}>
-              Questions? Reply to this email and we&apos;ll help.
+              Questions or feedback? Email us at <a href="mailto:admin@castability.ai" style={{ color: '#6366f1', textDecoration: 'none' }}>admin@castability.ai</a>
             </Text>
             <Text style={{ fontSize: 11, color: '#d1d5db', margin: 0 }}>
-              &copy; 2025 Cast &middot; AI Character Creation
+              &copy; 2026 Cast &middot; AI Character Creation
             </Text>
           </Section>
 
