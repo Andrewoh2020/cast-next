@@ -11,6 +11,22 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-03',
+    title: 'Smarter Characters, Better Portraits, and Production-Ready Emails',
+    summary:
+      'Characters are now more visually distinct with varied styling, the profile photo framing has been upgraded to a 3/4 portrait, and emails now send reliably from castability.ai.',
+    highlights: [
+      'Visually distinct characters — AI descriptions now include varied wardrobe, hairstyles, facial features, and accessories to avoid similar-looking characters',
+      '3/4 portrait framing — profile photos now show head to above the knees with natural angled poses, replacing the old full-body shots',
+      'Admin auto-fills attributes — age, ethnicity, race, build, and other fields are now automatically extracted when generating characters',
+      'Reliable email delivery — receipt emails now send from no-reply@castability.ai with verified domain, fixing delivery issues',
+      'Generation safeguards — reference sheets only generate after payment, preventing accidental credit usage',
+      'Stripe payments live on production — character credit purchases now work end-to-end',
+      'SEO improvements — canonical URL redirects configured, duplicate content issues resolved, Google re-indexing requested',
+      'Character name is now optional — AI generates a fitting name from your description if you leave it blank',
+    ],
+  },
+  {
     date: '2026-04-02',
     title: 'Mobile Overhaul, Cast Picks, and Smarter Character Creation',
     summary:

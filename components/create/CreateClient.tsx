@@ -70,8 +70,8 @@ export default function CreateClient() {
           setCurrentDraft(target);
           if (target.status === 'complete' || target.status === 'generating') {
             setStep('complete');
-            // Re-trigger generation if it was interrupted (status=generating but no URLs)
-            if (target.status === 'generating' && !target.profileImageUrl) {
+            // If status is generating but has no assets, re-trigger (only once via ref guard)
+            if (target.status === 'generating' && !target.profileImageUrl && !target.referenceSheetUrl) {
               generateFull(target.id);
             }
           } else if (target.status === 'preview' || target.status === 'paid') setStep('payment');
@@ -244,7 +244,7 @@ export default function CreateClient() {
     if (fullState?.generating || draft.status === 'generating') {
       setStep('complete');
       // Re-trigger if generation was interrupted (no active state but status=generating and no URLs)
-      if (!fullState?.generating && draft.status === 'generating' && !draft.profileImageUrl) {
+      if (!fullState?.generating && draft.status === 'generating' && !draft.profileImageUrl && !draft.referenceSheetUrl) {
         generateFull(draft.id);
       }
     } else if (genState?.generating) {

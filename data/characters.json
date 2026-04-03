@@ -284,46 +284,6 @@
     "featured": true
   },
   {
-    "name": "Mei Chen",
-    "slug": "east-asian-woman-mei-chen",
-    "vibe": "A 14-year-old Chinese girl with a petite, slender build and shoulder-length black hair with subtle layers. She has warm brown eyes, a round face with soft features, and clear skin with light freckles across her nose. She wears casual contemporary streetwear including oversized hoodies and high-waisted jeans, with minimalist accessories and white sneakers.",
-    "img": "/api/media?p=characters%2Feast-asian-woman-mei-chen-profile-1774602307598.jpg",
-    "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-mei-chen-refsheet-1774602320855.jpg",
-    "sex": "female",
-    "ageRange": "teen",
-    "build": "slim",
-    "height": "short",
-    "style": "realistic",
-    "prices": [
-      {
-        "name": "Single Project",
-        "price": "$50",
-        "amount": 50
-      },
-      {
-        "name": "Studio License",
-        "price": "$250",
-        "amount": 250
-      },
-      {
-        "name": "Exclusive Rights",
-        "price": "$1000",
-        "amount": 1000
-      }
-    ],
-    "exclusiveDisabled": false,
-    "id": 22,
-    "race": [
-      "east-asian"
-    ],
-    "ethnicity": "Chinese",
-    "age": 14,
-    "createdAt": "2026-03-11T21:00:00.000Z",
-    "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-mei-chen-profile-1774602307598-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-mei-chen-refsheet-1774602320855-thumb.jpg"
-  },
-  {
     "name": "Akira Tanaka",
     "slug": "east-asian-woman-akira-tanaka",
     "vibe": "Akira Tanaka is a strikingly beautiful Japanese woman in her late 20s with porcelain skin, sharp cheekbones, and expressive dark brown eyes. She has long, jet-black hair with subtle waves and a sleek, modern sense of style that blends high fashion with contemporary J-pop aesthetics—think tailored streetwear, oversized designer pieces, and statement accessories. Her presence is magnetic and confident, with the polished, camera-ready appearance of an established music industry professional.",
@@ -3126,19 +3086,57 @@
   },
   {
     "id": 94,
-    "name": "Lucia Reyes",
-    "slug": "lucia-reyes",
-    "vibe": "A 22-year-old Latina woman with rich caramel skin, bright hazel eyes, and voluminous dark curly hair that frames her face. She has a curvy, confident build and a radiant smile that lights up her round, dimpled cheeks. She wears an oversized vintage denim jacket over a sunflower-yellow crop top and high-waisted jeans, with layered silver necklaces and small hoop earrings. Her energy is infectious and unapologetically bold — equal parts dreamer and doer.",
-    "img": "/api/media?p=characters%2Flucia-reyes-profile-1775050496361.jpg",
-    "referenceSheetUrl": "/api/media?p=characters%2Flucia-reyes-refsheet-1775050611917.jpg",
+    "name": "Eleanor Hartwick",
+    "slug": "eleanor-hartwick",
+    "vibe": "Eleanor is a thoughtful 9-year-old British girl with pale, fair complexion and long, straight honey-blonde hair often worn in a neat side braid. She has large, observant grey-green eyes and delicate features with light freckles across her nose. Eleanor wears a tailored navy wool blazer over a crisp white cotton shirt, paired with pleated grey trousers and polished black oxford shoes—the look of a serious, studious child. Her posture is upright and composed, conveying intelligence and quiet maturity beyond her years.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Feleanor-hartwick-profile-1775187987245.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Feleanor-hartwick-profile-thumb-1775188239789.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Feleanor-hartwick-refsheet-1775188238966.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Feleanor-hartwick-refsheet-thumb-1775188239866.jpg",
     "sex": "female",
     "race": [
-      "latino"
+      "white"
     ],
-    "ethnicity": "Mexican",
-    "age": 22,
-    "ageRange": "20s",
-    "build": "curvy",
+    "ethnicity": "British",
+    "ageRange": "child",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 95,
+    "name": "Karim Nassar",
+    "slug": "karim-nassar",
+    "vibe": "A stocky 16-year-old Palestinian boy with a sturdy, compact build and rich olive skin. He has thick, dark curly hair styled short and neatly kept, with prominent dark brown eyes and a strong jawline. Standing at 5'4\", he carries himself with quiet confidence. Karim wears a well-fitted navy button-up shirt tucked into charcoal chinos, paired with tan suede loafers and a lightweight wool sweater draped over his shoulders — polished and put-together despite his youth.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-nassar-profile-1775187514248.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-nassar-profile-thumb-1775187601205.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-nassar-refsheet-1775187600700.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-nassar-refsheet-thumb-1775187601280.jpg",
+    "sex": "male",
+    "race": [
+      "middle-eastern"
+    ],
+    "ethnicity": "Palestinian",
+    "ageRange": "teen",
+    "build": "stocky",
     "height": "short",
     "style": "realistic",
     "prices": [
@@ -3158,10 +3156,543 @@
         "amount": 1000
       }
     ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 96,
+    "name": "Sophie Voss",
+    "slug": "sophie-voss",
+    "vibe": "A 16-year-old White German-American girl with an athletic, lean build and average height. She has sharp, angular cheekbones, pale complexion, and shoulder-length honey-blonde hair styled in a practical half-up style. Her eyes are a cool gray-blue with an intelligent, observant gaze. She wears tailored navy trousers, a crisp white oxford shirt with sleeves rolled to the elbows, and a charcoal wool blazer—her look is polished and put-together, suggesting a competitive swimmer or student-athlete who carries herself with quiet confidence and poise.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fsophie-voss-profile-1775184573981.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fsophie-voss-profile-thumb-1775186283098.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fsophie-voss-refsheet-1775186282427.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fsophie-voss-refsheet-thumb-1775186283146.jpg",
+    "sex": "female",
+    "race": [
+      "white",
+      "european"
+    ],
+    "ethnicity": "German-American",
+    "ageRange": "teen",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 97,
+    "name": "Mariana Akaka",
+    "slug": "mariana-akaka",
+    "vibe": "Mariana is a 26-year-old woman of Hawaiian and Puerto Rican descent with a stocky, muscular build and average height. She has warm, dark brown skin, shoulder-length wavy black hair with natural curl, and striking deep-set brown eyes with a direct, confident gaze. A small scar runs along her left jawline. She wears tailored navy trousers with a crisp cream linen button-up shirt, sleeves rolled to the elbow, and minimal gold jewelry—a simple pendant necklace and stacked rings. Her overall presentation is polished and composed, with an air of quiet authority and grounded intensity.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmariana-akaka-profile-1775099081582.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmariana-akaka-profile-thumb-1775099266696.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmariana-akaka-refsheet-1775099260370.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmariana-akaka-refsheet-thumb-1775099266735.jpg",
+    "sex": "female",
+    "race": [
+      "pacific-islander",
+      "latino"
+    ],
+    "ethnicity": "Hawaiian / Puerto Rican",
+    "ageRange": "20s",
+    "build": "stocky",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 98,
+    "name": "Carmen Reyes",
+    "slug": "carmen-reyes",
+    "vibe": "A 34-year-old Latina woman with a compact, athletic build developed through rigorous physical discipline. She has warm deep brown skin, sharp defined cheekbones, and intense dark eyes that convey focus and intelligence. Her thick black hair is pulled back in a neat braid, with a faint scar along her left jawline adding character. She wears tailored charcoal cargo trousers, a fitted charcoal blazer over a crisp white shirt, polished black leather boots, and a subtle silver watch — projecting controlled confidence and professional poise.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fcarmen-reyes-profile-1775098219007.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fcarmen-reyes-profile-thumb-1775098352002.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fcarmen-reyes-refsheet-1775098345055.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fcarmen-reyes-refsheet-thumb-1775098352041.jpg",
+    "sex": "female",
+    "race": [
+      "latino"
+    ],
+    "ethnicity": "Latina / Hispanic",
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "short",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 99,
+    "name": "Karim Abrahams",
+    "slug": "karim-abrahams",
+    "vibe": "Karim is a 17-year-old with striking mixed heritage, featuring olive-toned skin, sharp angular features, and dark wavy hair styled with subtle frosted tips. At 6'2\", he carries an athletic, lean build with broad shoulders from competitive swimming. He has intense brown eyes with a slight severity to his gaze, a defined jawline, and a small scar above his left eyebrow. His style blends contemporary streetwear with subtle luxury pieces—fitted designer hoodies, high-end sneakers, and tailored joggers—projecting quiet confidence mixed with youthful restlessness.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-abrahams-profile-1775097265583.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-abrahams-profile-thumb-1775097407650.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-abrahams-refsheet-1775097394883.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkarim-abrahams-refsheet-thumb-1775097407690.jpg",
+    "sex": "male",
+    "race": [
+      "middle-eastern",
+      "white"
+    ],
+    "ethnicity": "Lebanese / Austrian",
+    "ageRange": "teen",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 100,
+    "name": "Moana Tui",
+    "slug": "moana-tui",
+    "vibe": "A 47-year-old Samoan woman with a compact, athletic frame honed by decades of ocean work and traditional practices. She has warm copper-brown skin, shoulder-length dark hair streaked with silver worn in a practical braid, and sharp, intelligent eyes that crinkle at the corners. Moana carries herself with quiet authority, dressed in weathered linen and natural fibers—a faded indigo work shirt, woven belt, and a small collection of bone and shell jewelry that speaks to her heritage. Her presence is grounded and commanding despite her petite stature.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmoana-tui-profile-1775017503203.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmoana-tui-profile-thumb-1775031578716.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmoana-tui-refsheet-1775031572573.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmoana-tui-refsheet-thumb-1775031578754.jpg",
+    "sex": "female",
+    "race": [
+      "pacific-islander"
+    ],
+    "ethnicity": "Samoan",
+    "ageRange": "40s",
+    "build": "athletic",
+    "height": "short",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 101,
+    "name": "Lin Mei-Chen",
+    "slug": "lin-mei-chen",
+    "vibe": "A 47-year-old Taiwanese woman with shoulder-length black hair streaked with silver, sharp cheekbones, and an intense gaze that suggests quiet authority. She has a slim, athletic build maintained through disciplined posture and movement. She wears tailored, minimalist clothing—charcoal blazers, crisp white shirts, and dark trousers—with a single piece of heirloom jade jewelry that hints at her heritage and inner world.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Flin-mei-chen-profile-1774948862255.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Flin-mei-chen-profile-thumb-1774948961754.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Flin-mei-chen-refsheet-1774948951657.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Flin-mei-chen-refsheet-thumb-1774948961791.jpg",
+    "sex": "female",
+    "race": [
+      "east-asian"
+    ],
+    "ethnicity": "Taiwanese",
+    "ageRange": "40s",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 102,
+    "name": "Dr. Amara Okonkwo",
+    "slug": "dr-amara-okonkwo",
+    "vibe": "A distinguished 54-year-old Black woman with rich mahogany skin, natural silver-streaked locs pulled into an elegant bun, and sharp, observant dark eyes framed by subtle laugh lines. She carries herself with quiet authority, wearing tailored charcoal blazers over crisp linen shirts, with minimalist jewelry that speaks to her refined taste. Her bearing suggests both academic rigor and hard-won life wisdom.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdr-amara-okonkwo-profile-1774944324464.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdr-amara-okonkwo-profile-thumb-1774944435273.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdr-amara-okonkwo-refsheet-1774944429025.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdr-amara-okonkwo-refsheet-thumb-1774944435268.jpg",
+    "sex": "female",
+    "race": [
+      "black"
+    ],
+    "ethnicity": "Nigerian-American",
+    "ageRange": "50s",
+    "build": "average",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 103,
+    "name": "Viktor Rosenberg",
+    "slug": "viktor-rosenberg",
+    "vibe": "A 68-year-old Eastern European man with silver-gray hair swept back from a weathered, angular face marked by deep-set eyes and prominent cheekbones. He wears a tailored charcoal wool coat over a cream linen shirt, with a burgundy scarf loosely tied at his neck, exuding quiet intellectual authority and European sophistication.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fviktor-rosenberg-profile-1774942680065.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fviktor-rosenberg-profile-thumb-1774942874274.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fviktor-rosenberg-refsheet-1774942865087.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fviktor-rosenberg-refsheet-thumb-1774942874270.jpg",
+    "sex": "male",
+    "race": [
+      "european"
+    ],
+    "ethnicity": "Polish / German",
+    "ageRange": "60+",
+    "build": "average",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T04:05:33.224Z"
+  },
+  {
+    "id": 104,
+    "name": "Akira Shimizu",
+    "slug": "akira-shimizu",
+    "vibe": "A female jpop artist ",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-profile-1775196572891.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-profile-thumb-1775196841595.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-refsheet-1775196837393.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-refsheet-thumb-1775196841630.jpg",
+    "sex": "female",
+    "race": [
+      "east-asian"
+    ],
+    "ethnicity": "Japanese",
+    "ageRange": "20s",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T06:17:34.581Z"
+  },
+  {
+    "id": 105,
+    "name": "Min-jun Park",
+    "slug": "min-jun-park",
+    "vibe": "Create a really hot Korean kpop 19 year old",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-profile-1775195356758.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-profile-thumb-1775195454741.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-refsheet-1775195451183.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-refsheet-thumb-1775195454778.jpg",
+    "sex": "male",
+    "race": [
+      "east-asian"
+    ],
+    "ethnicity": "Korean",
+    "ageRange": "teen",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T06:17:34.582Z"
+  },
+  {
+    "id": 106,
+    "name": "Madison Pierce",
+    "slug": "madison-pierce",
+    "vibe": "A 17-year-old American girl with a fresh, polished appearance and naturally radiant features. She has shoulder-length honey-blonde hair with subtle waves, bright blue eyes, and clear skin with a light dusting of freckles across her nose. She wears a crisp white button-down shirt tucked into tailored navy trousers, paired with a structured blazer and simple gold jewelry—presenting an effortlessly elegant, classic American prep aesthetic.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmadison-pierce-profile-1775189824892.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmadison-pierce-profile-thumb-1775189896112.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmadison-pierce-refsheet-1775189895495.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmadison-pierce-refsheet-thumb-1775189896149.jpg",
+    "sex": "female",
+    "race": [
+      "white"
+    ],
+    "ethnicity": "American",
+    "ageRange": "teen",
+    "build": "slim",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T06:17:34.582Z"
+  },
+  {
+    "name": "Diego Velasco",
+    "slug": "white-man-diego-velasco",
+    "vibe": "A 38-year-old Spanish action star with a lean, athletic build and sharp Mediterranean features. He has dark brown eyes, slicked-back black hair with silver threading at the temples, and a strong jawline with a subtle scar across his left cheek. He wears a tailored charcoal blazer over a black turtleneck, exuding confident intensity and seasoned charisma.",
+    "img": "/api/media?p=characters%2Fwhite-man-diego-velasco-profile-1775197386558.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fwhite-man-diego-velasco-refsheet-1775197481630.jpg",
+    "sex": "male",
+    "race": [
+      "white",
+      "middle-eastern"
+    ],
+    "ethnicity": "Spanish / Moroccan",
+    "age": 38,
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
     "exclusiveDisabled": false,
-    "hidden": false,
-    "createdAt": "2026-04-01T00:00:00.000Z",
-    "imgThumbnail": "/api/media?p=characters%2Flucia-reyes-profile-1775050618355-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Flucia-reyes-refsheet-1775050618350-thumb.jpg"
+    "imgThumbnail": "/api/media?p=characters%2Fwhite-man-diego-velasco-profile-thumb-1775197391152.jpg",
+    "imgHistory": [],
+    "id": 107,
+    "createdAt": "2026-04-03T06:23:12.498Z",
+    "refSheetThumbnail": "/api/media?p=characters%2Fwhite-man-diego-velasco-refsheet-thumb-1775197485025.jpg",
+    "referenceSheetHistory": []
+  },
+  {
+    "name": "Harry Poulos",
+    "slug": "man-harry-poulos",
+    "vibe": "A Mediterranean action star",
+    "img": "/api/media?p=characters%2Fa-mediterranean-action-profile-1775199525536.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "",
+    "sex": "male",
+    "race": [
+      "middle-eastern",
+      "european"
+    ],
+    "ethnicity": "",
+    "ageRange": "50s",
+    "build": "average",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Fa-mediterranean-action-profile-thumb-1775199530067.jpg",
+    "imgHistory": [],
+    "id": 108,
+    "createdAt": "2026-04-03T06:58:51.627Z",
+    "refSheetThumbnail": "/api/media?p=characters%2Fa-mediterranean-action-refsheet-thumb-1775199672044.jpg",
+    "referenceSheetHistory": []
+  },
+  {
+    "name": "Marco Rossini",
+    "slug": "european-man-marco-rossini",
+    "vibe": "A 42-year-old Italian male with a commanding presence and athletic build. He has sharp, angular facial features with a strong jawline, deep-set brown eyes, and a prominent nose. His dark hair is thick and wavy, styled back with subtle gray at the temples, and he sports a well-groomed five-day stubble. He wears a fitted charcoal linen shirt with the sleeves rolled to the elbows, paired with tailored navy trousers and tan leather loafers. A thin silver chain necklace and a vintage steel watch add understated sophistication. His expression is intense and focused, with the relaxed confidence of someone accustomed to high-stakes situations.",
+    "img": "/api/media?p=characters%2Feuropean-man-marco-rossini-profile-1775200941627.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feuropean-man-marco-rossini-refsheet-1775201044446.jpg",
+    "sex": "male",
+    "race": [
+      "european"
+    ],
+    "ethnicity": "Italian",
+    "age": 42,
+    "ageRange": "40s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Feuropean-man-marco-rossini-profile-thumb-1775200944759.jpg",
+    "imgHistory": [],
+    "id": 109,
+    "createdAt": "2026-04-03T07:22:26.530Z",
+    "refSheetThumbnail": "/api/media?p=characters%2Feuropean-man-marco-rossini-refsheet-thumb-1775201048657.jpg",
+    "referenceSheetHistory": []
   }
 ]

@@ -1,24 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-
-const SYSTEM_PROMPT = `You are a character description writer for an AI character casting agency.
-
-IMPORTANT: Generate diverse characters. Vary sex, age, race, ethnicity, and build widely across requests. Do NOT default to any single demographic. Aim for a broad, global cast — young and old, male and female and nonbinary, every race and region.
-
-When given a request, respond with a JSON object containing:
-- "name": A compelling, memorable character name (first name + last name). Should feel cinematic and fit the character's ethnicity and archetype. No generic names.
-- "description": A vivid 2-3 sentence character description optimized for AI image generation. Include age, gender, ethnicity, build, hair, distinctive facial features, wardrobe/style, and overall vibe. Neutral descriptive tone, no metaphors.
-- "attributes": Structured fields extracted from the description:
-  - "sex": one of "male", "female", "nonbinary"
-  - "race": array of applicable race categories from: "east-asian", "south-asian", "black", "latino", "middle-eastern", "white", "southeast-asian", "mixed"
-  - "ethnicity": the specific national/cultural background as a string (e.g. "Korean", "Nigerian", "Swedish", "Mexican", "Japanese / Irish")
-  - "age": the character's specific age as a number (e.g. 28, 42, 16)
-  - "ageRange": one of "child", "teen", "20s", "30s", "40s", "50s", "60s+"
-  - "build": one of "slim", "athletic", "average", "stocky", "curvy", "plus-size"
-  - "height": one of "short", "average", "tall"
-  - "style": one of "realistic", "anime", "cartoon", "3d-cgi", "stylized"
-
-Respond ONLY with valid JSON, no markdown, no extra text.`;
+import { CHARACTER_DESCRIBE_SYSTEM_PROMPT } from '@/lib/describe-prompt';
 
 export async function POST(req: NextRequest) {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -41,13 +23,13 @@ export async function POST(req: NextRequest) {
       if (!description?.trim()) {
         return NextResponse.json({ error: 'description is required for improve mode' }, { status: 400 });
       }
-      userMessage = `Improve this character description and extract structured attributes: "${description}"`;
+      userMessage = `Improve this character description — make it more vivid, specific, and optimized for AI image generation. Keep the same character but enhance the details. Extract structured attributes from the result. Description: "${description}"`;
     }
 
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 512,
-      system: SYSTEM_PROMPT,
+      system: CHARACTER_DESCRIBE_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: userMessage }],
     });
 

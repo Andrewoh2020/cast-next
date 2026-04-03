@@ -24,8 +24,15 @@ export async function POST(req: NextRequest) {
     }
     if (!draft) return NextResponse.json({ error: 'Draft not found' }, { status: 404 });
 
-    if (draft.status === 'complete') {
-      return NextResponse.json({ error: 'Character already generated' }, { status: 400 });
+    // If already complete or has assets, return existing data instead of regenerating
+    if (draft.status === 'complete' || (draft.profileImageUrl && draft.referenceSheetUrl)) {
+      return NextResponse.json({
+        profileImageUrl: draft.profileImageUrl,
+        profileThumbnailUrl: draft.profileThumbnailUrl,
+        referenceSheetUrl: draft.referenceSheetUrl,
+        referenceSheetThumbnailUrl: draft.referenceSheetThumbnailUrl,
+        costs: { profile: 0, refsheet: 0, total: 0 },
+      });
     }
 
     if (!draft.previewImageUrl) {

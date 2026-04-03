@@ -289,6 +289,39 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
     setLastCosts(null);
     setGenProgress(0);
 
+    // Auto-extract attributes from description if not already done (no ethnicity = likely manual input)
+    if (!form.ethnicity && description) {
+      try {
+        const descRes = await fetch('/api/admin/describe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description, mode: 'improve' }),
+        });
+        const descData = await descRes.json();
+        if (descRes.ok) {
+          if (descData.claudeCost) setSessionClaudeCost((prev) => prev + descData.claudeCost);
+          const a = descData.attributes ?? {};
+          const newName = descData.name || form.name;
+          const newSex = a.sex ?? form.sex;
+          const newRace = Array.isArray(a.race) && a.race.length > 0 ? a.race : form.race;
+          setForm((prev) => ({
+            ...prev,
+            ...(descData.name && !prev.name ? { name: newName } : {}),
+            ...(a.sex ? { sex: newSex } : {}),
+            ...(a.race ? { race: newRace } : {}),
+            ...(a.ethnicity ? { ethnicity: a.ethnicity } : {}),
+            ...(a.age ? { age: a.age } : {}),
+            ...(a.ageRange ? { ageRange: a.ageRange } : {}),
+            ...(a.build ? { build: a.build } : {}),
+            ...(a.height ? { height: a.height } : {}),
+            ...(a.style ? { style: a.style } : {}),
+            ...(!prev.slug && newName ? { slug: toCharacterSlug(newName, newSex, newRace) } : {}),
+          }));
+          if (descData.description) setAiDescription(descData.description);
+        }
+      } catch {} // Non-blocking — continue with generation even if extraction fails
+    }
+
     // Animate progress bar to 90% over estimated duration
     const estimatedMs = mode === 'profile' ? genTiming.profile
       : mode === 'refsheet' ? genTiming.refsheet

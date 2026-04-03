@@ -38,6 +38,8 @@ export default function DescribeStep({ draft, onComplete }: Props) {
   );
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<{ description?: string; name?: string }>({});
+  const [aiGenerated, setAiGenerated] = useState(false); // tracks if AI set the description
   const draftIdRef = useRef(draft?.id ?? null);
 
   const autoSaveDraft = async (draftName: string, draftDesc: string, draftAttrs: CustomCharacterAttributes) => {
@@ -77,6 +79,8 @@ export default function DescribeStep({ draft, onComplete }: Props) {
 
       setName(data.name);
       setDescription(data.description);
+      setAiGenerated(true);
+      setErrors({});
       const newAttrs = data.attributes ? {
         sex: data.attributes.sex ?? 'female',
         race: data.attributes.race ?? [],
@@ -113,6 +117,8 @@ export default function DescribeStep({ draft, onComplete }: Props) {
       const newName = data.name || name;
       setName(newName);
       setDescription(data.description);
+      setAiGenerated(true);
+      setErrors({});
       const newAttrs = data.attributes ? {
         sex: data.attributes.sex ?? attributes.sex,
         race: data.attributes.race ?? attributes.race,
@@ -136,15 +142,55 @@ export default function DescribeStep({ draft, onComplete }: Props) {
 
   const handleContinue = async () => {
     if (saving) return; // Prevent double-click
-    if (!description.trim() || !name.trim()) {
-      alert('Please provide a name and description');
+
+    if (!description.trim()) {
+      setErrors({ description: 'Description is required' });
       return;
     }
 
     setSaving(true);
     try {
-      const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      const body = { name, slug, description, attributes };
+      let finalName = name;
+      let finalAttrs = attributes;
+
+      // If description was manually typed, extract attributes (and name if empty) from it via AI
+      if (!aiGenerated) {
+        const res = await fetch('/api/create/describe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ description: description.trim(), mode: 'improve' }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          if (!finalName.trim() && data.name) {
+            finalName = data.name;
+            setName(finalName);
+          }
+          if (data.attributes) {
+            finalAttrs = {
+              sex: data.attributes.sex ?? attributes.sex,
+              race: data.attributes.race ?? attributes.race,
+              ethnicity: data.attributes.ethnicity,
+              age: data.attributes.age,
+              ageRange: data.attributes.ageRange ?? attributes.ageRange,
+              build: data.attributes.build ?? attributes.build,
+              height: data.attributes.height ?? attributes.height,
+              style: data.attributes.style ?? attributes.style,
+            };
+            setAttributes(finalAttrs);
+          }
+        }
+      }
+
+      // If still no name after AI extraction, generate a fallback
+      if (!finalName.trim()) {
+        setSaving(false);
+        setErrors({ name: 'Please provide a character name' });
+        return;
+      }
+
+      const slug = finalName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const body = { name: finalName, slug, description, attributes: finalAttrs };
 
       let savedDraft: CustomCharacterDraft;
       const existingId = draftIdRef.current || draft?.id;
@@ -181,13 +227,14 @@ export default function DescribeStep({ draft, onComplete }: Props) {
 
       {/* Description */}
       <div className="mb-5">
-        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Description</label>
+        <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Description <span className="text-red-400">*</span></label>
         <textarea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => { setDescription(e.target.value); setAiGenerated(false); if (errors.description) setErrors((prev) => ({ ...prev, description: undefined })); }}
           placeholder="e.g. A 30-year-old East Asian woman, athletic build, sharp features, confident corporate executive..."
-          className="w-full h-32 text-sm border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none resize-none"
+          className={`w-full h-32 text-sm border rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none resize-none ${errors.description ? 'border-red-400' : 'border-gray-200'}`}
         />
+        {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description}</p>}
         <div className="flex gap-2 mt-2">
           <button
             onClick={handleGenerate}
@@ -212,10 +259,11 @@ export default function DescribeStep({ draft, onComplete }: Props) {
         <input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => { setName(e.target.value); if (errors.name) setErrors((prev) => ({ ...prev, name: undefined })); }}
           placeholder="e.g. Hailey Kim"
-          className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none"
+          className={`w-full text-sm border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 outline-none ${errors.name ? 'border-red-400' : 'border-gray-200'}`}
         />
+        {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
       </div>
 
       {/* Attributes */}
@@ -337,7 +385,7 @@ export default function DescribeStep({ draft, onComplete }: Props) {
       {/* Continue */}
       <button
         onClick={handleContinue}
-        disabled={saving || !description.trim() || !name.trim()}
+        disabled={saving || !description.trim()}
         className="w-full bg-indigo-500 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-50 disabled:hover:translate-y-0"
       >
         {saving ? 'Saving...' : 'Continue to Preview'}

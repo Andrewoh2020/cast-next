@@ -35,7 +35,7 @@ Panel 8 (bottom-right): Camera positioned directly BEHIND the subject's head —
 Consistent identity across all 8 panels. Consistent lighting across all panels: soft diffused studio light, even fill, no harsh shadows. Uniform spacing between panels. Consistent head height across top row, consistent face scale across bottom row. Crisp print-ready output. No visible panel borders, no dividing lines, no grid lines, no white lines, no black lines between panels. Panels are separated only by the background color — no drawn separators of any kind.`;
 
 export const PROFILE_PROMPT = (description: string) =>
-  `Full-body portrait of ${description}, head to toe visible. Plain seamless light warm-gray studio backdrop. Natural relaxed pose, sharp photorealistic DSLR photography style, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, soft even diffused studio lighting, no text overlays. Not outdoors. HD quality.`;
+  `Three-quarter length portrait of ${description}, framed from mid-thigh up showing head to above the knees. Body angled slightly toward the camera with a natural relaxed pose and subtle asymmetry like a real model shoot. Plain seamless light warm-gray paper backdrop covering the entire background edge to edge with no gaps, no windows, no walls, no furniture visible. Sharp photorealistic DSLR photography style, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, soft even diffused studio lighting, no text overlays. Studio environment only. HD quality.`;
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
