@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
         const resend = new Resend(process.env.RESEND_API_KEY);
         await resend.emails.send({
-          from: 'Cast <onboarding@resend.dev>',
+          from: 'Cast <no-reply@castability.ai>',
           to: email,
           subject: `Your character ${draft.name} is ready — Cast`,
           react: CustomCharacterReceipt({
