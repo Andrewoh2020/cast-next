@@ -35,7 +35,7 @@ Panel 8 (bottom-right): Camera positioned directly BEHIND the subject's head —
 Consistent identity across all 8 panels. Consistent lighting across all panels: soft diffused studio light, even fill, no harsh shadows. Uniform spacing between panels. Consistent head height across top row, consistent face scale across bottom row. Crisp print-ready output. No visible panel borders, no dividing lines, no grid lines, no white lines, no black lines between panels. Panels are separated only by the background color — no drawn separators of any kind.`;
 
 export const PROFILE_PROMPT = (description: string) =>
-  `Three-quarter length portrait of ${description}, framed from mid-thigh up showing head to above the knees. Body angled slightly toward the camera with a natural relaxed pose and subtle asymmetry like a real model shoot. Plain seamless light warm-gray paper backdrop covering the entire background edge to edge with no gaps, no windows, no walls, no furniture visible. Sharp photorealistic DSLR photography style, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, soft even diffused studio lighting, no text overlays. Studio environment only. HD quality.`;
+  `Medium shot portrait of ${description}, cropped at the knees, head-to-knees framing only. Body turned slightly toward camera, relaxed natural pose. Plain seamless warm-gray studio backdrop, no environment, no props. Photorealistic DSLR, 85mm lens, soft diffused studio lighting, sharp skin detail, no retouching. Do NOT show full body, do NOT show feet or ankles.`;
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -231,17 +231,17 @@ export async function generateAndUpload(
 ): Promise<GenerateResult> {
   const startedAt = Date.now();
   let resultUrl: string | undefined;
-  let provider: 'kie' | 'fal' = 'kie';
+  let provider: 'kie' | 'fal' = 'fal';
 
   try {
     let imageUrl: string;
     try {
-      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-      provider = 'kie';
-    } catch (kieErr) {
-      console.warn(`Kie.ai failed, falling back to fal.ai: ${kieErr instanceof Error ? kieErr.message : kieErr}`);
       imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
       provider = 'fal';
+    } catch (falErr) {
+      console.warn(`fal.ai failed, falling back to Kie.ai: ${falErr instanceof Error ? falErr.message : falErr}`);
+      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'kie';
     }
 
     const cost = GENERATION_COST[provider][type];
@@ -301,7 +301,7 @@ export async function generateProfile(
   blobPrefix = 'characters',
 ): Promise<GenerateResult> {
   return generateAndUpload(
-    PROFILE_PROMPT(description), '2:3', '4K', slug, 'profile', meta, undefined, blobPrefix,
+    PROFILE_PROMPT(description), '3:4', '4K', slug, 'profile', meta, undefined, blobPrefix,
   );
 }
 
@@ -345,7 +345,7 @@ export async function generatePreview(
   blobPrefix = 'characters',
 ): Promise<GenerateResult & { sourceProfileUrl: string }> {
   const result = await generateAndUpload(
-    PROFILE_PROMPT(description), '2:3', '2K', slug, 'profile', meta, undefined, blobPrefix,
+    PROFILE_PROMPT(description), '3:4', '2K', slug, 'profile', meta, undefined, blobPrefix,
   );
 
   const sourceProfileUrl = result.url;
@@ -432,7 +432,7 @@ export async function generateFull(
   } else {
     // Fallback: generate a new 4K profile (e.g. admin flow or missing sourceProfileUrl)
     profile = await generateAndUpload(
-      PROFILE_PROMPT(description), '2:3', '4K', slug, 'profile', meta, undefined, blobPrefix,
+      PROFILE_PROMPT(description), '3:4', '4K', slug, 'profile', meta, undefined, blobPrefix,
     );
     publicProfileUrl = await uploadToFalCdn(profile.rawBuffer);
   }

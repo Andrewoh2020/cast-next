@@ -3098,6 +3098,7 @@
       "white"
     ],
     "ethnicity": "British",
+    "age": 9,
     "ageRange": "child",
     "build": "slim",
     "height": "average",
@@ -3135,6 +3136,7 @@
       "middle-eastern"
     ],
     "ethnicity": "Palestinian",
+    "age": 16,
     "ageRange": "teen",
     "build": "stocky",
     "height": "short",
@@ -3173,6 +3175,7 @@
       "european"
     ],
     "ethnicity": "German-American",
+    "age": 16,
     "ageRange": "teen",
     "build": "athletic",
     "height": "average",
@@ -3211,6 +3214,7 @@
       "latino"
     ],
     "ethnicity": "Hawaiian / Puerto Rican",
+    "age": 26,
     "ageRange": "20s",
     "build": "stocky",
     "height": "average",
@@ -3248,6 +3252,7 @@
       "latino"
     ],
     "ethnicity": "Latina / Hispanic",
+    "age": 34,
     "ageRange": "30s",
     "build": "athletic",
     "height": "short",
@@ -3286,6 +3291,7 @@
       "white"
     ],
     "ethnicity": "Lebanese / Austrian",
+    "age": 17,
     "ageRange": "teen",
     "build": "athletic",
     "height": "tall",
@@ -3323,6 +3329,7 @@
       "pacific-islander"
     ],
     "ethnicity": "Samoan",
+    "age": 47,
     "ageRange": "40s",
     "build": "athletic",
     "height": "short",
@@ -3360,6 +3367,7 @@
       "east-asian"
     ],
     "ethnicity": "Taiwanese",
+    "age": 47,
     "ageRange": "40s",
     "build": "slim",
     "height": "average",
@@ -3397,6 +3405,7 @@
       "black"
     ],
     "ethnicity": "Nigerian-American",
+    "age": 54,
     "ageRange": "50s",
     "build": "average",
     "height": "tall",
@@ -3434,6 +3443,7 @@
       "european"
     ],
     "ethnicity": "Polish / German",
+    "age": 68,
     "ageRange": "60+",
     "build": "average",
     "height": "tall",
@@ -3471,6 +3481,7 @@
       "east-asian"
     ],
     "ethnicity": "Japanese",
+    "age": 23,
     "ageRange": "20s",
     "build": "slim",
     "height": "average",
@@ -3508,6 +3519,7 @@
       "east-asian"
     ],
     "ethnicity": "Korean",
+    "age": 19,
     "ageRange": "teen",
     "build": "slim",
     "height": "average",
@@ -3545,6 +3557,7 @@
       "white"
     ],
     "ethnicity": "American",
+    "age": 17,
     "ageRange": "teen",
     "build": "slim",
     "height": "average",
@@ -3623,7 +3636,8 @@
       "middle-eastern",
       "european"
     ],
-    "ethnicity": "",
+    "ethnicity": "Greek",
+    "age": 52,
     "ageRange": "50s",
     "build": "average",
     "height": "average",
@@ -3694,5 +3708,210 @@
     "createdAt": "2026-04-03T07:22:26.530Z",
     "refSheetThumbnail": "/api/media?p=characters%2Feuropean-man-marco-rossini-refsheet-thumb-1775201048657.jpg",
     "referenceSheetHistory": []
+  },
+  {
+    "name": "Mei Chen",
+    "slug": "east-asian-woman-mei-chen",
+    "vibe": "A 34-year-old East Asian woman with a sharp, angular face and high cheekbones. She has shoulder-length straight black hair with subtle layers, styled in a modern side-part. Her dark brown eyes are almond-shaped with a penetrating gaze, and she has a small scar above her left eyebrow that adds character. She wears a tailored cream linen button-up shirt tucked into high-waisted charcoal trousers, paired with a sleek cognac leather belt. Understated square-framed glasses complete her look. Her vibe is intelligent and composed—simultaneously approachable yet commanding.",
+    "img": "/api/media?p=characters%2Feast-asian-woman-mei-chen-profile-1775205859268.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-mei-chen-refsheet-1775205938434.jpg",
+    "sex": "female",
+    "race": [
+      "east-asian"
+    ],
+    "ethnicity": "Chinese / Taiwanese",
+    "age": 34,
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-mei-chen-profile-thumb-1775205941670.jpg",
+    "imgHistory": [],
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-mei-chen-refsheet-thumb-1775205941668.jpg",
+    "referenceSheetHistory": [],
+    "id": 110,
+    "createdAt": "2026-04-03T08:45:42.861Z"
+  },
+  {
+    "name": "Declan O'Shaughnessy",
+    "slug": "european-man-declan-oshaughnessy",
+    "vibe": "A 45-year-old Irish man with a weathered, angular face marked by a strong jawline and deep-set grey-blue eyes. His thick, dark auburn hair is streaked with silver and swept back from his forehead with natural texture. He sports a well-groomed salt-and-pepper beard covering his chin and upper lip. He wears a charcoal wool sweater layered over a cream Irish linen shirt, paired with dark grey wool trousers and cognac leather oxfords. A thin gold wedding band is visible on his left hand. His overall bearing is measured and introspective, with the quiet confidence of someone comfortable in his own skin.",
+    "img": "/api/media?p=characters%2Feuropean-man-declan-oshaughnessy-profile-1775206318070.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Feuropean-man-declan-oshaughnessy-refsheet-1775206550602.jpg",
+    "sex": "male",
+    "race": [
+      "european",
+      "white"
+    ],
+    "ethnicity": "Irish",
+    "age": 45,
+    "ageRange": "40s",
+    "build": "average",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Feuropean-man-declan-oshaughnessy-profile-thumb-1775206553719.jpg",
+    "imgHistory": [],
+    "refSheetThumbnail": "/api/media?p=characters%2Feuropean-man-declan-oshaughnessy-refsheet-thumb-1775206553630.jpg",
+    "referenceSheetHistory": [],
+    "id": 111,
+    "createdAt": "2026-04-03T08:55:55.599Z"
+  },
+  {
+    "name": "Amara Okonkwo-Santos",
+    "slug": "black-woman-amara-okonkwo-santos",
+    "vibe": "A striking 44-year-old woman of mixed Nigerian and Brazilian heritage with a rich brown complexion and high, defined cheekbones. Her shoulder-length hair is natural, textured, and colored a warm auburn-brown with subtle highlights, styled in a sleek side-part with soft waves. She has deep-set dark brown eyes with a penetrating gaze, full lips, and a small scar above her left eyebrow that adds character. She wears a tailored cream linen blazer over a burgundy silk blouse with subtle sheen, paired with charcoal trousers and burgundy leather loafers. A thin gold chain necklace and vintage tortoiseshell glasses frame her face. Her energy is commanding yet approachable—confident without coldness, with the bearing of someone accustomed to being listened to.",
+    "img": "/api/media?p=characters%2Fblack-woman-amara-okonkwo-santos-profile-1775206614375.jpg",
+    "gallery": [],
+    "referenceSheetUrl": "/api/media?p=characters%2Fblack-woman-amara-okonkwo-santos-refsheet-1775206661785.jpg",
+    "sex": "female",
+    "race": [
+      "black",
+      "latino",
+      "mixed"
+    ],
+    "ethnicity": "Nigerian / Brazilian",
+    "age": 44,
+    "ageRange": "40s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "exclusiveDisabled": false,
+    "imgThumbnail": "/api/media?p=characters%2Fblack-woman-amara-okonkwo-santos-profile-thumb-1775206666070.jpg",
+    "imgHistory": [],
+    "refSheetThumbnail": "/api/media?p=characters%2Fblack-woman-amara-okonkwo-santos-refsheet-thumb-1775206666066.jpg",
+    "referenceSheetHistory": [],
+    "id": 112,
+    "createdAt": "2026-04-03T08:57:47.538Z"
+  },
+  {
+    "id": 113,
+    "name": "Marcus Thorne",
+    "slug": "marcus-thorne",
+    "vibe": "A 42-year-old Black American action star with a muscular, athletic build and dark brown eyes that carry quiet intensity. He has close-cropped hair with subtle gray threading at the temples, a defined jawline, and dark skin with a warm undertone. Dressed in a tailored charcoal blazer over a crisp white dress shirt with the sleeves rolled to the forearm, paired with dark jeans and polished leather loafers. His overall presence is commanding yet refined—the bearing of someone equally comfortable on a film set or at a high-stakes business dinner.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-profile-1775199322169.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-profile-thumb-1775199457341.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-refsheet-1775199451031.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-refsheet-thumb-1775199457395.jpg",
+    "sex": "male",
+    "race": [
+      "black"
+    ],
+    "ethnicity": "African American",
+    "age": 42,
+    "ageRange": "40s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-03T06:57:38.134Z"
+  },
+  {
+    "id": 114,
+    "name": "Koa Kahale",
+    "slug": "koa-kahale",
+    "vibe": "A 34-year-old Hawaiian man with a broad, athletic build and warm brown skin. He has strong, expressive features — a wide jaw, deep-set dark brown eyes, and thick black hair worn in a short natural style. His presence is grounded and confident, with the calm intensity of someone deeply connected to his heritage and surroundings.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-profile-1774872340518-thumb.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkoa-kahale-refsheet-1774872438861-thumb.jpg",
+    "sex": "male",
+    "race": [
+      "pacific-islander"
+    ],
+    "ethnicity": "Hawaiian",
+    "age": 34,
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-03-30T12:07:25.062Z"
   }
 ]
