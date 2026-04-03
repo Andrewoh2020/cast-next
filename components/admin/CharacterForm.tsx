@@ -113,6 +113,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
   const [describingMode, setDescribingMode] = useState<'generate' | 'improve' | null>(null);
   const [genError, setGenError] = useState('');
   const [describeError, setDescribeError] = useState('');
+  const [uploadError, setUploadError] = useState('');
   const [lastCosts, setLastCosts] = useState<{ profile?: number; refsheet?: number; total?: number } | null>(null);
   const [showImgHistory, setShowImgHistory] = useState(false);
   const [showRefHistory, setShowRefHistory] = useState(false);
@@ -182,6 +183,9 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
   };
 
   const uploadFile = async (file: File, type: string): Promise<string> => {
+    if (file.size > 4.5 * 1024 * 1024) {
+      throw new Error(`File too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Max upload size is 4.5MB.`);
+    }
     const fd = new FormData();
     fd.append('file', file);
     const slug = form.slug || form.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -190,6 +194,10 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
       fd.append('type', type);
     }
     const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error || `Upload failed (${res.status})`);
+    }
     const { url } = await res.json();
     return url;
   };
@@ -198,20 +206,32 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const url = await uploadFile(file, 'profile');
-    set('img', url);
-    setUploading(false);
-    e.target.value = '';
+    setUploadError('');
+    try {
+      const url = await uploadFile(file, 'profile');
+      set('img', url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Profile upload failed');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
     setUploadingGallery(true);
-    const urls = await Promise.all(files.map((f, i) => uploadFile(f, `gallery-${(form.gallery?.length ?? 0) + i + 1}`)));
-    set('gallery', [...(form.gallery ?? []), ...urls]);
-    setUploadingGallery(false);
-    e.target.value = '';
+    setUploadError('');
+    try {
+      const urls = await Promise.all(files.map((f, i) => uploadFile(f, `gallery-${(form.gallery?.length ?? 0) + i + 1}`)));
+      set('gallery', [...(form.gallery ?? []), ...urls]);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Gallery upload failed');
+    } finally {
+      setUploadingGallery(false);
+      e.target.value = '';
+    }
   };
 
   const removeGalleryImage = (idx: number) => {
@@ -224,10 +244,16 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingSheet(true);
-    const url = await uploadFile(file, 'reference-sheet');
-    set('referenceSheetUrl', url);
-    setUploadingSheet(false);
-    e.target.value = '';
+    setUploadError('');
+    try {
+      const url = await uploadFile(file, 'reference-sheet');
+      set('referenceSheetUrl', url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Reference sheet upload failed');
+    } finally {
+      setUploadingSheet(false);
+      e.target.value = '';
+    }
   };
 
   const handleDescribe = async (mode: 'generate' | 'improve') => {
@@ -484,7 +510,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
             <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
-                disabled={!aiDescription.trim() || !!generating || !!describingMode}
+                disabled={!(aiDescription.trim() || form.vibe.trim()) || !!generating || !!describingMode}
                 onClick={() => handleGenerate('profile')}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
               >
@@ -493,7 +519,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               </button>
               <button
                 type="button"
-                disabled={!form.img || !aiDescription.trim() || !!generating || !!describingMode}
+                disabled={!form.img || !(aiDescription.trim() || form.vibe.trim()) || !!generating || !!describingMode}
                 onClick={() => handleGenerate('refsheet')}
                 title={!form.img ? 'Generate a profile photo first' : undefined}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
@@ -503,7 +529,7 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               </button>
               <button
                 type="button"
-                disabled={!aiDescription.trim() || !!generating || !!describingMode}
+                disabled={!(aiDescription.trim() || form.vibe.trim()) || !!generating || !!describingMode}
                 onClick={() => handleGenerate('both')}
                 className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-40 transition-colors"
               >
@@ -591,6 +617,9 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
               )}
             </div>
             <input ref={fileRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+            {uploadError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{uploadError}</div>
+            )}
             {form.img && (
               <button
                 type="button"
@@ -786,20 +815,36 @@ export default function CharacterForm({ open, character, onClose, onSave }: Prop
                 )}
               </>
             ) : (
-              <button
-                type="button"
-                onClick={() => sheetRef.current?.click()}
-                disabled={uploadingSheet}
-                className="w-full flex items-center gap-3 rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-400 p-5 text-gray-400 hover:text-indigo-500 transition-colors"
-              >
-                <FileText size={22} strokeWidth={1.5} />
-                <div className="text-left">
-                  <p className="text-sm font-semibold">
-                    {uploadingSheet ? 'Uploading...' : 'Upload Reference Sheet'}
-                  </p>
-                  <p className="text-xs">PDF or image — will be emailed to customer after purchase</p>
-                </div>
-              </button>
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => sheetRef.current?.click()}
+                  disabled={uploadingSheet}
+                  className="w-full flex items-center gap-3 rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-400 p-5 text-gray-400 hover:text-indigo-500 transition-colors"
+                >
+                  <FileText size={22} strokeWidth={1.5} />
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">
+                      {uploadingSheet ? 'Uploading...' : 'Upload Reference Sheet'}
+                    </p>
+                    <p className="text-xs">PDF or image — will be emailed to customer after purchase</p>
+                  </div>
+                </button>
+                {form.img && (
+                  <button
+                    type="button"
+                    disabled={!form.img || !(aiDescription.trim() || form.vibe.trim()) || !!generating || !!describingMode}
+                    onClick={() => handleGenerate('refsheet')}
+                    className="w-full flex items-center justify-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl border border-indigo-200 text-indigo-600 hover:bg-indigo-50 disabled:opacity-40 transition-colors"
+                  >
+                    {generating === 'refsheet' ? <span className="animate-spin">⟳</span> : '📋'}
+                    {generating === 'refsheet' ? 'Generating…' : 'Generate Reference Sheet'}
+                  </button>
+                )}
+                {form.img && !(aiDescription.trim() || form.vibe.trim()) && (
+                  <p className="text-[10px] text-amber-500 font-medium">Add a description to enable reference sheet generation.</p>
+                )}
+              </div>
             )}
             <input ref={sheetRef} type="file" accept="image/*,application/pdf" onChange={handleSheetUpload} className="hidden" />
           </Section>

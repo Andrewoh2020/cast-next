@@ -22,8 +22,8 @@ Arrange as follows:
 
 TOP ROW — 4 full-body standing shots, subject in relaxed A-pose, head to toe:
 Panel 1: Camera DIRECTLY IN FRONT — subject faces straight into lens, full front view.
-Panel 2: Camera 90 degrees to subject's LEFT — subject's LEFT side of body faces camera, right side hidden, strict 90-degree side profile showing left ear, left shoulder, left arm only.
-Panel 3: Camera 90 degrees to subject's RIGHT — subject's RIGHT side of body faces camera, left side hidden, strict 90-degree side profile showing right ear, right shoulder, right arm only. THIS MUST BE A MIRROR OPPOSITE OF PANEL 2.
+Panel 2: LEFT PROFILE — camera at subject's LEFT side, 90-degree side view. Only the LEFT ear, LEFT shoulder, LEFT arm visible. Subject faces screen-right. Right side completely hidden.
+Panel 3: RIGHT PROFILE — camera at subject's RIGHT side, 90-degree side view. Only the RIGHT ear, RIGHT shoulder, RIGHT arm visible. Subject faces screen-left. Left side completely hidden. MUST be the exact mirror/flip of Panel 2 — if Panel 2 faces right, Panel 3 MUST face left.
 Panel 4: Camera DIRECTLY BEHIND — subject's back faces lens, back of head and back of clothing fully visible, zero front-facing elements.
 
 RIGHT SIDE — 4 tight close-up portrait shots arranged in a 2x2 grid, shoulders and head only. All 4 must show a completely different camera angle:
