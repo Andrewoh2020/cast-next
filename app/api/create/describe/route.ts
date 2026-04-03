@@ -61,9 +61,7 @@ export async function POST(req: NextRequest) {
       if (!description?.trim()) {
         return NextResponse.json({ error: 'description is required for improve mode' }, { status: 400 });
       }
-      userMessage = traitSummary
-        ? `Improve this character description while keeping these traits: ${traitSummary}. Description: "${description}"`
-        : `Improve this character description and extract structured attributes: "${description}"`;
+      userMessage = `Improve this character description — make it more vivid, specific, and optimized for AI image generation. Keep the same character but enhance the details. Extract structured attributes from the result. Description: "${description}"`;
     }
 
     const message = await client.messages.create({
