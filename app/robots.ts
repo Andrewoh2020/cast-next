@@ -3,14 +3,14 @@ import { readSeo } from '@/lib/seo.server';
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const seo = await readSeo();
-  const base = seo.canonicalUrl || 'https://cast-next-silk.vercel.app';
+  const base = seo.canonicalUrl || 'https://www.castability.ai';
 
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/admin/dashboard', '/api/'],
+        disallow: ['/admin', '/admin/dashboard', '/api/', '/account', '/create', '/success', '/sign-in', '/sign-up'],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

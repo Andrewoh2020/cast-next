@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/privacy-policy`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     { url: `${base}/license-terms`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
     { url: `${base}/copyright-faq`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${base}/contact`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${base}/launches`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
   ];
 
   const characterRoutes: MetadataRoute.Sitemap = characters.map((c) => ({

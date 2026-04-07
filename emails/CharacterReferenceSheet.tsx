@@ -23,7 +23,7 @@ export default function CharacterReferenceSheet({
   licensePrice,
   referenceSheetDownloadUrl,
   profilePhotoDownloadUrl,
-  baseUrl = 'https://cast-next-silk.vercel.app',
+  baseUrl = 'https://www.castability.ai',
 }: Props) {
   const attrs = [
     { label: 'Sex', value: SEX_LABELS[talent.sex] },

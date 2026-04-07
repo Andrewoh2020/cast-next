@@ -18,7 +18,7 @@ export default function CustomCharacterReceipt({
   profileDownloadUrl,
   referenceSheetDownloadUrl,
   accountUrl,
-  baseUrl = 'https://cast-next-silk.vercel.app',
+  baseUrl = 'https://www.castability.ai',
 }: Props) {
   return (
     <Html>

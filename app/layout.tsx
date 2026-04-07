@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = await readSeo();
 
   return {
-    metadataBase: new URL(seo.canonicalUrl || "https://cast-next-silk.vercel.app"),
+    metadataBase: new URL(seo.canonicalUrl || "https://www.castability.ai"),
     title: {
       default: seo.siteTitle,
       template: seo.titleTemplate,

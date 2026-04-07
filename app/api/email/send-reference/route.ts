@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const license = talent.prices[priceIdx];
     if (!license) return NextResponse.json({ error: 'Invalid license index' }, { status: 400 });
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://cast-next-silk.vercel.app';
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.castability.ai';
 
     // Build download URLs
     let referenceSheetDownloadUrl: string | undefined;
