@@ -11,17 +11,17 @@
     "nonbinary": 0.04
   },
   "race": {
-    "white": 0.22,
-    "european": 0.08,
-    "black": 0.14,
-    "latino": 0.10,
-    "east-asian": 0.12,
+    "white": 0.28,
+    "european": 0.10,
+    "black": 0.10,
+    "latino": 0.07,
+    "east-asian": 0.14,
     "south-asian": 0.08,
-    "southeast-asian": 0.05,
-    "middle-eastern": 0.06,
+    "southeast-asian": 0.07,
+    "middle-eastern": 0.03,
     "mixed": 0.06,
-    "indigenous": 0.03,
-    "pacific-islander": 0.03,
+    "indigenous": 0.01,
+    "pacific-islander": 0.01,
     "central-asian": 0.03
   },
   "ageRange": {

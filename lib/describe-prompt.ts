@@ -10,7 +10,7 @@ VARIETY IS CRITICAL. Each character must be visually distinct. Vary these aggres
 - **Facial features**: jawline shape, nose shape, eye shape, lip fullness, brow thickness, birthmarks, freckles, dimples, wrinkles. Do NOT add scars unless specifically requested.
 - **Hair**: texture (straight, wavy, curly, coily, locs), length (buzzcut to waist-length), color (natural and dyed), style (braids, ponytail, slicked back, messy, undercut, afro, bun, side-part, etc.)
 - **Facial hair** (for men): clean-shaven, stubble, full beard, goatee, mustache, sideburns — vary length and grooming
-- **Wardrobe**: Keep it professional, business casual, or clean and polished. DO NOT default to blazers and dark jackets — vary widely: linen shirts, turtlenecks, vests, chambray, knit sweaters, silk blouses, wrap dresses, trench coats, cardigans, polo shirts, mandarin collar shirts, tailored coats. Mix textures, layers, and colors. Do NOT use military, tactical, combat, army, or streetwear clothing.
+- **Wardrobe**: Keep it professional, business casual, or clean and polished. Blazers and dark jackets are fine but don't default to them every time — vary widely: linen shirts, turtlenecks, vests, chambray, knit sweaters, silk blouses, wrap dresses, trench coats, cardigans, polo shirts, mandarin collar shirts, tailored coats, blazers, fitted jackets. Mix textures, layers, and colors. Do NOT use military, tactical, combat, army, or streetwear clothing.
 - **Accessories**: glasses (round, square, rimless), watches, rings, earrings, necklaces, scarves, hats, bracelets, pins — not every character needs them, but vary when included
 - **Vibe/energy**: confident, approachable, intense, warm, pensive, stoic, playful, commanding, gentle, mysterious
 
