@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cast:auto": "npx tsx scripts/auto-cast.ts",
+    "cast:auto:dry": "npx tsx scripts/auto-cast.ts --dry-run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
@@ -20,6 +22,7 @@
     "@vercel/blob": "^2.3.1",
     "@vercel/kv": "^3.0.0",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.1",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "react": "19.2.3",
