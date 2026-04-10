@@ -9,6 +9,7 @@ interface Props {
   draft: CustomCharacterDraft;
   isGenerating: boolean;
   generationError: string;
+  credits: number;
   onGenerate: () => void;
   onSelectPreview: (url: string) => void;
   onComplete: (draft: CustomCharacterDraft) => void;
@@ -17,7 +18,7 @@ interface Props {
 
 const MAX_ITERATIONS = 2;
 
-export default function PreviewStep({ draft, isGenerating, generationError, onGenerate, onSelectPreview, onComplete, onBack }: Props) {
+export default function PreviewStep({ draft, isGenerating, generationError, credits, onGenerate, onSelectPreview, onComplete, onBack }: Props) {
   const selectedUrl = draft.previewImageUrl ?? '';
   const previewImages = draft.previewImages ?? [];
   const iterations = draft.iterations ?? 0;
@@ -167,7 +168,7 @@ export default function PreviewStep({ draft, isGenerating, generationError, onGe
           disabled={!selectedUrl || isGenerating}
           className="flex-1 bg-indigo-500 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-50 disabled:hover:translate-y-0"
         >
-          Continue to Payment
+          {credits > 0 ? 'Generate Character' : 'Continue to Payment'}
         </button>
       </div>
     </div>

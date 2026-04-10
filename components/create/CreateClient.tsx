@@ -425,6 +425,7 @@ export default function CreateClient() {
                 draft={currentDraft}
                 isGenerating={currentGenState?.generating ?? false}
                 generationError={currentGenState?.error ?? ''}
+                credits={credits}
                 onGenerate={() => generatePreview(currentDraft.id)}
                 onSelectPreview={handleSelectPreviewImage}
                 onComplete={handlePreviewComplete}
