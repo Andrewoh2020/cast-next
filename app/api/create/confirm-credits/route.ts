@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       console.error('Credit receipt email error:', emailErr);
     }
 
-    return NextResponse.json({ credits: newBalance, added: creditsToAdd });
+    return NextResponse.json({ credits: newBalance, added: creditsToAdd, amount });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error('Credit confirmation error:', message);

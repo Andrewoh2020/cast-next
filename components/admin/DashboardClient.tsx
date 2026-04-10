@@ -75,10 +75,26 @@ interface GenerationStats {
   history: GenerationHistoryEntry[];
 }
 
+interface LaunchMetricsBucket {
+  paidPurchases: number;
+  freeDownloads: number;
+  revenue: number;
+  uniqueViewers?: number;
+  totalViews?: number;
+  conversionRate?: number;
+}
+
+interface LaunchMetrics {
+  today: LaunchMetricsBucket;
+  last7d: LaunchMetricsBucket;
+  allTime: LaunchMetricsBucket;
+}
+
 interface StatsData {
   totalRevenue: number;
   totalPurchases: number;
   byCharacter: Record<number, CharacterStat>;
+  launchMetrics?: LaunchMetrics;
   generation: GenerationStats;
 }
 
@@ -573,6 +589,73 @@ export default function DashboardClient({ initialCharacters }: Props) {
               </div>
             ) : statsData ? (
               <>
+                {/* Launch Metrics — today and last 7 days */}
+                {statsData.launchMetrics && (
+                  <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="inline-block w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                      <h2 className="text-sm font-bold uppercase tracking-widest text-gray-700">Launch Metrics</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Today */}
+                      <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-2xl p-5">
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 mb-3">Today</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <div className="text-2xl font-black text-black">{statsData.launchMetrics.today.uniqueViewers ?? 0}</div>
+                            <div className="text-[11px] text-gray-500">Unique visitors</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-black">{statsData.launchMetrics.today.totalViews ?? 0}</div>
+                            <div className="text-[11px] text-gray-500">Character views</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-emerald-600">${statsData.launchMetrics.today.revenue.toLocaleString()}</div>
+                            <div className="text-[11px] text-gray-500">Revenue</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-indigo-600">{statsData.launchMetrics.today.paidPurchases}</div>
+                            <div className="text-[11px] text-gray-500">Paid purchases</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-black">{statsData.launchMetrics.today.freeDownloads}</div>
+                            <div className="text-[11px] text-gray-500">Free downloads</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-purple-600">
+                              {((statsData.launchMetrics.today.conversionRate ?? 0) * 100).toFixed(1)}%
+                            </div>
+                            <div className="text-[11px] text-gray-500">Conversion rate</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Last 7 days */}
+                      <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-100 rounded-2xl p-5">
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Last 7 Days</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <div className="text-2xl font-black text-black">{statsData.launchMetrics.last7d.uniqueViewers ?? 0}</div>
+                            <div className="text-[11px] text-gray-500">Unique visitors</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-emerald-600">${statsData.launchMetrics.last7d.revenue.toLocaleString()}</div>
+                            <div className="text-[11px] text-gray-500">Revenue</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-indigo-600">{statsData.launchMetrics.last7d.paidPurchases}</div>
+                            <div className="text-[11px] text-gray-500">Paid purchases</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-black text-black">{statsData.launchMetrics.last7d.freeDownloads}</div>
+                            <div className="text-[11px] text-gray-500">Free downloads</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Summary cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
                   <div className="bg-white border border-gray-100 rounded-2xl p-5">

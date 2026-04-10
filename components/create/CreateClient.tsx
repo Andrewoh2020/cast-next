@@ -9,6 +9,7 @@ import PreviewStep from './PreviewStep';
 import PaymentStep from './PaymentStep';
 import CompleteStep from './CompleteStep';
 import DraftsList from './DraftsList';
+import { trackPurchaseCredits, trackBeginCreate } from '@/lib/analytics';
 
 type Step = 'describe' | 'preview' | 'payment' | 'complete';
 
@@ -147,6 +148,8 @@ export default function CreateClient() {
           if (confirmRes.ok) {
             const confirmData = await confirmRes.json();
             setCredits(confirmData.credits);
+            // GA: track credit purchase
+            trackPurchaseCredits(sessionId, confirmData.added ?? 0, (confirmData.amount ?? 0) / 100);
           } else {
             const err = await confirmRes.json();
             toast.error(err.error || 'Failed to confirm purchase');
@@ -234,6 +237,8 @@ export default function CreateClient() {
     setCurrentDraft(null);
     setStep('describe');
     syncDraftToUrl(null);
+    // GA: track create flow start
+    trackBeginCreate();
   };
 
   const handleSelectDraft = (draft: CustomCharacterDraft) => {

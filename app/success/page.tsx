@@ -7,6 +7,7 @@ import { recordPurchase } from '@/lib/user-data.server';
 import Link from 'next/link';
 import AutoDownload from '@/components/AutoDownload';
 import DownloadButton from '@/components/DownloadButton';
+import PurchaseTracker from '@/components/PurchaseTracker';
 
 export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ session_id?: string }> }) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -58,8 +59,18 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
     });
   }
 
+  // Parse amount from license price string (e.g. "$50" → 50)
+  const amountUsd = Number(String(m.licensePrice ?? '').replace(/[^0-9.]/g, '')) || 0;
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6 pt-24 pb-16">
+      <PurchaseTracker
+        transactionId={session_id}
+        characterId={Number(m.characterId)}
+        characterName={m.characterName}
+        licenseName={m.licenseName}
+        amount={amountUsd}
+      />
       <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
         <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">

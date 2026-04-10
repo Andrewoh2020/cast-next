@@ -12,6 +12,7 @@ import {
   HEIGHT_LABELS,
   thumbUrl,
 } from '@/lib/talent';
+import { trackViewCharacter, trackSelectLicense, trackBeginCheckout, trackFreeDownload } from '@/lib/analytics';
 
 const FREE_LICENSE_IDX = -1;
 
@@ -54,6 +55,9 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ characterId: talent.id, sessionId }),
       }).catch(() => {});
+
+      // GA: track character view
+      trackViewCharacter(talent.id, talent.name);
     }
 
     return () => { document.body.style.overflow = ''; };
@@ -97,6 +101,8 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
     }
     setSending(true);
     const price = talent!.prices[selectedIdx];
+    // GA: track checkout start
+    trackBeginCheckout(talent!.id, talent!.name, price.name, price.amount);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -126,6 +132,8 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
   const handleConfirmFree = async () => {
     if (!talent) return;
     setSending(true);
+    // GA: track free download
+    trackFreeDownload(talent.id, talent.name);
     // Record the free license as a purchase
     await fetch('/api/purchases', {
       method: 'POST',
