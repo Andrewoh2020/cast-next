@@ -231,17 +231,17 @@ export async function generateAndUpload(
 ): Promise<GenerateResult> {
   const startedAt = Date.now();
   let resultUrl: string | undefined;
-  let provider: 'kie' | 'fal' = 'kie';
+  let provider: 'kie' | 'fal' = 'fal';
 
   try {
     let imageUrl: string;
     try {
-      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-      provider = 'kie';
-    } catch (kieErr) {
-      console.warn(`Kie.ai failed, falling back to fal.ai: ${kieErr instanceof Error ? kieErr.message : kieErr}`);
       imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
       provider = 'fal';
+    } catch (falErr) {
+      console.warn(`fal.ai failed, falling back to Kie.ai: ${falErr instanceof Error ? falErr.message : falErr}`);
+      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'kie';
     }
 
     const cost = GENERATION_COST[provider][type];

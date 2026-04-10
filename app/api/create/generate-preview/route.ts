@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import { getDraft, saveDraft } from '@/lib/custom-characters.server';
 import { generatePreview } from '@/lib/generation.server';
 
+export const maxDuration = 300;
+
 const MAX_ITERATIONS = 2;
 
 export async function POST(req: NextRequest) {

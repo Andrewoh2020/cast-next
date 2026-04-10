@@ -4,6 +4,8 @@ import { getDraft, saveDraft, addToShowcase } from '@/lib/custom-characters.serv
 import { deductCredit, addCredits } from '@/lib/user-data.server';
 import { generateFull } from '@/lib/generation.server';
 
+export const maxDuration = 300;
+
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
