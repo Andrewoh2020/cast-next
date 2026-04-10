@@ -217,15 +217,20 @@ async function googleGenerate(
   }
 
   // Extract the image data from candidates[0].content.parts[*].inline_data
-  const candidates = (data.candidates as Array<{ content?: { parts?: Array<{ inline_data?: { data?: string; mime_type?: string }; inlineData?: { data?: string; mimeType?: string } }> } }> | undefined) ?? [];
+  type GeminiPart = {
+    inline_data?: { data?: string; mime_type?: string };
+    inlineData?: { data?: string; mimeType?: string };
+  };
+  const candidates = (data.candidates as Array<{ content?: { parts?: GeminiPart[] } }> | undefined) ?? [];
   const partsOut = candidates[0]?.content?.parts ?? [];
 
   for (const part of partsOut) {
-    const inline = part.inline_data || part.inlineData;
-    if (inline?.data) {
-      // Return as data URI for downstream processing
-      const mimeType = inline.mime_type || (part.inlineData as { mimeType?: string } | undefined)?.mimeType || 'image/jpeg';
-      return `data:${mimeType};base64,${inline.data}`;
+    const snake = part.inline_data;
+    const camel = part.inlineData;
+    const dataStr = snake?.data || camel?.data;
+    if (dataStr) {
+      const mimeType = snake?.mime_type || camel?.mimeType || 'image/jpeg';
+      return `data:${mimeType};base64,${dataStr}`;
     }
   }
 
