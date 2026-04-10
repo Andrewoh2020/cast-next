@@ -368,6 +368,7 @@ export async function generateAndUpload(
 
     return { url: resultUrl, rawBuffer: buffer, cost, provider };
   } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
     await appendGenerationLog({
       characterId: meta.characterId,
       characterName: meta.characterName,
@@ -378,10 +379,67 @@ export async function generateAndUpload(
       generatedAt: new Date().toISOString(),
       url: resultUrl,
       failed: true,
-      error: err instanceof Error ? err.message : String(err),
+      error: errorMessage,
       provider,
     });
+
+    // Detect provider credit/quota exhaustion and notify admin
+    if (isProviderCreditError(errorMessage)) {
+      // Fire-and-forget admin alert email — don't block the throw
+      notifyAdminOfCreditExhaustion(errorMessage, meta).catch(() => {});
+      // Throw a user-friendly error instead of the raw provider message
+      throw new Error('Image generation is temporarily unavailable. Our team has been notified and is restoring service. Please try again shortly — your draft has been saved.');
+    }
+
     throw err;
+  }
+}
+
+/** Detect errors that indicate the provider is out of credits or has hit a quota limit. */
+function isProviderCreditError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes('insufficient') ||
+    lower.includes('quota') ||
+    lower.includes('out of credits') ||
+    lower.includes('billing') ||
+    lower.includes('payment required') ||
+    lower.includes('exhausted') ||
+    lower.includes('balance') ||
+    lower.includes('exceeded')
+  );
+}
+
+/** Send an alert email to the admin when all providers fail with credit/quota errors. */
+async function notifyAdminOfCreditExhaustion(errorMessage: string, meta: GenerateMeta): Promise<void> {
+  if (!process.env.RESEND_API_KEY) return;
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: 'Cast Alerts <no-reply@castability.ai>',
+      to: 'admin@castability.ai',
+      subject: '🚨 Image generation provider credit exhausted',
+      html: `
+        <div style="font-family:sans-serif;max-width:600px;">
+          <h2 style="color:#dc2626;">Image generation provider is out of credits</h2>
+          <p>All fallback providers failed when generating an image. This usually means one of the API providers (fal.ai, Google, or Kie.ai) has run out of credits or hit a quota.</p>
+          <p><strong>Error:</strong></p>
+          <pre style="background:#f3f4f6;padding:12px;border-radius:8px;font-size:12px;overflow-x:auto;">${errorMessage.replace(/[<>]/g, '')}</pre>
+          <p><strong>Character:</strong> ${meta.characterName ?? '(unknown)'} (slug: ${meta.characterSlug ?? '—'})</p>
+          <p><strong>Time:</strong> ${new Date().toISOString()}</p>
+          <h3>Action needed:</h3>
+          <ul>
+            <li><a href="https://fal.ai/dashboard/billing">Top up fal.ai credits</a></li>
+            <li><a href="https://console.cloud.google.com/billing">Check Google Cloud billing</a></li>
+            <li><a href="https://kie.ai">Check Kie.ai credits</a></li>
+          </ul>
+          <p style="color:#9ca3af;font-size:12px;">Sent automatically by Cast generation pipeline.</p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error('Failed to send admin alert email:', err);
   }
 }
 
