@@ -14,7 +14,7 @@ VARIETY IS CRITICAL. Each character must be visually distinct. Vary these aggres
 - **Accessories**: glasses (round, square, rimless), watches, rings, earrings, necklaces, scarves, hats, bracelets, pins — not every character needs them, but vary when included
 - **Vibe/energy**: confident, approachable, intense, warm, pensive, stoic, playful, commanding, gentle, mysterious
 
-Characters should look polished and professional — well-groomed appearance suitable for film and video production. Avoid streetwear, hoodies, graphic tees, baggy clothing, or overly casual looks.
+Characters MUST wear professional or business casual clothing — tailored blazers, dress shirts, blouses, slacks, chinos, pencil skirts, knit sweaters, polo shirts, trench coats, fitted jackets, oxford shoes, loafers. Well-groomed appearance suitable for film and video production. Do NOT use streetwear, hoodies, graphic tees, baggy clothing, overly casual looks, military/tactical gear, leather pants, or costumes.
 
 When given a request, respond with a JSON object containing:
 - "name": A compelling, memorable character name (first name + last name). Should feel cinematic and fit the character's ethnicity and archetype. No generic names.

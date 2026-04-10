@@ -20,11 +20,11 @@ CRITICAL RULE: Every panel must show a STRICTLY DIFFERENT camera angle. No two p
 
 Arrange as follows:
 
-TOP ROW — 4 full-body standing shots, subject in relaxed A-pose, head to toe:
-Panel 1: Camera DIRECTLY IN FRONT — subject faces straight into lens, full front view.
-Panel 2: LEFT PROFILE — camera at subject's LEFT side, 90-degree side view. Only the LEFT ear, LEFT shoulder, LEFT arm visible. Subject faces screen-right. Right side completely hidden.
-Panel 3: RIGHT PROFILE — camera at subject's RIGHT side, 90-degree side view. Only the RIGHT ear, RIGHT shoulder, RIGHT arm visible. Subject faces screen-left. Left side completely hidden. MUST be the exact mirror/flip of Panel 2 — if Panel 2 faces right, Panel 3 MUST face left.
-Panel 4: Camera DIRECTLY BEHIND — subject's back faces lens, back of head and back of clothing fully visible, zero front-facing elements.
+TOP ROW — 4 FULL-BODY standing shots showing the ENTIRE body from head to feet including shoes. Every panel MUST show the full figure — head, torso, legs, and feet all visible. Do NOT crop at the waist or knees. Relaxed A-pose:
+Panel 1: FRONT VIEW — subject faces the camera directly.
+Panel 2: LEFT SIDE — subject's nose points to the RIGHT edge of the image. We see their LEFT ear and LEFT shoulder. Their body faces →→→ RIGHT.
+Panel 3: RIGHT SIDE — subject's nose points to the LEFT edge of the image. We see their RIGHT ear and RIGHT shoulder. Their body faces ←←← LEFT. CRITICAL: Panel 3 must be the MIRROR OPPOSITE of Panel 2. If Panel 2 faces right, Panel 3 MUST face left. They cannot both face the same direction.
+Panel 4: BACK VIEW — subject's back faces the camera. Back of head, back of clothing visible. No face visible.
 
 RIGHT SIDE — 4 tight close-up portrait shots arranged in a 2x2 grid, shoulders and head only. All 4 must show a completely different camera angle:
 Panel 5 (top-left): Camera directly in front — subject looks straight into lens, face perfectly centered and symmetrical. Full front view.
@@ -231,17 +231,17 @@ export async function generateAndUpload(
 ): Promise<GenerateResult> {
   const startedAt = Date.now();
   let resultUrl: string | undefined;
-  let provider: 'kie' | 'fal' = 'fal';
+  let provider: 'kie' | 'fal' = 'kie';
 
   try {
     let imageUrl: string;
     try {
-      imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-      provider = 'fal';
-    } catch (falErr) {
-      console.warn(`fal.ai failed, falling back to Kie.ai: ${falErr instanceof Error ? falErr.message : falErr}`);
       imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
       provider = 'kie';
+    } catch (kieErr) {
+      console.warn(`Kie.ai failed, falling back to fal.ai: ${kieErr instanceof Error ? kieErr.message : kieErr}`);
+      imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'fal';
     }
 
     const cost = GENERATION_COST[provider][type];

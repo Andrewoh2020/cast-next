@@ -6,9 +6,8 @@
     "stylized": 0.05
   },
   "sex": {
-    "male": 0.48,
-    "female": 0.48,
-    "nonbinary": 0.04
+    "male": 0.50,
+    "female": 0.50
   },
   "race": {
     "white": 0.28,
@@ -25,21 +24,21 @@
     "central-asian": 0.03
   },
   "ageRange": {
-    "20s": 0.28,
-    "30s": 0.28,
-    "40s": 0.20,
-    "50s": 0.12,
+    "20s": 0.32,
+    "30s": 0.30,
+    "40s": 0.16,
+    "50s": 0.10,
     "teen": 0.06,
     "60s+": 0.05,
     "child": 0.01
   },
   "build": {
-    "athletic": 0.22,
-    "slim": 0.22,
-    "average": 0.22,
-    "curvy": 0.12,
-    "stocky": 0.12,
-    "plus-size": 0.10
+    "athletic": 0.35,
+    "slim": 0.30,
+    "average": 0.25,
+    "curvy": 0.04,
+    "stocky": 0.04,
+    "plus-size": 0.02
   },
   "archetypes": [
     "business professional",

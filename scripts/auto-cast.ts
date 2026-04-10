@@ -9,12 +9,58 @@
  */
 
 import 'dotenv/config';
+import { put, get } from '@vercel/blob';
 import { readCharacters, writeCharacters, nextId } from '../lib/characters.server';
 import { loadStrategy, analyzeRosterGaps, isDuplicate, computeRosterStats, DemographicSlot } from '../lib/casting-strategy';
 import { describeCharacterFromSlot, validateAttributes, DescribeResult } from '../lib/auto-describe';
 import { generateBoth, GenerateMeta } from '../lib/generation.server';
 import { Talent, TalentRace } from '../lib/talent';
 import { Resend } from 'resend';
+
+// ── Run log (persisted to Blob for monthly cost tracking) ────────────────
+
+interface RunLogEntry {
+  date: string;
+  created: number;
+  failures: number;
+  claudeCost: number;
+  imageCost: number;
+  totalCost: number;
+  durationMs: number;
+  characters: string[];
+}
+
+const RUN_LOG_KEY = 'auto-cast-log.json';
+
+async function readRunLog(): Promise<RunLogEntry[]> {
+  try {
+    const result = await get(RUN_LOG_KEY, { access: 'private' });
+    if (!result?.stream) return [];
+    const text = await new Response(result.stream).text();
+    return JSON.parse(text) as RunLogEntry[];
+  } catch {
+    return [];
+  }
+}
+
+async function appendRunLog(entry: RunLogEntry): Promise<void> {
+  const log = await readRunLog();
+  log.push(entry);
+  await put(RUN_LOG_KEY, JSON.stringify(log, null, 2), {
+    access: 'private',
+    contentType: 'application/json',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+}
+
+function getMonthlyTotal(log: RunLogEntry[]): number {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  return log
+    .filter((e) => e.date >= monthStart)
+    .reduce((sum, e) => sum + e.totalCost, 0);
+}
 
 // ── CLI args ─────────────────────────────────────────────────────────────
 
@@ -247,10 +293,28 @@ async function main(): Promise<void> {
     }
   }
 
+  // ── Persist run log ───────────────────────────────────────────────────
+
+  const batchCost = result.totalClaudeCost + result.totalImageCost;
+  if (result.created.length > 0) {
+    await appendRunLog({
+      date: new Date().toISOString(),
+      created: result.created.length,
+      failures: result.failures.length,
+      claudeCost: result.totalClaudeCost,
+      imageCost: result.totalImageCost,
+      totalCost: batchCost,
+      durationMs: result.totalDurationMs,
+      characters: result.created.map((c) => c.name),
+    });
+  }
+
   // ── Send email report ────────────────────────────────────────────────
 
   if (result.created.length > 0 && process.env.RESEND_API_KEY) {
-    await sendReport(result, currentCharacters);
+    const runLog = await readRunLog();
+    const monthlyCost = getMonthlyTotal(runLog);
+    await sendReport(result, currentCharacters, monthlyCost);
   }
 
   console.log();
@@ -258,7 +322,7 @@ async function main(): Promise<void> {
 
 // ── Email report ─────────────────────────────────────────────────────────
 
-async function sendReport(result: BatchResult, characters: Talent[]): Promise<void> {
+async function sendReport(result: BatchResult, characters: Talent[], monthlyCost: number): Promise<void> {
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
     const stats = computeRosterStats(characters);
@@ -274,6 +338,9 @@ async function sendReport(result: BatchResult, characters: Talent[]): Promise<vo
           <strong>${c.name}</strong><br/>
           <span style="color:#666;font-size:13px;">${c.sex}, ${c.race.join('/')}, ${c.ageRange}${c.age ? ` (${c.age})` : ''}</span><br/>
           <span style="color:#888;font-size:12px;">${c.archetype}</span>
+        </td>
+        <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;font-size:12px;color:#666;">
+          $${(c.claudeCost + c.imageCost).toFixed(2)}
         </td>
         <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">
           <a href="${baseUrl}/characters/${c.slug}" style="color:#6366f1;font-size:13px;">View</a>
@@ -298,7 +365,8 @@ async function sendReport(result: BatchResult, characters: Talent[]): Promise<vo
             <tr style="background:#f9fafb;">
               <th style="padding:8px;text-align:left;font-size:12px;color:#888;width:70px;">Photo</th>
               <th style="padding:8px;text-align:left;font-size:12px;color:#888;">Character</th>
-              <th style="padding:8px;text-align:center;font-size:12px;color:#888;width:60px;">Link</th>
+              <th style="padding:8px;text-align:right;font-size:12px;color:#888;width:50px;">Cost</th>
+              <th style="padding:8px;text-align:center;font-size:12px;color:#888;width:50px;">Link</th>
             </tr>
           </thead>
           <tbody>
@@ -308,9 +376,10 @@ async function sendReport(result: BatchResult, characters: Talent[]): Promise<vo
 
         <h3 style="color:#333;margin-top:24px;">Cost Breakdown</h3>
         <table style="font-size:14px;color:#555;">
-          <tr><td style="padding:4px 16px 4px 0;">Claude (Opus):</td><td>$${result.totalClaudeCost.toFixed(4)}</td></tr>
-          <tr><td style="padding:4px 16px 4px 0;">Image generation:</td><td>$${result.totalImageCost.toFixed(4)}</td></tr>
-          <tr><td style="padding:4px 16px 4px 0;font-weight:bold;">Total:</td><td style="font-weight:bold;">$${totalCost.toFixed(4)}</td></tr>
+          <tr><td style="padding:4px 16px 4px 0;">Claude (Opus):</td><td>$${result.totalClaudeCost.toFixed(2)}</td></tr>
+          <tr><td style="padding:4px 16px 4px 0;">Image generation:</td><td>$${result.totalImageCost.toFixed(2)}</td></tr>
+          <tr><td style="padding:4px 16px 4px 0;font-weight:bold;">This batch:</td><td style="font-weight:bold;">$${totalCost.toFixed(2)}</td></tr>
+          <tr><td style="padding:4px 16px 4px 0;font-weight:bold;color:#6366f1;">Month to date:</td><td style="font-weight:bold;color:#6366f1;">$${monthlyCost.toFixed(2)}</td></tr>
         </table>
 
         <h3 style="color:#333;margin-top:24px;">Roster Snapshot</h3>
