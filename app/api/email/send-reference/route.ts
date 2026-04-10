@@ -3,10 +3,11 @@ import { readCharacters } from '@/lib/characters.server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, characterId, licenseIndex } = await req.json() as {
+    const { email, characterId, licenseIndex, sessionId } = await req.json() as {
       email: string;
       characterId: number;
       licenseIndex: number;
+      sessionId?: string;
     };
 
     if (!email || !characterId) {
@@ -59,6 +60,8 @@ export async function POST(req: NextRequest) {
         referenceSheetDownloadUrl,
         profilePhotoDownloadUrl,
         baseUrl,
+        orderId: sessionId,
+        purchaseDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       }),
     });
 

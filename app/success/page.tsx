@@ -45,7 +45,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? 'https://www.castability.ai'}/api/email/send-reference`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, characterId: Number(m.characterId), licenseIndex }),
+      body: JSON.stringify({ email, characterId: Number(m.characterId), licenseIndex, sessionId: session_id }),
     }).catch(() => {}); // non-blocking — don't fail the page if email fails
   }
 

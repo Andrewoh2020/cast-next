@@ -15,6 +15,8 @@ interface Props {
   referenceSheetDownloadUrl?: string;
   profilePhotoDownloadUrl?: string;
   baseUrl?: string;
+  orderId?: string;
+  purchaseDate?: string;
 }
 
 export default function CharacterReferenceSheet({
@@ -24,6 +26,8 @@ export default function CharacterReferenceSheet({
   referenceSheetDownloadUrl,
   profilePhotoDownloadUrl,
   baseUrl = 'https://www.castability.ai',
+  orderId,
+  purchaseDate,
 }: Props) {
   const attrs = [
     { label: 'Sex', value: SEX_LABELS[talent.sex] },
@@ -220,6 +224,60 @@ export default function CharacterReferenceSheet({
                 </Column>
               </Row>
             ))}
+          </Section>
+
+          {/* Receipt for expense reporting */}
+          <Section style={{
+            backgroundColor: '#fff',
+            borderRadius: 16,
+            padding: '24px 32px',
+            border: '1px solid #e5e7eb',
+            marginBottom: 20,
+          }}>
+            <Text style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#9ca3af', margin: '0 0 16px' }}>
+              Receipt
+            </Text>
+            <Row style={{ marginBottom: 8 }}>
+              <Column>
+                <Text style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>Description</Text>
+              </Column>
+              <Column style={{ textAlign: 'right' }}>
+                <Text style={{ fontSize: 13, color: '#111', margin: 0 }}>{talent.name} — {licenseName} License</Text>
+              </Column>
+            </Row>
+            {purchaseDate && (
+              <Row style={{ marginBottom: 8 }}>
+                <Column>
+                  <Text style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>Date</Text>
+                </Column>
+                <Column style={{ textAlign: 'right' }}>
+                  <Text style={{ fontSize: 13, color: '#111', margin: 0 }}>{purchaseDate}</Text>
+                </Column>
+              </Row>
+            )}
+            {orderId && (
+              <Row style={{ marginBottom: 8 }}>
+                <Column>
+                  <Text style={{ fontSize: 13, color: '#6b7280', margin: 0 }}>Order ID</Text>
+                </Column>
+                <Column style={{ textAlign: 'right' }}>
+                  <Text style={{ fontSize: 12, color: '#9ca3af', margin: 0, fontFamily: 'monospace' }}>{orderId}</Text>
+                </Column>
+              </Row>
+            )}
+            <Hr style={{ borderColor: '#e5e7eb', margin: '12px 0' }} />
+            <Row>
+              <Column>
+                <Text style={{ fontSize: 14, fontWeight: 700, color: '#111', margin: 0 }}>Total Paid</Text>
+              </Column>
+              <Column style={{ textAlign: 'right' }}>
+                <Text style={{ fontSize: 18, fontWeight: 900, color: '#111', margin: 0 }}>{licensePrice} USD</Text>
+              </Column>
+            </Row>
+            <Text style={{ fontSize: 11, color: '#9ca3af', margin: '12px 0 0', textAlign: 'center' }}>
+              Charged by Cast (Ability AI Technologies Pte Ltd, Singapore UEN 202548889G).
+              <br/>Save this email for your records.
+            </Text>
           </Section>
 
           <Hr style={{ borderColor: '#e5e7eb', margin: '8px 0 20px' }} />
