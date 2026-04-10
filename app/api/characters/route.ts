@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { readCharacters, readVisibleCharacters, writeCharacters, nextId } from '@/lib/characters.server';
 import { Talent } from '@/lib/talent';
+import { pingIndexNow } from '@/lib/indexnow.server';
 
 export async function GET(req: NextRequest) {
   const showAll = req.nextUrl.searchParams.get('all') === '1';
@@ -31,6 +32,12 @@ export async function POST(req: NextRequest) {
 
   const newCharacter: Talent = { ...body, slug: uniqueSlug, id: nextId(characters), createdAt: new Date().toISOString() };
   await writeCharacters([...characters, newCharacter]);
+
+  // Notify search engines via IndexNow if the character is publicly visible
+  if (!newCharacter.hidden) {
+    pingIndexNow([`/characters/${newCharacter.slug}`, '/']).catch(() => {});
+  }
+
   return NextResponse.json(newCharacter, { status: 201 });
 }
 
@@ -39,8 +46,24 @@ export async function PATCH(req: NextRequest) {
   if (!ids?.length) return NextResponse.json({ error: 'No ids provided' }, { status: 400 });
   const characters = await readCharacters();
   const idSet = new Set(ids);
+
+  // Detect characters that are being unhidden (going public for the first time)
+  const newlyVisible: string[] = [];
+  if (update.hidden === false) {
+    for (const c of characters) {
+      if (idSet.has(c.id) && c.hidden && c.slug) {
+        newlyVisible.push(`/characters/${c.slug}`);
+      }
+    }
+  }
+
   const updated = characters.map((c) => idSet.has(c.id) ? { ...c, ...update, id: c.id } : c);
   await writeCharacters(updated);
+
+  if (newlyVisible.length > 0) {
+    pingIndexNow([...newlyVisible, '/']).catch(() => {});
+  }
+
   return NextResponse.json({ ok: true, updated: ids.length });
 }
 
