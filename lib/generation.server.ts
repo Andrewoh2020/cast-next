@@ -213,6 +213,7 @@ async function googleGenerate(
 
   if (!res.ok) {
     const errMsg = (data.error as { message?: string } | undefined)?.message || `Google API error ${res.status}`;
+    console.error(`[google] API error (${res.status}) for aspectRatio=${aspectRatio} resolution=${resolution} refImages=${referenceImageUrls?.length || 0}: ${errMsg}`);
     throw new Error(`Google: ${errMsg}`);
   }
 
@@ -318,7 +319,7 @@ export async function generateAndUpload(
       imageUrl = await googleGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
       provider = 'google';
     } catch (googleErr) {
-      console.warn(`Google failed, falling back to fal.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
+      console.warn(`[generation] Google failed for ${type} (aspectRatio=${aspectRatio}), falling back to fal.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
       try {
         imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
         provider = 'fal';
