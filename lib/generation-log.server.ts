@@ -12,12 +12,16 @@ export interface GenerationEntry {
   url?: string;
   failed: boolean;
   error?: string;
-  provider?: 'kie' | 'fal';
+  provider?: 'kie' | 'fal' | 'google';
 }
 
 const LOG_KEY = 'logs/generation-log.json';
 
 export const GENERATION_COST = {
+  google: {
+    profile: 0.151,  // Google direct 4K Nano Banana 2
+    refsheet: 0.151,
+  },
   kie: {
     profile: 0.09,   // Kie.ai 4K nano-banana-2
     refsheet: 0.09,

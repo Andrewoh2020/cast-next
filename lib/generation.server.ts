@@ -158,6 +158,80 @@ async function kieGenerate(
   return kiePollResult(taskId);
 }
 
+// ── Google Gemini (Nano Banana 2) — primary ─────────────────────────────
+
+async function googleGenerate(
+  prompt: string,
+  aspectRatio: string,
+  resolution: string,
+  referenceImageUrls?: string[],
+): Promise<string> {
+  const apiKey = process.env.GOOGLE_GEMINI_KEY;
+  if (!apiKey) throw new Error('GOOGLE_GEMINI_KEY not configured');
+
+  // Build parts array — text prompt plus optional reference images as inline data
+  const parts: Array<Record<string, unknown>> = [{ text: prompt }];
+
+  if (referenceImageUrls?.length) {
+    for (const url of referenceImageUrls) {
+      const { buffer, contentType } = await fetchImageBuffer(url);
+      parts.push({
+        inline_data: {
+          mime_type: contentType,
+          data: Buffer.from(buffer).toString('base64'),
+        },
+      });
+    }
+  }
+
+  const body = {
+    contents: [{ parts }],
+    generationConfig: {
+      responseModalities: ['IMAGE'],
+      imageConfig: {
+        aspectRatio,
+        imageSize: resolution, // '1K', '2K', '4K'
+      },
+    },
+  };
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${apiKey}`;
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  const text = await res.text();
+  let data: Record<string, unknown>;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Google: invalid response (${res.status}): ${text.slice(0, 200)}`);
+  }
+
+  if (!res.ok) {
+    const errMsg = (data.error as { message?: string } | undefined)?.message || `Google API error ${res.status}`;
+    throw new Error(`Google: ${errMsg}`);
+  }
+
+  // Extract the image data from candidates[0].content.parts[*].inline_data
+  const candidates = (data.candidates as Array<{ content?: { parts?: Array<{ inline_data?: { data?: string; mime_type?: string }; inlineData?: { data?: string; mimeType?: string } }> } }> | undefined) ?? [];
+  const partsOut = candidates[0]?.content?.parts ?? [];
+
+  for (const part of partsOut) {
+    const inline = part.inline_data || part.inlineData;
+    if (inline?.data) {
+      // Return as data URI for downstream processing
+      const mimeType = inline.mime_type || (part.inlineData as { mimeType?: string } | undefined)?.mimeType || 'image/jpeg';
+      return `data:${mimeType};base64,${inline.data}`;
+    }
+  }
+
+  throw new Error(`Google: no image in response: ${JSON.stringify(data).slice(0, 300)}`);
+}
+
 // ── Fal.ai fallback ─────────────────────────────────────────────────────
 
 async function falGenerate(
@@ -202,7 +276,7 @@ export interface GenerateResult {
   url: string;
   rawBuffer: ArrayBuffer;
   cost: number;
-  provider: 'kie' | 'fal';
+  provider: 'kie' | 'fal' | 'google';
 }
 
 export interface GenerateMeta {
@@ -231,23 +305,36 @@ export async function generateAndUpload(
 ): Promise<GenerateResult> {
   const startedAt = Date.now();
   let resultUrl: string | undefined;
-  let provider: 'kie' | 'fal' = 'fal';
+  let provider: 'kie' | 'fal' | 'google' = 'google';
 
   try {
     let imageUrl: string;
     try {
-      imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-      provider = 'fal';
-    } catch (falErr) {
-      console.warn(`fal.ai failed, falling back to Kie.ai: ${falErr instanceof Error ? falErr.message : falErr}`);
-      imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-      provider = 'kie';
+      imageUrl = await googleGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'google';
+    } catch (googleErr) {
+      console.warn(`Google failed, falling back to fal.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
+      try {
+        imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+        provider = 'fal';
+      } catch (falErr) {
+        console.warn(`fal.ai failed, falling back to Kie.ai: ${falErr instanceof Error ? falErr.message : falErr}`);
+        imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+        provider = 'kie';
+      }
     }
 
     const cost = GENERATION_COST[provider][type];
 
-    const imageRes = await fetch(imageUrl);
-    const buffer = await imageRes.arrayBuffer();
+    // Handle data URI (Google returns base64) vs HTTP URL (fal/kie)
+    let buffer: ArrayBuffer;
+    if (imageUrl.startsWith('data:')) {
+      const base64Data = imageUrl.split(',')[1];
+      buffer = Buffer.from(base64Data, 'base64').buffer as ArrayBuffer;
+    } else {
+      const imageRes = await fetch(imageUrl);
+      buffer = await imageRes.arrayBuffer();
+    }
     const filename = `${blobPrefix}/${slug}-${type}-${Date.now()}.jpg`;
 
     const blob = await put(filename, Buffer.from(buffer), {
