@@ -311,20 +311,20 @@ export async function generateAndUpload(
 ): Promise<GenerateResult> {
   const startedAt = Date.now();
   let resultUrl: string | undefined;
-  let provider: 'kie' | 'fal' | 'google' = 'google';
+  let provider: 'kie' | 'fal' | 'google' = 'fal';
 
   try {
     let imageUrl: string;
     try {
-      imageUrl = await googleGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-      provider = 'google';
-    } catch (googleErr) {
-      console.warn(`[generation] Google failed for ${type} (aspectRatio=${aspectRatio}), falling back to fal.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
+      imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+      provider = 'fal';
+    } catch (falErr) {
+      console.warn(`[generation] fal.ai failed for ${type}, falling back to Google: ${falErr instanceof Error ? falErr.message : falErr}`);
       try {
-        imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-        provider = 'fal';
-      } catch (falErr) {
-        console.warn(`fal.ai failed, falling back to Kie.ai: ${falErr instanceof Error ? falErr.message : falErr}`);
+        imageUrl = await googleGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+        provider = 'google';
+      } catch (googleErr) {
+        console.warn(`[generation] Google failed for ${type}, falling back to Kie.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
         imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
         provider = 'kie';
       }
