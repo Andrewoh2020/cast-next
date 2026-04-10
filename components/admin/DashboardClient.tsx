@@ -58,7 +58,7 @@ interface GenerationHistoryEntry {
   url?: string;
   failed: boolean;
   error?: string;
-  provider?: 'kie' | 'fal';
+  provider?: 'kie' | 'fal' | 'google';
 }
 
 interface GenerationStats {
@@ -722,11 +722,13 @@ export default function DashboardClient({ initialCharacters }: Props) {
                                   <td className="px-5 py-3 font-bold text-rose-600">${entry.cost.toFixed(2)}</td>
                                   <td className="px-5 py-3">
                                     <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                                      entry.provider === 'kie'
-                                        ? 'bg-emerald-50 text-emerald-700'
-                                        : 'bg-orange-50 text-orange-700'
+                                      entry.provider === 'google'
+                                        ? 'bg-indigo-50 text-indigo-700'
+                                        : entry.provider === 'kie'
+                                          ? 'bg-emerald-50 text-emerald-700'
+                                          : 'bg-orange-50 text-orange-700'
                                     }`}>
-                                      {entry.provider === 'kie' ? 'Kie.ai' : 'Fal.ai'}
+                                      {entry.provider === 'google' ? 'Google' : entry.provider === 'kie' ? 'Kie.ai' : 'Fal.ai'}
                                     </span>
                                   </td>
                                   <td className="px-5 py-3">
