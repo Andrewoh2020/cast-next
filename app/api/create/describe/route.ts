@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CHARACTER_DESCRIBE_SYSTEM_PROMPT } from '@/lib/describe-prompt';
+import { readCharacters } from '@/lib/characters.server';
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -32,12 +33,22 @@ export async function POST(req: NextRequest) {
     if (attributes?.style && attributes.style !== 'realistic') traitParts.push(`style: ${attributes.style}`);
     const traitSummary = traitParts.length > 0 ? traitParts.join(', ') : '';
 
+    // Pull existing character names so Claude can avoid duplicates
+    let avoidNames = '';
+    try {
+      const chars = await readCharacters();
+      const names = chars.map((c) => c.name).slice(-100);
+      if (names.length > 0) {
+        avoidNames = `\n\nAvoid using these existing character names (or close variations): ${names.join(', ')}`;
+      }
+    } catch {}
+
     let userMessage: string;
     if (mode === 'generate') {
       if (description?.trim()) {
-        userMessage = `Generate a detailed character based on these hints: "${description}". Use these traits: ${traitSummary}.`;
+        userMessage = `Generate a detailed character based on these hints: "${description}". Use these traits: ${traitSummary}.${avoidNames}`;
       } else {
-        userMessage = `Generate a detailed character for film or video production with these traits: ${traitSummary}. Interpret creatively — build a vivid, specific character around these constraints.`;
+        userMessage = `Generate a detailed character for film or video production with these traits: ${traitSummary}. Interpret creatively — build a vivid, specific character around these constraints.${avoidNames}`;
       }
     } else {
       if (!description?.trim()) {

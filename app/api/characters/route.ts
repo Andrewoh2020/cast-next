@@ -17,7 +17,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const body = await req.json() as Omit<Talent, 'id'>;
   const characters = await readCharacters();
-  const newCharacter: Talent = { ...body, id: nextId(characters), createdAt: new Date().toISOString() };
+
+  // Slug deduplication: if slug already exists, append -2, -3, etc.
+  let uniqueSlug = body.slug;
+  if (uniqueSlug) {
+    const existingSlugs = new Set(characters.map((c) => c.slug));
+    if (existingSlugs.has(uniqueSlug)) {
+      let suffix = 2;
+      while (existingSlugs.has(`${body.slug}-${suffix}`)) suffix++;
+      uniqueSlug = `${body.slug}-${suffix}`;
+    }
+  }
+
+  const newCharacter: Talent = { ...body, slug: uniqueSlug, id: nextId(characters), createdAt: new Date().toISOString() };
   await writeCharacters([...characters, newCharacter]);
   return NextResponse.json(newCharacter, { status: 201 });
 }

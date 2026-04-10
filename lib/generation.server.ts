@@ -34,8 +34,32 @@ Panel 8 (bottom-right): Camera positioned directly BEHIND the subject's head —
 
 Consistent identity across all 8 panels. Consistent lighting across all panels: soft diffused studio light, even fill, no harsh shadows. Uniform spacing between panels. Consistent head height across top row, consistent face scale across bottom row. Crisp print-ready output. No visible panel borders, no dividing lines, no grid lines, no white lines, no black lines between panels. Panels are separated only by the background color — no drawn separators of any kind.`;
 
-export const PROFILE_PROMPT = (description: string) =>
-  `Medium shot portrait of ${description}, cropped at the knees, head-to-knees framing only. Body turned slightly toward camera, relaxed natural pose. Plain seamless warm-gray studio backdrop, no environment, no props. Photorealistic DSLR, 85mm lens, soft diffused studio lighting, sharp skin detail, no retouching. Do NOT show full body, do NOT show feet or ankles.`;
+// Subtle variations applied to each generation to prevent identical outputs
+const POSE_VARIATIONS = [
+  'left hand resting at side, right hand slightly forward',
+  'arms relaxed at sides, weight on one leg',
+  'one hand in pocket, the other relaxed at side',
+  'arms folded loosely',
+  'standing at ease with subtle shoulder turn',
+  'three-quarter angle, body turned slightly',
+];
+const LIGHTING_VARIATIONS = [
+  'soft diffused studio lighting from above',
+  'warm key light from the front-left, soft fill from the right',
+  'even diffused lighting with subtle rim light',
+  'soft window-style daylight from the left',
+  'cinematic three-point lighting, gentle shadows',
+];
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+export const PROFILE_PROMPT = (description: string) => {
+  const pose = pickRandom(POSE_VARIATIONS);
+  const lighting = pickRandom(LIGHTING_VARIATIONS);
+  return `Medium shot portrait of ${description}, cropped at the knees, head-to-knees framing only. ${pose}. Plain seamless warm-gray studio backdrop, no environment, no props. Photorealistic DSLR, 85mm lens, ${lighting}, sharp skin detail, no retouching. Do NOT show full body, do NOT show feet or ankles.`;
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 

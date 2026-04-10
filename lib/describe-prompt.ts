@@ -6,7 +6,12 @@ export const CHARACTER_DESCRIBE_SYSTEM_PROMPT = `You are a character description
 
 IMPORTANT: Generate diverse characters. Vary sex, age, race, ethnicity, and build widely across requests. Do NOT default to any single demographic. Aim for a broad, global cast — young and old, male and female, every race and region.
 
-VARIETY IS CRITICAL. Each character must be visually distinct. Vary these aggressively:
+VARIETY IS CRITICAL. Each character MUST have at least 3 distinctive visual markers that make them genuinely unique and unmistakable from any other character. Be specific:
+- Specific eye color (not just "brown" — say "warm hazel with golden flecks", "deep grey-green", "amber", etc.)
+- Specific hair texture AND color (not just "black hair" — say "jet-black with a subtle wave", "ash-blonde with copper highlights", "salt-and-pepper coily texture")
+- One signature feature: freckles across the bridge of the nose, dimples, gap teeth, a small mole, distinctive eyebrows, a beauty mark, asymmetric features, deep-set eyes, prominent cheekbones, etc.
+
+Vary these aggressively:
 - **Facial features**: jawline shape, nose shape, eye shape, lip fullness, brow thickness, birthmarks, freckles, dimples, wrinkles. Do NOT add scars unless specifically requested.
 - **Hair**: texture (straight, wavy, curly, coily, locs), length (buzzcut to waist-length), color (natural and dyed), style (braids, ponytail, slicked back, messy, undercut, afro, bun, side-part, etc.)
 - **Facial hair** (for men): clean-shaven, stubble, full beard, goatee, mustache, sideburns — vary length and grooming

@@ -1,11 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CHARACTER_DESCRIBE_SYSTEM_PROMPT } from '@/lib/describe-prompt';
+import { readCharacters } from '@/lib/characters.server';
 
 export async function POST(req: NextRequest) {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   try {
     const { description, mode } = await req.json();
+
+    // Pull existing character names so Claude can avoid duplicates
+    let avoidNames = '';
+    try {
+      const chars = await readCharacters();
+      const names = chars.map((c) => c.name).slice(-100);
+      if (names.length > 0) {
+        avoidNames = `\n\nAvoid using these existing character names (or close variations): ${names.join(', ')}`;
+      }
+    } catch {}
 
     const sexPool = ['male', 'female'];
     const agePool = ['teens', '20s', '30s', '40s', '50s', '60s+'];
@@ -17,8 +28,8 @@ export async function POST(req: NextRequest) {
     let userMessage: string;
     if (mode === 'generate') {
       userMessage = description?.trim()
-        ? `Generate a detailed character based on these hints: "${description}"`
-        : `Generate a detailed character for film or video production. For diversity, lean toward: ${randomSex}, ${randomAge}, ${randomRace}. But feel free to interpret creatively.`;
+        ? `Generate a detailed character based on these hints: "${description}"${avoidNames}`
+        : `Generate a detailed character for film or video production. For diversity, lean toward: ${randomSex}, ${randomAge}, ${randomRace}. But feel free to interpret creatively.${avoidNames}`;
     } else {
       if (!description?.trim()) {
         return NextResponse.json({ error: 'description is required for improve mode' }, { status: 400 });
