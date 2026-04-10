@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { CustomCharacterDraft } from '@/lib/custom-characters.server';
 import { thumbUrl } from '@/lib/talent';
@@ -20,6 +21,29 @@ export default function PreviewStep({ draft, isGenerating, generationError, onGe
   const selectedUrl = draft.previewImageUrl ?? '';
   const previewImages = draft.previewImages ?? [];
   const iterations = draft.iterations ?? 0;
+
+  // Animated progress bar — climbs to 95% over ~180s, completes when done
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (isGenerating) {
+      setProgress(0);
+      const startTime = Date.now();
+      const targetMs = 180_000; // 3 minutes
+      intervalRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const pct = Math.min(95, Math.floor((elapsed / targetMs) * 95));
+        setProgress(pct);
+      }, 500);
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      setProgress(100);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isGenerating]);
 
   const handleContinue = () => {
     onComplete({
@@ -44,11 +68,18 @@ export default function PreviewStep({ draft, isGenerating, generationError, onGe
       {/* Selected preview image */}
       <div className="relative w-full max-w-sm mx-auto mb-6">
         {isGenerating ? (
-          <div className="w-full rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center" style={{ aspectRatio: '2/3' }}>
-            <div className="text-center">
-              <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-              <p className="text-sm text-gray-400">Generating preview...</p>
-              <p className="text-xs text-gray-300 mt-1">This may take up to 2 minutes</p>
+          <div className="w-full rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center px-6" style={{ aspectRatio: '2/3' }}>
+            <div className="text-center w-full max-w-xs">
+              <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-sm font-semibold text-black">Generating preview...</p>
+              <p className="text-xs text-gray-400 mt-1 mb-4">This can take up to 2–3 minutes</p>
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-indigo-500 h-2 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-2 font-semibold">{progress}%</p>
             </div>
           </div>
         ) : selectedUrl ? (

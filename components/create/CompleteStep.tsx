@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { CustomCharacterDraft } from '@/lib/custom-characters.server';
 import { thumbUrl } from '@/lib/talent';
@@ -16,6 +16,31 @@ interface Props {
 export default function CompleteStep({ draft, generating, generationError, onRetry, onNewCharacter }: Props) {
   const [downloadingProfile, setDownloadingProfile] = useState(false);
   const [downloadingRef, setDownloadingRef] = useState(false);
+
+  // Animated progress bar for ref sheet generation — climbs to 95% over ~180s
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const isLoading = generating || (!draft.profileImageUrl && !generationError);
+
+  useEffect(() => {
+    if (isLoading) {
+      setProgress(0);
+      const startTime = Date.now();
+      const targetMs = 180_000;
+      intervalRef.current = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const pct = Math.min(95, Math.floor((elapsed / targetMs) * 95));
+        setProgress(pct);
+      }, 500);
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      setProgress(100);
+    }
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isLoading]);
 
   const downloadFile = async (url: string, filename: string, setLoading: (v: boolean) => void) => {
     setLoading(true);
@@ -42,16 +67,11 @@ export default function CompleteStep({ draft, generating, generationError, onRet
     setLoading(false);
   };
 
-  const isReady = draft.profileImageUrl && draft.referenceSheetUrl && !generating;
-
-  // If no URLs and not explicitly in error state, treat as still generating
-  const effectivelyGenerating = generating || (!draft.profileImageUrl && !generationError);
-
-  if (effectivelyGenerating) {
+  if (isLoading) {
     return (
       <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
         <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
         </div>
 
         <h2 className="text-2xl font-black tracking-tight text-black mb-1">Generating Your Assets</h2>
@@ -72,7 +92,18 @@ export default function CompleteStep({ draft, generating, generationError, onRet
           </div>
         </div>
 
-        <p className="text-xs text-gray-400">This may take up to 4 minutes. You can leave this page — a receipt with download links will be emailed to you as soon as your assets are ready.</p>
+        {/* Progress bar */}
+        <div className="max-w-sm mx-auto mb-3">
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-indigo-500 h-2 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="text-xs font-semibold text-gray-500 mt-2">{progress}%</p>
+        </div>
+
+        <p className="text-xs text-gray-400 max-w-sm mx-auto">This can take up to 2–3 minutes. You can leave this page — a receipt with download links will be emailed to you as soon as your assets are ready.</p>
       </div>
     );
   }
