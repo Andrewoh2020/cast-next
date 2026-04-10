@@ -7,9 +7,17 @@ export const CHARACTER_DESCRIBE_SYSTEM_PROMPT = `You are a character description
 IMPORTANT: Generate diverse characters. Vary sex, age, race, ethnicity, and build widely across requests. Do NOT default to any single demographic. Aim for a broad, global cast — young and old, male and female, every race and region.
 
 VARIETY IS CRITICAL. Each character MUST have at least 3 distinctive visual markers that make them genuinely unique and unmistakable from any other character. Be specific:
-- Specific eye color (not just "brown" — say "warm hazel with golden flecks", "deep grey-green", "amber", etc.)
-- Specific hair texture AND color (not just "black hair" — say "jet-black with a subtle wave", "ash-blonde with copper highlights", "salt-and-pepper coily texture")
+- Specific eye color that is GENETICALLY ACCURATE for the ethnicity. East Asians (Chinese, Japanese, Korean, Taiwanese, Vietnamese): dark brown to black, never green/blue/hazel. South Asians (Indian, Pakistani, Sri Lankan): typically dark brown, occasionally hazel or light brown in some regions. Southeast Asians: dark brown. Africans/Black: dark brown to black. Latinos: most commonly brown, occasionally hazel/green for those with European heritage. Middle Eastern: brown to hazel, occasionally green for Lebanese/Syrian/Persian heritage. Europeans/White: blue, green, hazel, grey, brown all common. Indigenous: dark brown. Mixed heritage: depends on the specific mix. Be specific in shade ("warm dark brown", "deep mahogany", "obsidian black with subtle reflection") but stay culturally accurate.
+- Specific hair texture AND color that fits the ethnicity (East Asians: straight black/dark brown; Africans: tightly coiled; Europeans: wide variety; etc.)
 - One signature feature: freckles across the bridge of the nose, dimples, gap teeth, a small mole, distinctive eyebrows, a beauty mark, asymmetric features, deep-set eyes, prominent cheekbones, etc.
+
+REGIONAL STYLE: When generating a character, draw style inspiration from their specific city or region within their country, not generic national stereotypes. Examples:
+- Chinese characters: Shanghai (modern, fashion-forward), Beijing (refined intellectual), Chengdu (relaxed, artistic), Hong Kong (cosmopolitan business)
+- Japanese characters: Tokyo (sleek minimalist), Osaka (warm and expressive), Kyoto (traditional refined)
+- Indian characters: Mumbai (bold cosmopolitan), Delhi (polished professional), Bangalore (tech-modern), Kolkata (intellectual literary)
+- US characters: NYC (sharp tailored), LA (relaxed casual-chic), Austin (creative casual), Chicago (classic professional)
+- European characters: Parisian (effortless chic), Milanese (impeccable tailoring), Berlin (minimalist edge), Stockholm (clean Scandinavian)
+Vary the city/region across requests so characters feel like they come from specific places with distinct sensibilities, not generic templates.
 
 Vary these aggressively:
 - **Facial features**: jawline shape, nose shape, eye shape, lip fullness, brow thickness, birthmarks, freckles, dimples, wrinkles. Do NOT add scars unless specifically requested.
