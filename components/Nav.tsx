@@ -11,6 +11,7 @@ export default function Nav() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [scrolled, setScrolled] = useState(false);
+  const [credits, setCredits] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isHome) return;
@@ -19,6 +20,14 @@ export default function Nav() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, [isHome]);
+
+  useEffect(() => {
+    if (!isSignedIn) return;
+    fetch('/api/create/credits')
+      .then(r => r.json())
+      .then(d => setCredits(d.credits ?? 0))
+      .catch(() => {});
+  }, [isSignedIn]);
 
   const transparent = isHome && !scrolled;
 
@@ -42,6 +51,11 @@ export default function Nav() {
           </Link>
           {isSignedIn ? (
             <>
+              {credits !== null && (
+                <Link href="/create" className={`text-xs font-bold px-3 py-1 rounded-full transition-colors ${transparent ? 'bg-white/20 text-white border border-white/30' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
+                  {credits} {credits === 1 ? 'credit' : 'credits'}
+                </Link>
+              )}
               <Link href="/account" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
                 My Account
               </Link>
@@ -84,9 +98,17 @@ export default function Nav() {
             Recent Launches
           </Link>
           {isSignedIn ? (
-            <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
-              My Account
-            </Link>
+            <>
+              {credits !== null && (
+                <Link href="/create" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100 flex items-center justify-between">
+                  Credits
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600">{credits}</span>
+                </Link>
+              )}
+              <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+                My Account
+              </Link>
+            </>
           ) : (
             <>
               <Link href="/sign-in" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
