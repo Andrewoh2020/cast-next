@@ -13,9 +13,15 @@ interface Props {
   onNewCharacter: () => void;
 }
 
+const MAX_REFSHEET_REGENS = 3;
+
 export default function CompleteStep({ draft, generating, generationError, onRetry, onNewCharacter }: Props) {
   const [downloadingProfile, setDownloadingProfile] = useState(false);
   const [downloadingRef, setDownloadingRef] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenError, setRegenError] = useState<string | null>(null);
+  const [refSheetUrl, setRefSheetUrl] = useState(draft.referenceSheetUrl);
+  const [regenCount, setRegenCount] = useState(draft.refSheetRegenerations ?? 0);
 
   // Animated progress bar for ref sheet generation — climbs to 95% over ~180s
   const [progress, setProgress] = useState(0);
@@ -41,6 +47,25 @@ export default function CompleteStep({ draft, generating, generationError, onRet
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isLoading]);
+
+  const regenerateRefSheet = async () => {
+    setRegenerating(true);
+    setRegenError(null);
+    try {
+      const res = await fetch('/api/create/regenerate-refsheet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ draftId: draft.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Regeneration failed');
+      setRefSheetUrl(data.referenceSheetUrl);
+      setRegenCount(data.refSheetRegenerations);
+    } catch (err) {
+      setRegenError(err instanceof Error ? err.message : 'Regeneration failed');
+    }
+    setRegenerating(false);
+  };
 
   const downloadFile = async (url: string, filename: string, setLoading: (v: boolean) => void) => {
     setLoading(true);
@@ -175,26 +200,47 @@ export default function CompleteStep({ draft, generating, generationError, onRet
             </button>
           </div>
         )}
-        {draft.referenceSheetUrl && (
+        {refSheetUrl && (
           <div>
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Reference Sheet</p>
             <p className="text-[10px] text-gray-400 mb-2">4K resolution</p>
             <Image
-              src={thumbUrl(draft.referenceSheetUrl, 400)}
+              src={thumbUrl(refSheetUrl, 400)}
               alt={`${draft.name} reference sheet`}
               width={400}
               height={172}
               className="w-full rounded-xl object-cover"
+              key={refSheetUrl}
             />
             <button
               disabled={downloadingRef}
-              onClick={() => downloadFile(draft.referenceSheetUrl!, `${draft.slug}-reference-sheet`, setDownloadingRef)}
+              onClick={() => downloadFile(refSheetUrl!, `${draft.slug}-reference-sheet`, setDownloadingRef)}
               className="mt-2 w-full text-sm font-semibold bg-black text-white py-2.5 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {downloadingRef ? (
                 <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Downloading...</>
               ) : 'Download Reference Sheet'}
             </button>
+
+            {/* Regenerate reference sheet */}
+            {regenCount < MAX_REFSHEET_REGENS ? (
+              <button
+                disabled={regenerating}
+                onClick={regenerateRefSheet}
+                className="mt-2 w-full text-xs font-medium text-gray-500 py-2 rounded-lg border border-gray-200 hover:border-gray-400 hover:text-gray-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {regenerating ? (
+                  <><div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />Regenerating...</>
+                ) : (
+                  <>Regenerate Reference Sheet ({MAX_REFSHEET_REGENS - regenCount} {MAX_REFSHEET_REGENS - regenCount === 1 ? 'attempt' : 'attempts'} remaining)</>
+                )}
+              </button>
+            ) : (
+              <p className="mt-2 text-xs text-gray-400 text-center">
+                No regenerations remaining. Need help? Contact <a href="mailto:admin@castability.ai" className="text-indigo-500 hover:underline">admin@castability.ai</a>
+              </p>
+            )}
+            {regenError && <p className="mt-1 text-xs text-red-500 text-center">{regenError}</p>}
           </div>
         )}
       </div>

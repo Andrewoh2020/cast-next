@@ -38,10 +38,12 @@ export interface Talent {
   sex: TalentSex;
   race: TalentRace[];
   ethnicity?: string;
+  city?: string;
   age?: number;
   ageRange: TalentAgeRange;
   build: TalentBuild;
   height: TalentHeight;
+  hairLength?: string;
   style: TalentStyle;
   prices: PriceOption[];
   createdAt?: string;

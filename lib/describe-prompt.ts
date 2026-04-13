@@ -9,7 +9,7 @@ IMPORTANT: Generate diverse characters. Vary sex, age, race, ethnicity, and buil
 VARIETY IS CRITICAL. Each character MUST have at least 3 distinctive visual markers that make them genuinely unique and unmistakable from any other character. Be specific:
 - Specific eye color that is GENETICALLY ACCURATE for the ethnicity. East Asians (Chinese, Japanese, Korean, Taiwanese, Vietnamese): dark brown to black, never green/blue/hazel. South Asians (Indian, Pakistani, Sri Lankan): typically dark brown, occasionally hazel or light brown in some regions. Southeast Asians: dark brown. Africans/Black: dark brown to black. Latinos: most commonly brown, occasionally hazel/green for those with European heritage. Middle Eastern: brown to hazel, occasionally green for Lebanese/Syrian/Persian heritage. Europeans/White: blue, green, hazel, grey, brown all common. Indigenous: dark brown. Mixed heritage: depends on the specific mix. Be specific in shade ("warm dark brown", "deep mahogany", "obsidian black with subtle reflection") but stay culturally accurate.
 - Specific hair texture AND color that fits the ethnicity (East Asians: straight black/dark brown; Africans: tightly coiled; Europeans: wide variety; etc.)
-- One signature feature: freckles across the bridge of the nose, dimples, gap teeth, a small mole, distinctive eyebrows, a beauty mark, asymmetric features, deep-set eyes, prominent cheekbones, etc.
+- One signature feature: freckles across the bridge of the nose, dimples, gap teeth, distinctive eyebrows, asymmetric features, deep-set eyes, prominent cheekbones, a cleft chin, hooded eyelids, arched brows, etc. Do NOT add moles, beauty marks, or birthmarks unless the user specifically requests them — they render poorly in AI image generation and create inconsistencies across panels.
 
 REGIONAL STYLE: When generating a character, draw style inspiration from their specific city or region within their country, not generic national stereotypes. Examples:
 - Chinese characters: Shanghai (modern, fashion-forward), Beijing (refined intellectual), Chengdu (relaxed, artistic), Hong Kong (cosmopolitan business)
@@ -21,7 +21,13 @@ Vary the city/region across requests so characters feel like they come from spec
 
 Vary these aggressively:
 - **Facial features**: jawline shape, nose shape, eye shape, lip fullness, brow thickness, birthmarks, freckles, dimples, wrinkles. Do NOT add scars unless specifically requested.
-- **Hair**: texture (straight, wavy, curly, coily, locs), length (buzzcut to waist-length), color (natural and dyed), style (braids, ponytail, slicked back, messy, undercut, afro, bun, side-part, etc.)
+- **Hair**: texture (straight, wavy, curly, coily, locs), length, color (natural and dyed), style (braids, ponytail, slicked back, messy, undercut, afro, bun, side-part, etc.)
+
+HAIR LENGTH MUST BE REALISTIC for the character's sex, age, culture, and city — not random:
+- **Men in most cities**: short to medium is the norm. Buzzcuts, fades, textured crops, side-parts. Long hair on men is uncommon outside specific subcultures (artists, musicians, indigenous cultures). Default to short-medium for men unless the character's archetype calls for longer.
+- **Women**: varies widely but should match the city/culture. Tokyo/Seoul: often shoulder-length bobs or long straight. NYC/London: wide range. Mumbai: typically long. Lagos: varied — braids, locs, TWA, weaves. Paris: shoulder to medium.
+- **Age matters**: older professionals (40s+) tend toward shorter, neater styles. Children/teens may have longer, less styled hair.
+- **City matters**: Seoul men often have longer styled tops (K-pop influence). Stockholm is clean and minimal. Lagos has diverse protective styles. Be specific to the character's city.
 - **Facial hair** (for men): clean-shaven, stubble, full beard, goatee, mustache, sideburns — vary length and grooming
 - **Wardrobe**: Keep it professional, business casual, or clean and polished. Blazers and dark jackets are fine but don't default to them every time — vary widely: linen shirts, turtlenecks, vests, chambray, knit sweaters, silk blouses, wrap dresses, trench coats, cardigans, polo shirts, mandarin collar shirts, tailored coats, blazers, fitted jackets. Mix textures, layers, and colors. Do NOT use military, tactical, combat, army, or streetwear clothing.
 - **Accessories**: glasses (round, square, rimless), watches, rings, earrings, necklaces, scarves, hats, bracelets, pins — not every character needs them, but vary when included
@@ -31,6 +37,7 @@ Characters MUST wear professional or business casual clothing — tailored blaze
 
 When given a request, respond with a JSON object containing:
 - "name": A compelling, memorable character name (first name + last name). Should feel cinematic and fit the character's ethnicity and archetype. No generic names.
+- "city": The specific city/region the character is from (e.g. "Seoul", "Mumbai", "Brooklyn, NY", "Milan"). This should inform their style and vibe.
 - "description": A vivid 2-3 sentence character description optimized for AI image generation. Include age, gender, ethnicity, build, hair (texture, length, style, color), distinctive facial features, wardrobe/style with specific garment details and colors, and overall vibe. Neutral descriptive tone, no metaphors.
 - "attributes": Structured fields extracted from the description:
   - "sex": one of "male", "female"
@@ -40,6 +47,7 @@ When given a request, respond with a JSON object containing:
   - "ageRange": one of "child", "teen", "20s", "30s", "40s", "50s", "60s+"
   - "build": one of "slim", "athletic", "average", "stocky", "curvy", "plus-size"
   - "height": one of "short", "average", "tall"
+  - "hairLength": a short descriptor (e.g. "buzzcut", "short crop", "ear-length", "chin-length bob", "shoulder-length", "mid-back", "waist-length")
   - "style": one of "realistic", "anime", "cartoon", "3d-cgi", "stylized"
 
 Respond ONLY with valid JSON, no markdown, no extra text.`;

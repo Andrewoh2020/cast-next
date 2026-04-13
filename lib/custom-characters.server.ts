@@ -7,10 +7,12 @@ export interface CustomCharacterAttributes {
   sex: TalentSex;
   race: TalentRace[];
   ethnicity?: string;
+  city?: string;
   age?: number;
   ageRange: TalentAgeRange;
   build: TalentBuild;
   height: TalentHeight;
+  hairLength?: string;
   style: TalentStyle;
 }
 
@@ -31,6 +33,7 @@ export interface CustomCharacterDraft {
   referenceSheetUrl?: string;
   referenceSheetThumbnailUrl?: string;
   iterations: number;
+  refSheetRegenerations?: number;
   showInShowcase: boolean;
   createdAt: string;
   updatedAt: string;

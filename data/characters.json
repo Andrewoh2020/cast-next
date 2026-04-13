@@ -38,7 +38,7 @@
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fa-42-year-old-black-profile-1774439654051-thumb.jpg",
     "refSheetThumbnail": "/api/media?p=characters%2Fblack-woman-naomi-black-refsheet-thumb-1775208552085.jpg",
-    "featured": true,
+    "featured": false,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Fa-42-year-old-black-refsheet-1774439726903.jpg"
     ]
@@ -132,7 +132,7 @@
     "vibe": "Marcus Chen is a 26-year-old East Asian man with an athletic build and sharp facial features, including defined cheekbones and dark expressive eyes. He has jet-black hair styled with an undercut fade, and wears contemporary streetwear—slim-fit designer jeans, a fitted oversized hoodie, and clean minimalist sneakers. His overall aesthetic balances modern sophistication with casual confidence.",
     "img": "/api/media?p=characters%2Feast-asian-man-profile-1774442514842.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-refsheet-1774442515195.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-man-marcus-chen-refsheet-1776019628455.jpg",
     "sex": "male",
     "ageRange": "20s",
     "build": "athletic",
@@ -164,7 +164,10 @@
     "age": 26,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-profile-1774442514842-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-refsheet-1774442515195-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-marcus-chen-refsheet-thumb-1776019637215.jpg",
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Feast-asian-man-refsheet-1774442515195.jpg"
+    ]
   },
   {
     "name": "Hailey Kim",
@@ -205,7 +208,7 @@
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-profile-1774442748991-thumb.jpg",
     "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-hailey-kim-refsheet-thumb-1775209241877.jpg",
-    "featured": true,
+    "featured": false,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Feast-asian-woman-refsheet-1774442776820.jpg",
       "/api/media?p=characters%2Feast-asian-woman-hailey-kim-refsheet-1775208756581.jpg",
@@ -251,7 +254,7 @@
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fblack-man-profile-1774443406061-thumb.jpg",
     "refSheetThumbnail": "/api/media?p=characters%2Fblack-man-marcus-stewart-refsheet-thumb-1775212678262.jpg",
-    "featured": true,
+    "featured": false,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Fblack-man-refsheet-1774443506145.jpg"
     ]
@@ -295,7 +298,7 @@
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-man-profile-1774444453976-thumb.jpg",
     "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-man-james-park-refsheet-thumb-1775212742474.jpg",
-    "featured": true,
+    "featured": false,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Feast-asian-man-refsheet-1774444512998.jpg"
     ]
@@ -352,7 +355,7 @@
     "vibe": "A striking 28-year-old Japanese woman with sharp, angular facial features and large expressive dark eyes. She has long, sleek black hair with subtle highlights, porcelain skin, and a slim, graceful build. Her style is contemporary and polished, featuring high-fashion streetwear with oversized blazers, designer accessories, and bold makeup that emphasizes her eyes, embodying modern J-pop aesthetic.",
     "img": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-profile-1774603140717.jpg",
     "gallery": [],
-    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-1774603211197.jpg",
+    "referenceSheetUrl": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-1776019721412.jpg",
     "sex": "female",
     "ageRange": "20s",
     "build": "slim",
@@ -384,7 +387,10 @@
     "age": 28,
     "createdAt": "2026-03-11T21:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-profile-1774603140717-thumb.jpg",
-    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-1774603211197-thumb.jpg"
+    "refSheetThumbnail": "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-thumb-1776019727042.jpg",
+    "referenceSheetHistory": [
+      "/api/media?p=characters%2Feast-asian-woman-akira-shimizu-refsheet-1774603211197.jpg"
+    ]
   },
   {
     "name": "Marcus Chen",
@@ -2979,7 +2985,7 @@
     "createdAt": "2026-04-01T00:00:00.000Z",
     "imgThumbnail": "/api/media?p=characters%2Fpriya-sharma-profile-1775049901191-thumb.jpg",
     "refSheetThumbnail": "/api/media?p=characters%2Fpriya-sharma-refsheet-1775049901188-thumb.jpg",
-    "featured": true
+    "featured": false
   },
   {
     "id": 91,
@@ -3488,7 +3494,7 @@
     "id": 104,
     "name": "Akira Shimizu",
     "slug": "akira-shimizu",
-    "vibe": "A female jpop artist ",
+    "vibe": "Akira Shimizu is a 23-year-old Japanese woman with a slim, average-height frame and straight, jet-black hair cut into a sharp asymmetric bob — longer on the left side, brushing her collarbone, and cropped to her jawline on the right. She has deep obsidian-black eyes with a subtle monolid crease, a small beauty mark just below the outer corner of her left eye, and naturally full lips with a soft rose tint. Drawing from Tokyo's Harajuku-adjacent fashion scene filtered through a polished lens, she wears a fitted ivory silk blouse with a mandarin collar tucked into high-waisted charcoal wide-leg trousers, paired with delicate gold hoop earrings and a thin gold chain bracelet, projecting an effortlessly cool and quietly magnetic energy.",
     "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-profile-1775196572891.jpg",
     "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-profile-thumb-1775196841595.jpg",
     "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fakira-shimizu-refsheet-1775196837393.jpg",
@@ -3526,7 +3532,7 @@
     "id": 105,
     "name": "Min-jun Park",
     "slug": "min-jun-park",
-    "vibe": "Create a really hot Korean kpop 19 year old",
+    "vibe": "Min-jun Park is a 19-year-old Korean male with a slim, average-height frame and striking, sculpted features. He has straight, jet-black hair styled in a textured comma fringe that sweeps across his forehead, deep obsidian-black eyes with subtle double eyelids, and a small beauty mark just below his left eye that draws immediate attention. He wears a fitted ivory turtleneck layered under a tailored camel-brown wool overcoat with clean shoulders, paired with slim-fit black trousers and polished Chelsea boots, projecting a Seoul Gangnam-district polish with an effortlessly magnetic, confident energy.",
     "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-profile-1775195356758.jpg",
     "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-profile-thumb-1775195454741.jpg",
     "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmin-jun-park-refsheet-1775195451183.jpg",
@@ -3644,7 +3650,7 @@
   {
     "name": "Harry Poulos",
     "slug": "man-harry-poulos",
-    "vibe": "A Mediterranean action star",
+    "vibe": "Harry Poulos is a 52-year-old Greek man of average height and build with sun-weathered olive skin and deep-set hazel-brown eyes framed by thick, expressive dark eyebrows that give him a naturally intense gaze. His salt-and-pepper hair is wavy and swept back from his forehead with a textured, slightly windswept quality, paired with a neatly trimmed silver-flecked goatee and strong Roman nose with a subtle bump along the bridge. He wears a fitted charcoal wool blazer over a slate-blue open-collar linen shirt, dark navy trousers, and a weathered silver chronograph watch on his left wrist, projecting a commanding Mediterranean charisma with quiet, coiled energy.",
     "img": "/api/media?p=characters%2Fa-mediterranean-action-profile-1775199525536.jpg",
     "gallery": [],
     "referenceSheetUrl": "",
@@ -4136,7 +4142,7 @@
       }
     ],
     "createdAt": "2026-04-09T09:57:47.195Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Fdanilo-reyes-bautista-refsheet-1775728662950.jpg"
@@ -4219,7 +4225,7 @@
       }
     ],
     "createdAt": "2026-04-09T10:15:44.385Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4313,8 +4319,8 @@
     "name": "Elliot Brannock",
     "slug": "elliot-brannock",
     "vibe": "A 26-year-old plus-size White American man who works as a muralist and mixed-media sculptor. He has a round, soft face with full cheeks, a broad nose, pale blue eyes framed by thick sandy-brown brows, and shoulder-length wavy auburn hair swept loosely behind his ears. He wears a rumpled cream linen button-up shirt with the sleeves rolled to the elbows, layered over a dusty olive vest, paired with tan chinos and scuffed leather loafers, with a silver chain bracelet on his left wrist and flecks of dried paint visible on his knuckles.",
-    "img": "/api/media?p=characters%2Felliot-brannock-profile-1775732715584.jpg",
-    "imgThumbnail": "/api/media?p=characters%2Felliot-brannock-profile-thumb-1775732805991.jpg",
+    "img": "/api/media?p=characters%2Felliot-brannock-profile-1775831109598.jpg",
+    "imgThumbnail": "/api/media?p=characters%2Felliot-brannock-profile-thumb-1775831110131.jpg",
     "referenceSheetUrl": "/api/media?p=characters%2Felliot-brannock-refsheet-1775732803165.jpg",
     "refSheetThumbnail": "/api/media?p=characters%2Felliot-brannock-refsheet-thumb-1775732805990.jpg",
     "sex": "male",
@@ -4346,7 +4352,10 @@
     ],
     "createdAt": "2026-04-09T11:06:46.858Z",
     "hidden": false,
-    "autoGenerated": true
+    "autoGenerated": true,
+    "imgHistory": [
+      "/api/media?p=characters%2Felliot-brannock-profile-1775732715584.jpg"
+    ]
   },
   {
     "id": 125,
@@ -4465,7 +4474,7 @@
       }
     ],
     "createdAt": "2026-04-09T11:20:56.555Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Fvivienne-calloway-refsheet-1775733651841.jpg",
@@ -4509,7 +4518,7 @@
       }
     ],
     "createdAt": "2026-04-09T11:23:35.414Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4549,7 +4558,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:11:30.640Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4589,7 +4598,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:14:14.218Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4629,7 +4638,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:23:07.279Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4669,7 +4678,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:27:15.409Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4709,7 +4718,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:42:41.833Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4749,7 +4758,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:45:58.700Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4789,7 +4798,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:51:23.541Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4829,7 +4838,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:56:20.816Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
   },
   {
@@ -4869,7 +4878,7 @@
       }
     ],
     "createdAt": "2026-04-09T12:59:28.761Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Ftalia-nafanua-refsheet-1775739564157.jpg"
@@ -4912,7 +4921,7 @@
       }
     ],
     "createdAt": "2026-04-09T13:16:18.830Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true,
     "referenceSheetHistory": [
       "/api/media?p=characters%2Ffiona-callister-refsheet-1775740573420.jpg"
@@ -4955,7 +4964,237 @@
       }
     ],
     "createdAt": "2026-04-09T13:21:31.628Z",
-    "hidden": true,
+    "hidden": false,
     "autoGenerated": true
+  },
+  {
+    "id": 140,
+    "name": "Diego Márquez",
+    "slug": "diego-mrquez",
+    "vibe": "Diego is a 26-year-old Spanish man with warm olive skin and an athletic, lean build. He has thick, dark brown hair with a subtle wave, styled in a tousled, slightly longer cut that falls just above his ears. His most distinctive feature is a small, dark beauty mark just above his left jawline. He has warm hazel eyes with a gentle, approachable gaze, and defined cheekbones with a softly angled jawline. He wears a cream-colored linen shirt with the sleeves rolled to the elbows, paired with fitted navy chinos and tan suede loafers. A thin gold chain bracelet sits on his left wrist. His overall vibe is warm, youthful, and effortlessly charming—the kind of person who puts others immediately at ease.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdiego-mrquez-profile-1775836832125.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdiego-mrquez-profile-thumb-1775836977361.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdiego-mrquez-refsheet-1775836976923.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fdiego-mrquez-refsheet-thumb-1775836977385.jpg",
+    "sex": "male",
+    "race": [
+      "european"
+    ],
+    "ethnicity": "Spanish",
+    "age": 26,
+    "ageRange": "20s",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-10T16:02:57.512Z"
+  },
+  {
+    "id": 141,
+    "name": "James Whitmore",
+    "slug": "james-whitmore",
+    "vibe": "A 45-year-old British man of English heritage with an aristocratic bearing and impeccably groomed appearance. He has a lean, athletic build, sharp angular jawline, and deep-set grey-blue eyes with subtle crow's feet that suggest intelligence and experience. His dark brown hair, streaked with distinguished silver at the temples, is styled in a precise side-part with a clean, polished finish. He wears a charcoal wool blazer with notch lapels over a crisp white Oxford shirt, paired with a burgundy silk tie featuring subtle paisley detailing, and pressed charcoal trousers. A silver Patek Philippe watch peeks from his left wrist, and he carries an understated confidence with a composed, refined demeanor.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fjames-whitmore-profile-1775835801039.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fjames-whitmore-profile-thumb-1775835884269.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fjames-whitmore-refsheet-1775835883816.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fjames-whitmore-refsheet-thumb-1775835884275.jpg",
+    "sex": "male",
+    "race": [
+      "european",
+      "white"
+    ],
+    "ethnicity": "British / English",
+    "age": 45,
+    "ageRange": "40s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-10T15:44:44.375Z"
+  },
+  {
+    "id": 142,
+    "name": "Edison Chen",
+    "slug": "edison-chen",
+    "vibe": "28-year-old Taiwanese-American man with a warm, approachable presence. He has a lean athletic build, straight black hair with a modern textured crop and slight fade on the sides, and warm dark brown eyes with a natural downward tilt. His defining features include a small beauty mark just above his left jawline, full lips, and subtle dimples when smiling. He wears a crisp cream linen shirt with the sleeves rolled to mid-forearm, paired with tailored caramel-brown chinos and cognac leather loafers. A delicate silver chain necklace sits against his collarbone. His overall vibe is effortlessly polished and approachable.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fedison-chen-profile-1775835111977.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fedison-chen-profile-thumb-1775835431002.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fedison-chen-refsheet-1775835430631.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fedison-chen-refsheet-thumb-1775835431021.jpg",
+    "sex": "male",
+    "race": [
+      "east-asian",
+      "white"
+    ],
+    "ethnicity": "Taiwanese-American",
+    "age": 28,
+    "ageRange": "20s",
+    "build": "athletic",
+    "height": "average",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-10T15:37:11.081Z"
+  },
+  {
+    "id": 143,
+    "name": "Katalin Kovács",
+    "slug": "katalin-kovcs",
+    "vibe": "Katalin is a 34-year-old Hungarian woman with a tall, athletic build and sharp, angular facial features. She has shoulder-length, straight dark chestnut hair with subtle caramel highlights, styled in a sleek side-part that frames her face. Her most striking feature is her pair of deep-set, cool grey-green eyes with an intense, intelligent gaze. She has high, prominent cheekbones, and a small beauty mark just above her left cheekbone. She wears a tailored charcoal grey blazer over a crisp white silk blouse, paired with fitted black trousers and polished black leather oxfords. A delicate gold chain necklace and a vintage gold watch add understated elegance. Her overall vibe is sophisticated and commanding, with an air of quiet confidence.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkatalin-kovcs-profile-1775833744685.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkatalin-kovcs-profile-thumb-1775834180461.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkatalin-kovcs-refsheet-1775834179988.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fkatalin-kovcs-refsheet-thumb-1775834180463.jpg",
+    "sex": "female",
+    "race": [
+      "european"
+    ],
+    "ethnicity": "Hungarian",
+    "age": 34,
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-10T15:16:20.540Z"
+  },
+  {
+    "id": 144,
+    "name": "Vera Liang",
+    "slug": "vera-liang",
+    "vibe": "Vera Liang is a striking 34-year-old Taiwanese woman with an athletic, lean build and commanding presence. She has jet-black hair with subtle waves, styled in a sleek, shoulder-length cut with a deep side part that frames her face. Her most distinctive features are her cool-toned, deep-set grey-green eyes with a slight upward tilt, paired with sharp, defined cheekbones and a strong, angular jawline. A small beauty mark sits just above her left collarbone. She wears a tailored charcoal grey blazer over a crisp ivory silk blouse, paired with dark charcoal trousers and polished black leather loafers. A minimalist silver watch adorns her left wrist. Her vibe is composed, intelligent, and quietly commanding—a woman comfortable in her own authority.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fvera-liang-profile-1775831960380.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fvera-liang-profile-thumb-1775832201471.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fvera-liang-refsheet-1775832200960.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fvera-liang-refsheet-thumb-1775832201451.jpg",
+    "sex": "female",
+    "race": [
+      "east-asian"
+    ],
+    "ethnicity": "Taiwanese",
+    "age": 34,
+    "ageRange": "30s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-10T14:43:21.631Z"
+  },
+  {
+    "id": 145,
+    "name": "Mark Hall",
+    "slug": "black-man-mark-hall",
+    "vibe": "A distinguished Black man in his mid-50s with a lean, athletic build and dark brown skin with warm undertones. He has sharp, angular facial features—a prominent jawline, straight nose, and deep-set dark eyes that convey intensity and quiet authority. His hair is salt-and-pepper gray, cut short and neatly groomed with a clean fade. He wears a tailored charcoal blazer over a crisp ivory dress shirt with the top button undone, paired with charcoal wool trousers and polished oxfords. A thin platinum watch adorns his left wrist. His expression is resolute and measured, with the composed bearing of someone who has weathered decades of challenges and emerged stronger.",
+    "img": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-profile-1775812673419.jpg",
+    "imgThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-profile-thumb-1775812922005.jpg",
+    "referenceSheetUrl": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-refsheet-1775812921418.jpg",
+    "refSheetThumbnail": "/api/media?p=custom%2Fuser_3BCMrf3DJvMWlifdmZWgkVsx0SW%2Fmarcus-thorne-refsheet-thumb-1775812922084.jpg",
+    "sex": "male",
+    "race": [
+      "black"
+    ],
+    "ethnicity": "African American",
+    "age": 54,
+    "ageRange": "50s",
+    "build": "athletic",
+    "height": "tall",
+    "style": "realistic",
+    "prices": [
+      {
+        "name": "Single Project",
+        "price": "$50",
+        "amount": 50
+      },
+      {
+        "name": "Studio License",
+        "price": "$250",
+        "amount": 250
+      },
+      {
+        "name": "Exclusive Rights",
+        "price": "$1000",
+        "amount": 1000
+      }
+    ],
+    "createdAt": "2026-04-10T09:22:02.133Z"
   }
 ]
