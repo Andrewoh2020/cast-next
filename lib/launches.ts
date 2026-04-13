@@ -11,6 +11,21 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-13',
+    title: 'Product Hunt Launch, How It Works Page, and Launch Promo',
+    summary:
+      'Cast is live on Product Hunt! New How It Works page for onboarding, 2 free credits for the first 200 accounts, reference sheet regeneration, and smarter character generation.',
+    highlights: [
+      'Product Hunt launch — Cast is officially live on Product Hunt',
+      'How It Works page — new dedicated page explaining the 4-step workflow from browsing to using characters in AI video tools',
+      'Launch promo — first 200 accounts get 2 free credits to create custom characters',
+      'Reference sheet regeneration — users can now regenerate their reference sheet up to 3 times if the first result isn\'t right',
+      'City and hair length attributes — characters now include city of origin and culturally-accurate hair styling for more realistic variety',
+      'Improved character descriptions — removed moles/beauty marks by default (they render inconsistently across panels), added city-informed style guidance',
+      'Google Search Console fix — added www.castability.ai property to resolve indexing redirect errors',
+    ],
+  },
+  {
     date: '2026-04-03',
     title: 'Smarter Characters, Better Portraits, and Production-Ready Emails',
     summary:
