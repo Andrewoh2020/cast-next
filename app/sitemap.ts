@@ -17,6 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/how-it-works`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${base}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
     { url: `${base}/blog/character-consistency-ai-video`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${base}/blog/best-ai-video-generators`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
   ];
 
   const characterRoutes: MetadataRoute.Sitemap = characters.map((c) => ({

@@ -12,6 +12,12 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: 'best-ai-video-generators',
+    title: 'The Best AI Video Generators in 2026: Seedance, Kling, Runway, and Veo Compared',
+    description: 'An in-depth comparison of the top AI video generators — which one is best for your production?',
+    date: '2026-04-14',
+  },
+  {
     slug: 'character-consistency-ai-video',
     title: 'How to Keep the Same Character Consistent Across AI Video Shots',
     description: 'Why AI video tools generate different faces every shot, what the workarounds are, and how reference sheets solve the problem for good.',

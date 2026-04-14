@@ -1,10 +1,10 @@
 {
-  "siteTitle": "Cast",
-  "titleTemplate": "%s | Cast",
-  "description": "Browse and license 100% AI-generated characters for your video productions. No prompts, no rights issues, instant delivery.",
-  "keywords": ["AI actors", "AI characters", "AI casting agency", "AI film casting", "license AI characters", "copyright-safe actors", "AI video production", "AI talent", "virtual actors", "AI video cast"],
+  "siteTitle": "Cast — AI Character Casting Agency for Video Production",
+  "titleTemplate": "%s | Cast — AI Character Casting Agency",
+  "description": "The world's first AI character casting agency. Browse or create photorealistic AI characters with 4K reference sheets for Kling, Runway, and Veo.",
+  "keywords": ["AI actors", "AI characters", "AI casting agency", "AI film casting", "license AI characters", "copyright-safe actors", "AI video production", "AI talent", "virtual actors", "AI video cast", "character consistency", "AI reference sheets", "AI character casting"],
   "canonicalUrl": "https://www.castability.ai",
-  "ogImage": "https://www.castability.ai/og-image.png",
-  "twitterHandle": "@castai",
+  "ogImage": "https://www.castability.ai/og-cast-v2.png",
+  "twitterHandle": "@trycastability",
   "googleAnalyticsId": "G-RW4PV7NHPY"
 }

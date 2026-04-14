@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { Talent, filterTalent, ActiveFilters, FILTER_GROUPS, FilterKey } from '@/lib/talent';
@@ -46,6 +46,8 @@ export default function ImmersiveLayout() {
   const [purchasedTalent, setPurchasedTalent] = useState<Talent | null>(null);
   const [purchasedPriceIdx, setPurchasedPriceIdx] = useState(0);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [showAllCharacters, setShowAllCharacters] = useState(false);
+  const GRID_CAP = 40;
 
   useEffect(() => {
     fetch('/api/characters').then((r) => r.json()).then((data) => { setAllTalents(data.filter((t: Talent) => !t.exclusive)); setLoading(false); });
@@ -136,9 +138,9 @@ export default function ImmersiveLayout() {
       {/* ── Mobile header (visible < lg) ─────────────────────── */}
       <div className="lg:hidden pt-16 px-5 pb-4 bg-white border-b border-gray-100">
         <p className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-1">AI Character Casting</p>
-        <h1 className="text-2xl font-black tracking-tighter text-black leading-tight">
-          Cast Flawless<br />AI Actors.
-        </h1>
+        <h2 className="text-2xl font-black tracking-tighter text-black leading-tight">
+          Cast Flawless<br />AI Characters.
+        </h2>
         <p className="text-sm text-gray-500 mt-1 mb-3">
           100% copyright-safe. No prompting. Instant download.
         </p>
@@ -168,9 +170,9 @@ export default function ImmersiveLayout() {
           </p>
 
           {/* Headline */}
-          <h1 className="text-3xl xl:text-4xl font-black tracking-tighter text-black leading-[1.05] mb-4">
-            Cast Flawless<br />AI Actors.
-          </h1>
+          <h2 className="text-3xl xl:text-4xl font-black tracking-tighter text-black leading-[1.05] mb-4">
+            Cast Flawless<br />AI Characters.
+          </h2>
 
           {/* Value props */}
           <div className="space-y-3 mb-6">
@@ -276,19 +278,31 @@ export default function ImmersiveLayout() {
                 <button onClick={() => setFilters({})} className="text-sm text-indigo-500 hover:underline">Clear all filters</button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
-                {filtered.map((talent, i) => (
-                  <div key={talent.id} style={{ animationDelay: `${i * 45}ms` }}>
-                    <TalentCard
-                      talent={talent}
-                      onClick={setSelectedTalent}
-                      index={i}
-                      isFavorited={favorites.includes(talent.id)}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
+                  {(showAllCharacters ? filtered : filtered.slice(0, GRID_CAP)).map((talent, i) => (
+                    <div key={talent.id} style={{ animationDelay: `${Math.min(i, 20) * 45}ms` }}>
+                      <TalentCard
+                        talent={talent}
+                        onClick={setSelectedTalent}
+                        index={i}
+                        isFavorited={favorites.includes(talent.id)}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {!showAllCharacters && filtered.length > GRID_CAP && (
+                  <div className="text-center pt-6 pb-2">
+                    <button
+                      onClick={() => setShowAllCharacters(true)}
+                      className="bg-black text-white font-bold text-sm px-8 py-3.5 rounded-xl hover:bg-gray-800 transition-colors"
+                    >
+                      Load More
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </div>
         </div>
