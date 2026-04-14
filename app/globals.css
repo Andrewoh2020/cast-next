@@ -103,10 +103,24 @@ html {
   animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Marquee horizontal scroll */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .drift-slow, .drift-medium, .drift-fast,
-  .animate-fade-in-up, .reveal-up, .animate-blink {
+  .animate-fade-in-up, .reveal-up, .animate-blink, .animate-marquee {
     animation: none !important;
   }
 }
