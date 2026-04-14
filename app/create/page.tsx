@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import CreateClient from '@/components/create/CreateClient';
 
 export const metadata: Metadata = {
@@ -7,7 +8,12 @@ export const metadata: Metadata = {
 };
 
 export default function CreatePage() {
-  // Auth is checked at the Generate click in DescribeStep, not page load
-  // This lets guests see the form and fill it out before signing up
-  return <CreateClient />;
+  // Auth is checked at the Generate click in DescribeStep, not page load.
+  // This lets guests see the form and fill it out before signing up.
+  // Suspense boundary required because CreateClient uses useSearchParams.
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <CreateClient />
+    </Suspense>
+  );
 }
