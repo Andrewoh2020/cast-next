@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       draft.description,
       draft.slug,
       draft.profileImageUrl,
-      { characterName: draft.name, characterSlug: draft.slug },
+      { characterName: draft.name, characterSlug: draft.slug, userId },
       blobPrefix,
     );
 

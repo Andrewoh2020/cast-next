@@ -290,6 +290,7 @@ export interface GenerateMeta {
   characterName?: string;
   characterSlug?: string;
   claudeCost?: number;
+  userId?: string;
 }
 
 /**
@@ -352,6 +353,13 @@ export async function generateAndUpload(
 
     resultUrl = `/api/media?p=${encodeURIComponent(blob.pathname)}`;
 
+    // Model identifier for provenance
+    const modelMap = {
+      fal: referenceImageUrls?.length ? 'fal-ai/nano-banana-2/edit' : 'fal-ai/nano-banana-2',
+      google: 'gemini-3.1-flash-image-preview',
+      kie: 'kie-ai/nano-banana-2',
+    };
+
     await appendGenerationLog({
       characterId: meta.characterId,
       characterName: meta.characterName,
@@ -364,6 +372,10 @@ export async function generateAndUpload(
       url: resultUrl,
       failed: false,
       provider,
+      userId: meta.userId,
+      prompt,
+      model: modelMap[provider],
+      referenceImageUrl: referenceImageUrls?.[0]?.startsWith('data:') ? '(data-uri-from-profile)' : referenceImageUrls?.[0],
     });
 
     return { url: resultUrl, rawBuffer: buffer, cost, provider };

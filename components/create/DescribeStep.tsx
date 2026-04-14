@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { CustomCharacterDraft, CustomCharacterAttributes } from '@/lib/custom-characters.server';
 import { RACE_LABELS, AGE_LABELS, BUILD_LABELS, HEIGHT_LABELS, STYLE_LABELS, TalentRace, TalentAgeRange, TalentBuild, TalentHeight, TalentStyle } from '@/lib/talent';
 
@@ -28,11 +30,16 @@ function randomAttributes(): CustomCharacterAttributes {
 interface Props {
   draft: CustomCharacterDraft | null;
   onComplete: (draft: CustomCharacterDraft) => void;
+  initialPrompt?: string;
+  initialName?: string;
+  autoSubmit?: boolean;
 }
 
-export default function DescribeStep({ draft, onComplete }: Props) {
-  const [description, setDescription] = useState(draft?.description ?? '');
-  const [name, setName] = useState(draft?.name ?? '');
+export default function DescribeStep({ draft, onComplete, initialPrompt, initialName, autoSubmit }: Props) {
+  const { isSignedIn } = useUser();
+  const router = useRouter();
+  const [description, setDescription] = useState(draft?.description ?? initialPrompt ?? '');
+  const [name, setName] = useState(draft?.name ?? initialName ?? '');
   const [attributes, setAttributes] = useState<CustomCharacterAttributes>(
     draft?.attributes ?? randomAttributes
   );
@@ -41,6 +48,16 @@ export default function DescribeStep({ draft, onComplete }: Props) {
   const [errors, setErrors] = useState<{ description?: string; name?: string }>({});
   const [aiGenerated, setAiGenerated] = useState(false); // tracks if AI set the description
   const draftIdRef = useRef(draft?.id ?? null);
+  const autoSubmittedRef = useRef(false);
+
+  // Auto-submit after signup return (autogen=1 in URL)
+  useEffect(() => {
+    if (autoSubmit && !autoSubmittedRef.current && isSignedIn && description.trim()) {
+      autoSubmittedRef.current = true;
+      handleContinue();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoSubmit, isSignedIn]);
 
   const autoSaveDraft = async (draftName: string, draftDesc: string, draftAttrs: CustomCharacterAttributes) => {
     const slug = draftName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -148,6 +165,19 @@ export default function DescribeStep({ draft, onComplete }: Props) {
       return;
     }
 
+    // Guest users: redirect to sign-up, preserve prompt + autogen flag
+    // After signup, they return here with the prompt prefilled and Continue auto-triggers
+    if (!isSignedIn) {
+      const params = new URLSearchParams({
+        prompt: description,
+        autogen: '1',
+      });
+      if (name) params.set('name', name);
+      const returnUrl = `/create?${params.toString()}`;
+      router.push(`/sign-up?redirect_url=${encodeURIComponent(returnUrl)}`);
+      return;
+    }
+
     setSaving(true);
     try {
       let finalName = name;
@@ -248,7 +278,7 @@ export default function DescribeStep({ draft, onComplete }: Props) {
             disabled={generating || !description.trim()}
             className="text-xs font-semibold border border-gray-200 text-gray-600 px-4 py-2 rounded-lg hover:border-gray-400 transition-colors disabled:opacity-50"
           >
-            Improve
+            Improve Description
           </button>
         </div>
       </div>
@@ -388,7 +418,7 @@ export default function DescribeStep({ draft, onComplete }: Props) {
         disabled={saving || !description.trim()}
         className="w-full bg-indigo-500 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-50 disabled:hover:translate-y-0"
       >
-        {saving ? 'Saving...' : 'Continue to Preview'}
+        {saving ? 'Saving...' : (isSignedIn ? 'Continue to Preview' : 'Sign Up to Preview')}
       </button>
     </div>
   );

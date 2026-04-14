@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
     const result = await generatePreview(draft.description, draft.slug, {
       characterName: draft.name,
       characterSlug: draft.slug,
+      userId,
     }, blobPrefix);
 
     const updatedIterations = draft.previewImageUrl ? draft.iterations + 1 : 0;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { CustomCharacterDraft } from '@/lib/custom-characters.server';
 import DescribeStep from './DescribeStep';
@@ -24,8 +25,11 @@ interface FullGenState {
 }
 
 export default function CreateClient() {
+  const { isSignedIn, isLoaded: userLoaded } = useUser();
   const searchParams = useSearchParams();
   const isPurchaseReturn = searchParams.get('credits') === 'purchased';
+  const initialPrompt = searchParams.get('prompt') || '';
+  const autogen = searchParams.get('autogen') === '1';
   const [step, setStep] = useState<Step>(isPurchaseReturn ? 'payment' : 'describe');
   const [drafts, setDrafts] = useState<CustomCharacterDraft[]>([]);
   const [currentDraft, setCurrentDraft] = useState<CustomCharacterDraft | null>(null);
@@ -55,6 +59,15 @@ export default function CreateClient() {
 
   useEffect(() => {
     if (initialLoadDoneRef.current) return;
+    if (!userLoaded) return;
+
+    // Guest users: skip auth-required fetches, just show the empty describe step
+    if (!isSignedIn) {
+      initialLoadDoneRef.current = true;
+      setLoading(false);
+      return;
+    }
+
     initialLoadDoneRef.current = true;
 
     const restoreDraftId = searchParams.get('draft');
@@ -82,7 +95,7 @@ export default function CreateClient() {
       }
     }).finally(() => setLoading(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userLoaded, isSignedIn]);
 
   // --- Full package generation logic ---
   const generateFull = useCallback(async (draftId: string) => {
@@ -423,6 +436,9 @@ export default function CreateClient() {
               <DescribeStep
                 draft={currentDraft}
                 onComplete={handleDescribeComplete}
+                initialPrompt={initialPrompt}
+                initialName={searchParams.get('name') || undefined}
+                autoSubmit={autogen && isSignedIn && !currentDraft}
               />
             )}
             {step === 'preview' && currentDraft && (

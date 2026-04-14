@@ -13,6 +13,11 @@ export interface GenerationEntry {
   failed: boolean;
   error?: string;
   provider?: 'kie' | 'fal' | 'google';
+  // Provenance fields — legal proof that no real person's likeness was used
+  userId?: string;       // who initiated the generation
+  prompt?: string;       // exact text prompt sent to the image generator
+  model?: string;        // specific AI model used (e.g. "fal-ai/nano-banana-2/edit")
+  referenceImageUrl?: string; // the input reference image (should always be AI-generated)
 }
 
 const LOG_KEY = 'logs/generation-log.json';
