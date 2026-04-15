@@ -147,11 +147,6 @@ export const FILTER_GROUPS = [
     label: 'Height',
     options: Object.entries(HEIGHT_LABELS).map(([value, label]) => ({ value, label })),
   },
-  {
-    key: 'style' as const,
-    label: 'Style',
-    options: Object.entries(STYLE_LABELS).map(([value, label]) => ({ value, label })),
-  },
 ] as const;
 
 export type FilterKey = typeof FILTER_GROUPS[number]['key'];

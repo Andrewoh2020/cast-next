@@ -4,7 +4,7 @@ const STEPS = [
   {
     num: '01',
     title: 'Describe or browse',
-    desc: 'Type what you need, or pick from 130+ ready-made characters.',
+    desc: 'Type what you need, or pick from our ready-made roster.',
   },
   {
     num: '02',

@@ -6,17 +6,44 @@ import Link from 'next/link';
 import LivingMarquee from './LivingMarquee';
 
 const PLACEHOLDER_EXAMPLES = [
-  'a 30-year-old Korean detective in a rumpled blazer',
-  'a grandmother from Lagos in a crimson sari',
-  'a 45-year-old firefighter with weathered hands',
-  'a 25-year-old violinist in a midnight-blue gown',
+  '30-year-old Korean man, detective in a rumpled blazer',
+  'Elderly Nigerian grandmother from Lagos in a crimson sari',
+  '45-year-old American firefighter, man, weathered hands',
+  'French woman, 25, violinist in a midnight-blue gown',
+  'Retired American male astronaut with silver hair, Mojave',
+  'Teenage Japanese boy skateboarder in Tokyo, bleached hair',
+  '38-year-old Nigerian male architect, tailored charcoal suit',
+  'Brazilian woman, 26, barista with ink-dark curls and hoop earrings',
+  '52-year-old Scottish fisherman, man, weathered face',
+  'Vietnamese woman chef in a linen apron, sweat on her brow',
+  '29-year-old Persian woman photojournalist, leather jacket',
+  'Elderly Polish grandfather in a wool newsboy cap',
+  '34-year-old Indian male AI researcher in rimless glasses',
+  'French woman pastry chef dusted with flour, smiling, 38',
+  '40-year-old Ethiopian male marathoner in race-day kit',
+  'Swedish woman, 33, architect in a minimalist cream turtleneck',
 ];
 
-const SUGGESTION_CHIPS = [
-  'a 28-year-old biotech founder in Seoul',
-  'an Irish deckhand at sunset',
-  'a Mumbai journalist in a linen suit',
+const SUGGESTION_CHIPS_POOL = [
+  'Korean woman biotech founder, 28, Seoul',
+  'American man park ranger in Montana, 32',
+  'Indian male journalist, 41, linen suit',
+  'Retired American male astronaut, Mojave',
+  'Kenyan woman pilot, 36, leather flight jacket',
+  'Japanese male sake brewer, 55',
+  'Colombian woman street-food vendor at dawn, 48',
+  'Greek male shipbuilder, 60, calloused hands',
+  'Moroccan woman textile artist in an indigo kaftan, 42',
+  'German woman DJ from Berlin, 30, platinum hair',
+  'Mexican male wedding photographer in Oaxaca, 35',
+  'Australian woman surf instructor on Bondi Beach, 29',
 ];
+
+// Pick 3 random chips per page load for variety
+function pickChips(): string[] {
+  const shuffled = [...SUGGESTION_CHIPS_POOL].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 3);
+}
 
 /**
  * Variant B:2 — Text at top, marquee fills below
@@ -26,6 +53,8 @@ export default function HeroB2() {
   const [query, setQuery] = useState('');
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
+  const [cursorOn, setCursorOn] = useState(true);
+  const [suggestionChips] = useState<string[]>(() => pickChips());
   const router = useRouter();
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -48,6 +77,13 @@ export default function HeroB2() {
     return () => { if (typingTimerRef.current) clearTimeout(typingTimerRef.current); };
   }, [placeholderIdx, query]);
 
+  // Blink the placeholder cursor every 530ms
+  useEffect(() => {
+    if (query) return;
+    const interval = setInterval(() => setCursorOn(c => !c), 530);
+    return () => clearInterval(interval);
+  }, [query]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = query.trim();
@@ -69,7 +105,7 @@ export default function HeroB2() {
         </h1>
 
         <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto mb-7 leading-relaxed">
-          130+ photorealistic AI actors. Browse the roster below or describe your own — ready for Kling, Runway, and Veo.
+          Photorealistic AI actors for commercial video. Browse the roster below or describe your own — ready for Kling, Runway, and Veo.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mb-4">
@@ -81,7 +117,7 @@ export default function HeroB2() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={typedPlaceholder + (!query ? '|' : '')}
+              placeholder={typedPlaceholder + (!query && cursorOn ? '|' : '')}
               className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base font-medium px-3 py-2 outline-none"
             />
             <button
@@ -89,14 +125,14 @@ export default function HeroB2() {
               disabled={!query.trim()}
               className="bg-black text-white font-bold text-sm px-5 py-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-40 whitespace-nowrap"
             >
-              Create →
+              Generate Character
             </button>
           </div>
         </form>
 
         <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
           <span className="text-xs text-gray-500 font-medium self-center mr-1">Try:</span>
-          {SUGGESTION_CHIPS.map((chip) => (
+          {suggestionChips.map((chip) => (
             <button
               key={chip}
               onClick={() => setQuery(chip)}

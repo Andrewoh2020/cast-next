@@ -4,41 +4,62 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Talent, thumbUrl } from '@/lib/talent';
 
-const DEMO_PROMPT = 'A 32-year-old Mexican marine biologist with sun-bleached hair, wearing a navy polo and a vintage dive watch.';
-
 type Stage = 'idle' | 'typing' | 'generating' | 'revealed';
+
+const NUM_DEMOS = 3;
+const REVEAL_HOLD_MS = 4000;
+
+/**
+ * Reverse-engineer a simple, realistic prompt from a character's stored vibe.
+ * Takes the first sentence so it feels like a casual description a user
+ * would actually type.
+ */
+function vibeToPrompt(vibe: string): string {
+  if (!vibe) return '';
+  const trimmed = vibe.trim();
+  const firstSentence = trimmed.match(/^[^.!?]+[.!?]/)?.[0] ?? trimmed.slice(0, 160);
+  return firstSentence.trim();
+}
 
 export default function LiveDemoSection() {
   const [typedText, setTypedText] = useState('');
   const [stage, setStage] = useState<Stage>('idle');
-  const [character, setCharacter] = useState<Talent | null>(null);
+  const [demoIdx, setDemoIdx] = useState(0);
+  const [characters, setCharacters] = useState<Talent[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const startedRef = useRef(false);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  // Fetch a single character with a real reference sheet
+  // Fetch 3 characters with reference sheets, deterministic but varied daily
   useEffect(() => {
     fetch('/api/characters')
       .then(r => r.json())
       .then((data: Talent[]) => {
-        const candidates = data.filter(t => !t.exclusive && t.referenceSheetUrl && (t.refSheetThumbnail || t.referenceSheetUrl));
-        if (candidates.length > 0) {
-          // Deterministic pick that varies daily so demo isn't always identical
-          const idx = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % candidates.length;
-          setCharacter(candidates[idx]);
+        const candidates = data.filter(t =>
+          !t.exclusive &&
+          t.referenceSheetUrl &&
+          t.vibe &&
+          t.vibe.length > 30
+        );
+        if (candidates.length === 0) return;
+        const dayOffset = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+        const picks: Talent[] = [];
+        for (let i = 0; i < NUM_DEMOS; i++) {
+          picks.push(candidates[(dayOffset + i * 17) % candidates.length]);
         }
+        setCharacters(picks);
       })
       .catch(() => {});
   }, []);
 
-  // Start the demo when scrolled into view
+  // Start the cycle when scrolled into view
   useEffect(() => {
-    if (!sectionRef.current || !character) return;
+    if (!sectionRef.current || characters.length === 0) return;
 
     const start = () => {
       if (startedRef.current) return;
       startedRef.current = true;
-      runDemo();
+      runDemo(0);
     };
 
     const observer = new IntersectionObserver(
@@ -54,19 +75,24 @@ export default function LiveDemoSection() {
     observer.observe(sectionRef.current);
     return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [character]);
+  }, [characters]);
 
-  const runDemo = () => {
+  const runDemo = (idx: number) => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
 
+    const character = characters[idx];
+    if (!character) return;
+
+    setDemoIdx(idx);
     setStage('typing');
     setTypedText('');
 
+    const prompt = vibeToPrompt(character.vibe);
     let i = 0;
     const type = () => {
-      if (i <= DEMO_PROMPT.length) {
-        setTypedText(DEMO_PROMPT.slice(0, i));
+      if (i <= prompt.length) {
+        setTypedText(prompt.slice(0, i));
         i++;
         timersRef.current.push(setTimeout(type, 18));
       } else {
@@ -76,18 +102,26 @@ export default function LiveDemoSection() {
     type();
   };
 
-  // Move from generating → revealed
+  // Generating → revealed → next demo
   useEffect(() => {
     if (stage === 'generating') {
       const t = setTimeout(() => setStage('revealed'), 1100);
       timersRef.current.push(t);
+    } else if (stage === 'revealed') {
+      const t = setTimeout(() => {
+        const next = (demoIdx + 1) % characters.length;
+        runDemo(next);
+      }, REVEAL_HOLD_MS);
+      timersRef.current.push(t);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage]);
 
-  // Cleanup on unmount
   useEffect(() => () => {
     timersRef.current.forEach(clearTimeout);
   }, []);
+
+  const character = characters[demoIdx];
 
   return (
     <section ref={sectionRef} className="relative py-24 px-6 bg-white">
@@ -112,7 +146,8 @@ export default function LiveDemoSection() {
             <div className="flex-1 bg-white rounded-2xl border border-gray-200 p-6 min-h-[200px]">
               <p className="text-lg text-gray-800 leading-relaxed">
                 {typedText}
-                {stage === 'typing' && <span className="animate-blink">|</span>}
+                {/* Cursor blinks always once demo starts — typing, generating, and revealed */}
+                {stage !== 'idle' && <span className="animate-blink">|</span>}
               </p>
             </div>
             <div className="mt-5 flex items-center justify-between text-xs text-gray-400">
@@ -132,11 +167,14 @@ export default function LiveDemoSection() {
               {/* Profile photo — top, prominent */}
               <div className="relative rounded-2xl overflow-hidden bg-gray-200 mx-auto w-full max-w-[200px] aspect-[3/4]">
                 <p className="absolute top-2 left-2 z-10 text-[9px] font-black uppercase tracking-widest text-white bg-black/60 backdrop-blur-sm rounded-md px-2 py-1">Profile</p>
-                {character && stage !== 'idle' && stage !== 'typing' && (
-                  <div className={`absolute inset-0 transition-all duration-700 ${stage === 'generating' ? 'opacity-30 blur-md' : 'opacity-100 blur-0'}`}>
+                {character && (stage === 'generating' || stage === 'revealed') && (
+                  <div
+                    key={`profile-${character.id}-${demoIdx}`}
+                    className={`absolute inset-0 ${stage === 'generating' ? 'opacity-30 blur-md' : 'opacity-100 blur-0 transition-all duration-700'}`}
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={thumbUrl(character.imgThumbnail || character.img, 400)}
+                      src={thumbUrl(character.img, 1200)}
                       alt={character.name}
                       className="w-full h-full object-cover object-top"
                     />
@@ -147,31 +185,24 @@ export default function LiveDemoSection() {
                     <div className="w-8 h-8 border-3 border-indigo-300 border-t-indigo-500 rounded-full animate-spin" />
                   </div>
                 )}
-                {stage === 'revealed' && character && (
-                  <div className="absolute bottom-2 left-2 right-2 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1.5">
-                    <p className="text-[10px] font-bold text-black truncate">{character.name}</p>
-                  </div>
-                )}
               </div>
 
-              {/* Full reference sheet — wide strip below */}
-              <div className={`relative rounded-2xl overflow-hidden bg-gray-200 transition-all duration-700 ${
-                stage === 'revealed' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+              {/* Full reference sheet — wide strip below, higher resolution */}
+              <div className={`relative rounded-2xl overflow-hidden bg-gray-200 ${
+                stage === 'revealed' ? 'opacity-100 translate-y-0 transition-all duration-700' : 'opacity-0 translate-y-3'
               }`} style={{ aspectRatio: '21/9' }}>
                 <p className="absolute top-2 left-2 z-10 text-[9px] font-black uppercase tracking-widest text-white bg-black/60 backdrop-blur-sm rounded-md px-2 py-1">8-Panel Reference Sheet · 4K</p>
-                {character?.referenceSheetUrl && (
-                  <div className={`absolute inset-0 transition-all duration-700 ${stage === 'generating' ? 'opacity-20 blur-md' : 'opacity-100 blur-0'}`}>
+                {character?.referenceSheetUrl && stage === 'revealed' && (
+                  <div
+                    key={`ref-${character.id}-${demoIdx}`}
+                    className="absolute inset-0"
+                  >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={thumbUrl(character.refSheetThumbnail || character.referenceSheetUrl, 1200)}
+                      src={thumbUrl(character.referenceSheetUrl, 2000)}
                       alt={`${character.name} reference sheet`}
                       className="w-full h-full object-cover object-center"
                     />
-                  </div>
-                )}
-                {stage === 'generating' && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-10 h-10 border-3 border-indigo-300 border-t-indigo-500 rounded-full animate-spin" />
                   </div>
                 )}
               </div>
@@ -184,6 +215,18 @@ export default function LiveDemoSection() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Subtle progress indicator (no clickable slider) */}
+        <div className="flex justify-center gap-1.5 mt-8" aria-hidden="true">
+          {Array.from({ length: NUM_DEMOS }).map((_, i) => (
+            <span
+              key={i}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                i === demoIdx ? 'w-8 bg-indigo-500' : 'w-4 bg-gray-200'
+              }`}
+            />
+          ))}
         </div>
       </div>
     </section>

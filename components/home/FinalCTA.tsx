@@ -51,7 +51,7 @@ export default function FinalCTA() {
 
         <div className="flex items-center justify-center gap-4 text-sm">
           <a href="/#roster" className="font-semibold text-gray-600 hover:text-black transition-colors">
-            Browse 130+ characters →
+            Browse the roster →
           </a>
           <span className="text-gray-300">·</span>
           <a href="/how-it-works" className="font-semibold text-gray-600 hover:text-black transition-colors">

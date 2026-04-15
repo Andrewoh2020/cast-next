@@ -61,7 +61,7 @@ export default function CommunityShowcase() {
               <div key={entry.characterId} className="group relative">
                 <div className="relative w-full rounded-xl overflow-hidden" style={{ paddingBottom: '133%' }}>
                   <Image
-                    src={thumbUrl(entry.previewImageUrl, 200)}
+                    src={thumbUrl(entry.previewImageUrl, 800)}
                     alt={entry.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"

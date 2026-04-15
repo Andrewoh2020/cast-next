@@ -35,14 +35,14 @@ function MarqueeRow({ talents, duration, cardHeight }: MarqueeRowProps) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={thumbUrl(img, 400)}
+                src={thumbUrl(img, 800)}
                 alt={talent.name}
                 className="w-full h-full object-cover object-top"
                 loading="lazy"
               />
               <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                 <p className="text-white font-bold text-xs truncate">{talent.name}</p>
-                <p className="text-white/70 text-[10px] mt-0.5">{talent.ageRange} · From $50</p>
+                <p className="text-white/70 text-[10px] mt-0.5 truncate">{talent.ageRange} · {talent.ethnicity || (talent.race?.[0]) || ''}</p>
               </div>
             </a>
           );

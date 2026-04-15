@@ -75,11 +75,6 @@ export default function FeaturedCarousel() {
                 className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
               />
 
-              {/* Price badge — always visible */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs font-bold text-black shadow-lg">
-                From $50
-              </div>
-
               {/* Exclusive chip */}
               {talent.exclusive && (
                 <div className="absolute top-4 left-4 bg-amber-400/95 backdrop-blur-sm rounded-full px-3 py-1.5 text-[10px] font-black text-black uppercase tracking-wide">
