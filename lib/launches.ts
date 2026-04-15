@@ -11,6 +11,23 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-15',
+    title: 'Homepage Redesign — Cinematic Hero Reel and Filmmaker-First Narrative',
+    summary:
+      'A ground-up homepage redesign that reframes Cast from "character catalog" to "AI casting platform." New cinematic hero reel, directability showcase, dedicated copyright-safe section, and upgraded roster browsing.',
+    highlights: [
+      'Cinematic hero reel — full-width autoplay showcase of AI characters in real scenes (NYC street, library, cocktail bar, restaurant kitchen) so filmmakers can see range at a glance',
+      'New hero search with animated typing placeholder, blinking cursor, and varied archetype example prompts',
+      'Directability section — showcases the 4K 8-panel reference sheet as a full cinematic strip proving one cast works across every shot',
+      'Copyright-safe section — dedicated three-pillar explainer (no real-person likeness, commercial license on every cast, written indemnity on Exclusive tier) with link to full FAQ',
+      'Browse the roster — simplified roster section with sticky search, pill filters, and an inline Advanced filter panel; removed price tags and character count from marketing surfaces',
+      'Higher-quality thumbnails — roster grid now serves 1200px images and community showcase 800px, noticeably sharper on retina displays',
+      'LiveDemo polish — rotating character demos auto-advance on scroll-into-view, crossfade profile photo and full reference sheet without flashing next character during transitions',
+      'LivingMarquee hover info updated to show ethnicity + age, matching the roster card format',
+      'Removed Style filter (Cast currently only offers realistic characters) to keep filters honest and focused',
+    ],
+  },
+  {
     date: '2026-04-13',
     title: 'Product Hunt Launch, How It Works Page, and Launch Promo',
     summary:

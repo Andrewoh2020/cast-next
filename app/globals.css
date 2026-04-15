@@ -47,6 +47,93 @@ html {
   animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* ── Homepage redesign utilities ───────────────────────────────── */
+
+/* Soft mesh gradient for hero backgrounds */
+.bg-mesh-gradient {
+  background:
+    radial-gradient(at 10% 0%, rgba(236, 254, 255, 0.4) 0%, transparent 50%),
+    radial-gradient(at 80% 10%, rgba(233, 213, 255, 0.35) 0%, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(199, 210, 254, 0.3) 0%, transparent 50%),
+    radial-gradient(at 20% 90%, rgba(254, 226, 226, 0.25) 0%, transparent 50%),
+    #fafaf9;
+}
+
+/* Subtle dot grid pattern */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Floating portrait drift animations for animated hero */
+@keyframes drift-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(15px, -20px); }
+}
+
+@keyframes drift-medium {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-18px, 14px); }
+}
+
+@keyframes drift-fast {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(22px, 18px); }
+}
+
+.drift-slow   { animation: drift-slow 18s ease-in-out infinite; }
+.drift-medium { animation: drift-medium 13s ease-in-out infinite; }
+.drift-fast   { animation: drift-fast 9s ease-in-out infinite; }
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Scroll-reveal */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal-up {
+  animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Marquee horizontal scroll */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Drawer slide-in */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .drift-slow, .drift-medium, .drift-fast,
+  .animate-fade-in-up, .reveal-up, .animate-blink, .animate-marquee {
+    animation: none !important;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

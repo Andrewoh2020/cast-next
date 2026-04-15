@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { get } from '@vercel/blob';
 import sharp from 'sharp';
 
-const ALLOWED_WIDTHS = [96, 200, 400, 800, 1200];
+const ALLOWED_WIDTHS = [96, 200, 400, 800, 1200, 2000];
 
 export async function GET(req: NextRequest) {
   const pathname = req.nextUrl.searchParams.get('p');

@@ -23,6 +23,12 @@ export default function CompleteStep({ draft, generating, generationError, onRet
   const [refSheetUrl, setRefSheetUrl] = useState(draft.referenceSheetUrl);
   const [regenCount, setRegenCount] = useState(draft.refSheetRegenerations ?? 0);
 
+  // Keep local state in sync when draft prop updates (e.g., after generation completes or switching drafts)
+  useEffect(() => {
+    setRefSheetUrl(draft.referenceSheetUrl);
+    setRegenCount(draft.refSheetRegenerations ?? 0);
+  }, [draft.id, draft.referenceSheetUrl, draft.refSheetRegenerations]);
+
   // Animated progress bar for ref sheet generation — climbs to 95% over ~180s
   const [progress, setProgress] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);

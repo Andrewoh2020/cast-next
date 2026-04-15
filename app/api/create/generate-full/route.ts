@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
     const { profile, refSheet, profileThumbUrl, refSheetThumbUrl } = await generateFull(draft.description, draft.slug, {
       characterName: draft.name,
       characterSlug: draft.slug,
+      userId,
     }, blobPrefix, draft.sourceProfileUrl);
 
     const now = new Date().toISOString();

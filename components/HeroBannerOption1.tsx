@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import HeroSearch from './HeroSearch';
 
 export default function HeroBannerOption1() {
   return (
@@ -18,10 +19,6 @@ export default function HeroBannerOption1() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full max-w-5xl mx-auto px-6 pb-16">
-        <div className="hidden sm:inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full mb-5 w-fit border border-white/20">
-          100% Copyright Safe &middot; AI-Generated Talent
-        </div>
-
         <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95] text-white mb-4">
           Your next lead actor<br />is already perfect.
         </h1>
@@ -30,6 +27,10 @@ export default function HeroBannerOption1() {
           Browse our curated roster of AI-generated characters in 4K — ready to cast, license,
           and bring to screen. No prompts. No uncertainty. No rights issues.
         </p>
+
+        <div className="mb-6">
+          <HeroSearch />
+        </div>
 
         <div className="flex items-center gap-3 flex-wrap mb-10">
           <Link
