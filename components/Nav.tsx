@@ -29,7 +29,10 @@ export default function Nav() {
       .catch(() => {});
   }, [isSignedIn]);
 
-  const transparent = isHome && !scrolled;
+  // The new homepage hero has a white background, so the nav stays solid
+  // everywhere. Keep the scrolled flag available for future variants.
+  void scrolled;
+  const transparent = false;
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${transparent ? 'bg-transparent border-b border-transparent' : 'bg-white/90 backdrop-blur-md border-b border-black/5'}`}>
