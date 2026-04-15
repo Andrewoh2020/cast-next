@@ -128,9 +128,10 @@ export default function LiveDemoSection() {
               <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Cast delivers</p>
             </div>
 
-            <div className="flex-1 grid grid-cols-3 gap-3">
-              {/* Big profile photo */}
-              <div className="col-span-1 row-span-2 relative rounded-2xl overflow-hidden bg-gray-200 aspect-[3/4]">
+            <div className="flex-1 flex flex-col gap-3">
+              {/* Profile photo — top, prominent */}
+              <div className="relative rounded-2xl overflow-hidden bg-gray-200 mx-auto w-full max-w-[200px] aspect-[3/4]">
+                <p className="absolute top-2 left-2 z-10 text-[9px] font-black uppercase tracking-widest text-white bg-black/60 backdrop-blur-sm rounded-md px-2 py-1">Profile</p>
                 {character && stage !== 'idle' && stage !== 'typing' && (
                   <div className={`absolute inset-0 transition-all duration-700 ${stage === 'generating' ? 'opacity-30 blur-md' : 'opacity-100 blur-0'}`}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -143,7 +144,7 @@ export default function LiveDemoSection() {
                 )}
                 {stage === 'generating' && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-10 h-10 border-4 border-indigo-300 border-t-indigo-500 rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-3 border-indigo-300 border-t-indigo-500 rounded-full animate-spin" />
                   </div>
                 )}
                 {stage === 'revealed' && character && (
@@ -153,27 +154,27 @@ export default function LiveDemoSection() {
                 )}
               </div>
 
-              {/* 6 reference sheet panel thumbnails */}
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`relative rounded-xl overflow-hidden bg-gray-200 aspect-square transition-all duration-500 ${
-                    stage === 'revealed' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-                  }`}
-                  style={{ transitionDelay: stage === 'revealed' ? `${i * 70}ms` : '0ms' }}
-                >
-                  {character && (
-                    <div
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{
-                        backgroundImage: `url(${thumbUrl(character.refSheetThumbnail || character.referenceSheetUrl || '', 800)})`,
-                        backgroundPosition: `${(i % 3) * 50}% ${Math.floor(i / 3) * 100}%`,
-                        backgroundSize: '300% 200%',
-                      }}
+              {/* Full reference sheet — wide strip below */}
+              <div className={`relative rounded-2xl overflow-hidden bg-gray-200 transition-all duration-700 ${
+                stage === 'revealed' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+              }`} style={{ aspectRatio: '21/9' }}>
+                <p className="absolute top-2 left-2 z-10 text-[9px] font-black uppercase tracking-widest text-white bg-black/60 backdrop-blur-sm rounded-md px-2 py-1">8-Panel Reference Sheet · 4K</p>
+                {character?.referenceSheetUrl && (
+                  <div className={`absolute inset-0 transition-all duration-700 ${stage === 'generating' ? 'opacity-20 blur-md' : 'opacity-100 blur-0'}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={thumbUrl(character.refSheetThumbnail || character.referenceSheetUrl, 1200)}
+                      alt={`${character.name} reference sheet`}
+                      className="w-full h-full object-cover object-center"
                     />
-                  )}
-                </div>
-              ))}
+                  </div>
+                )}
+                {stage === 'generating' && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 border-3 border-indigo-300 border-t-indigo-500 rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="mt-5 flex items-center justify-between text-xs">
