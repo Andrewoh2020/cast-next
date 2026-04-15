@@ -108,6 +108,7 @@ export default async function CharacterPage({ params }: Props) {
               <div className="relative rounded-2xl overflow-hidden bg-gray-100" style={{ paddingBottom: '133%' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                  key={character.img}
                   src={thumbUrl(character.img, 800)}
                   alt={character.name}
                   className="absolute inset-0 w-full h-full object-cover"
@@ -124,6 +125,7 @@ export default async function CharacterPage({ params }: Props) {
                 <div className="rounded-2xl overflow-hidden bg-gray-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
+                    key={character.referenceSheetUrl}
                     src={thumbUrl(character.referenceSheetUrl, 800)}
                     alt={`${character.name} reference sheet`}
                     className="w-full object-cover"

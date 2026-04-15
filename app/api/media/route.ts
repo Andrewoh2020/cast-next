@@ -39,7 +39,9 @@ export async function GET(req: NextRequest) {
       return new Response(resized as unknown as BodyInit, {
         headers: {
           'Content-Type': 'image/jpeg',
-          'Cache-Control': 'public, max-age=31536000, immutable',
+          // 1 day fresh + 7 days stale-while-revalidate. Avoids "immutable" so any
+          // bad cached bytes can heal themselves within a day.
+          'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
         },
       });
     }
