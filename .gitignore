@@ -43,3 +43,7 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# hero reel source clips — only commit the compiled reel
+/public/hero-videos/*
+!/public/hero-videos/reel.mp4
