@@ -11,6 +11,18 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-16',
+    title: 'Environmental Portraits and Archetype Casting Chips',
+    summary:
+      'The homepage now features 20 characters shown in their world — CEOs, athletes, chefs, journalists placed in cinematic scenes. Hero search gets curated archetype chips that cycle through 60 hand-written prompts.',
+    highlights: [
+      'Environmental portraits — 20 featured characters now appear in scene-placed variants across the homepage marquee (Seoul street, Barcelona cafe, hospital, Vienna library, Pacific beach, and more). Identity preserved, wardrobe swapped to fit each scene.',
+      'Archetype chips replace random prompt suggestions in the hero search — CEO, Athlete, Chef, Artist, Musician, Journalist. Each chip cycles through 10 distinct prompt variants per click for fresh inspiration every time (60 prompts total).',
+      'Marquee row 2 now exclusively cinematic — scene-placed characters stay in their own row, not mixed with studio portraits.',
+      'Studio portraits preserved on character detail pages — the scene variants are marketing-only; buyers still get the headshot + 4K reference sheet.',
+    ],
+  },
+  {
     date: '2026-04-15',
     title: 'Homepage Redesign — Cinematic Hero Reel and Filmmaker-First Narrative',
     summary:

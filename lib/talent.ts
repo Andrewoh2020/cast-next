@@ -30,6 +30,12 @@ export interface Talent {
   img: string;
   imgThumbnail?: string;
   imgHistory?: string[];
+  /**
+   * Environmental portrait — same character placed in a scene with scene-
+   * appropriate wardrobe. Used on marketing surfaces (homepage marquee) only.
+   * Character detail pages continue to use `img` as the canonical headshot.
+   */
+  sceneImg?: string;
   gallery?: string[];
   referenceSheetUrl?: string;
   refSheetThumbnail?: string;

@@ -24,26 +24,104 @@ const PLACEHOLDER_EXAMPLES = [
   'Swedish woman, 33, architect in a minimalist cream turtleneck',
 ];
 
-const SUGGESTION_CHIPS_POOL = [
-  'Korean woman biotech founder, 28, Seoul',
-  'American man park ranger in Montana, 32',
-  'Indian male journalist, 41, linen suit',
-  'Retired American male astronaut, Mojave',
-  'Kenyan woman pilot, 36, leather flight jacket',
-  'Japanese male sake brewer, 55',
-  'Colombian woman street-food vendor at dawn, 48',
-  'Greek male shipbuilder, 60, calloused hands',
-  'Moroccan woman textile artist in an indigo kaftan, 42',
-  'German woman DJ from Berlin, 30, platinum hair',
-  'Mexican male wedding photographer in Oaxaca, 35',
-  'Australian woman surf instructor on Bondi Beach, 29',
+/**
+ * Archetype chips — curated casting archetypes that translate across film, ad,
+ * and editorial work. Each chip has 10 distinct prompt variations. Clicking a
+ * chip multiple times cycles through variants so users get fresh inspiration
+ * instead of the same prompt every time.
+ */
+const ARCHETYPE_CHIPS: { label: string; prompts: string[] }[] = [
+  {
+    label: 'CEO',
+    prompts: [
+      'Japanese-American woman CEO, 42, tailored navy suit, glass-walled office with soft backlight',
+      'Nigerian male tech CEO, 35, charcoal bespoke suit, minimalist high-rise boardroom',
+      'Swedish woman CEO, 52, cream turtleneck under a gray blazer, sunlit corner office',
+      'Brazilian male fintech founder, 41, navy suit without a tie, warm dusk light through floor-to-ceiling windows',
+      'Korean woman CEO, 38, tailored cream suit, slicked-back ponytail, modern lobby',
+      'Indian male venture capitalist, 45, charcoal three-piece suit, leather armchair in a wood-paneled library',
+      'Mexican woman startup CEO, 33, rolled-up oxford sleeves, standup desk cluttered with laptops',
+      'British man CEO, 58, navy pinstripe, standing on a Thames-facing terrace at dusk',
+      'Kenyan woman CEO, 47, emerald blazer over a silk blouse, warm-lit rooftop bar',
+      'French man CEO, 50, cuffed dress shirt, leaning on a marble conference table',
+    ],
+  },
+  {
+    label: 'Athlete',
+    prompts: [
+      'Kenyan male marathoner, 28, mid-stride in race-day kit, golden-hour track light, sweat on his brow',
+      'Brazilian woman gymnast, 22, chalked hands, stadium floodlights, preparing for her routine',
+      'Japanese male surfer, 26, wetsuit half-zipped, dawn light on wet sand, board under his arm',
+      'Nigerian woman sprinter, 25, tensed in the starting blocks, rain streaks on the track',
+      'Norwegian male cross-country skier, 32, goggles up, breath visible, backdrop of snow and pine',
+      'American woman pro boxer, 30, wrapped hands, gym with a heavy bag behind her',
+      'Italian male road cyclist, 35, salt-crusted kit after a long climb, Dolomites behind him',
+      'Australian woman surfer, 24, walking out of shore break with her board, sunset light',
+      'Moroccan male rock climber, 29, chalk bag on hip, sunset in the High Atlas',
+      'South African woman triathlete, 31, wet hair, swim cap in hand, stepping off the beach',
+    ],
+  },
+  {
+    label: 'Chef',
+    prompts: [
+      'French woman chef, 38, white linen apron dusted with flour, warm kitchen lighting, small smile',
+      'Japanese male sushi chef, 55, pristine white jacket, bamboo counter, plating a nigiri with tweezers',
+      'Mexican woman pastry chef, 34, piping delicate icing onto a cake in a bright prep kitchen',
+      'Italian male pasta chef, 48, flour-dusted forearms rolling fresh dough, rustic kitchen with hanging pots',
+      'Ethiopian woman chef, 42, colorful apron, ladling stew from a clay pot, sunlit cafe kitchen',
+      'American male barbecue pitmaster, 50, wood smoke rising, apron smeared with sauce',
+      'Thai woman street-food chef, 45, steaming wok, night-market neon signs behind her',
+      'Spanish male tapas chef, 39, red apron over a black tee, open-flame tapas bar service',
+      'Korean woman kimchi chef, 60, rolled sleeves and blue apron, ceramic jars lined behind her',
+      'New Zealand male chef, 36, inspecting fresh greens from a kitchen garden at sunrise',
+    ],
+  },
+  {
+    label: 'Artist',
+    prompts: [
+      'Moroccan woman textile artist, 42, indigo-dyed hands, sunlit studio with hanging kaftans',
+      'Nigerian male painter, 30, paint-smeared smock, oversized canvas in a converted warehouse studio',
+      'Japanese woman ceramicist, 48, clay on her forearms, at a wheel in a wooden studio',
+      'French male sculptor, 55, stone dust on his apron, working a marble bust in an open-air atelier',
+      'Indian woman illustrator, 27, tablet and stylus, golden-hour window light in a home studio',
+      'Peruvian male weaver, 65, hand-loom on his lap, traditional textiles around him',
+      'Italian woman fresco painter, 35, on scaffolding under a chapel ceiling, brushes in hand',
+      'Mexican male muralist, 40, spraying paint on a Brooklyn alley wall, evening light',
+      'Korean woman calligrapher, 52, brush mid-stroke over handmade paper, quiet tea-lit studio',
+      'Scottish male photographer-artist, 33, large-format camera on a tripod, moody Highlands behind him',
+    ],
+  },
+  {
+    label: 'Musician',
+    prompts: [
+      'Black male jazz pianist, 55, at a grand piano, dim club lighting, fedora on the bench beside him',
+      'Cuban woman salsa singer, 32, microphone in hand, stage lights, sequined dress',
+      'Icelandic male cellist, 40, lone performance on a volcanic cliff, wool sweater',
+      'Indian woman sitar player, 60, traditional sari, seated on a rug under warm lamplight',
+      'Brazilian male samba drummer, 29, sweating at carnival, colorful costume, stage pink',
+      'German woman techno DJ, 30, headphones on, Berlin club blue-and-magenta haze',
+      'Irish male fiddler, 45, small pub stage, pint of stout on the stool beside him',
+      'Korean woman K-pop artist, 24, mid-choreography, stage smoke and spotlight',
+      'American woman folk guitarist, 38, on a porch at golden hour, acoustic guitar on her lap',
+      'Malian male kora player, 52, seated in an earth-walled courtyard, strings catching morning light',
+    ],
+  },
+  {
+    label: 'Journalist',
+    prompts: [
+      'Persian woman photojournalist, 29, leather jacket, camera slung across her chest, rain-slick Istanbul street',
+      'American male war correspondent, 44, flak jacket, notebook in hand, dust-kicked Middle Eastern street',
+      'Japanese woman news anchor, 36, tailored blazer, studio lights, monitors glowing behind her',
+      'Nigerian male investigative reporter, 41, rolled-up sleeves, standing in a chaotic newsroom',
+      'French woman magazine editor, 50, pen in hand, glass-walled office, stack of back issues on her desk',
+      'British male foreign correspondent, 38, beige field shirt, Moleskine in hand, Mumbai market background',
+      'Mexican woman crime reporter, 33, voice recorder raised, dimly lit press conference',
+      'Korean male tech journalist, 29, MacBook open at a Tokyo cafe, skyline through the window',
+      'Ukrainian woman journalist, 42, helmet in hand, sunrise over a defiant city skyline',
+      'Argentine male sports journalist, 48, press pass around his neck, roaring stadium behind him',
+    ],
+  },
 ];
-
-// Pick 3 random chips per page load for variety
-function pickChips(): string[] {
-  const shuffled = [...SUGGESTION_CHIPS_POOL].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 3);
-}
 
 /**
  * Variant B:2 — Text at top, marquee fills below
@@ -54,9 +132,10 @@ export default function HeroB2() {
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
   const [cursorOn, setCursorOn] = useState(true);
-  const [suggestionChips] = useState<string[]>(() => pickChips());
   const router = useRouter();
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track per-chip click count so each click cycles to the next prompt variant
+  const chipClickCountRef = useRef<Record<string, number>>({});
 
   useEffect(() => {
     if (query) return;
@@ -131,14 +210,25 @@ export default function HeroB2() {
         </form>
 
         <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
-          <span className="text-xs text-gray-500 font-medium self-center mr-1">Try:</span>
-          {suggestionChips.map((chip) => (
+          <span className="text-xs text-gray-500 font-medium self-center mr-1">Cast a:</span>
+          {ARCHETYPE_CHIPS.map((chip) => (
             <button
-              key={chip}
-              onClick={() => setQuery(chip)}
-              className="text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 transition-colors"
+              key={chip.label}
+              onClick={() => {
+                // Cycle through the chip's prompt variants. First click picks a
+                // random start so refreshing the page feels fresh, subsequent
+                // clicks step forward through the list.
+                const counts = chipClickCountRef.current;
+                const seen = counts[chip.label] ?? -1;
+                const nextIdx = seen === -1
+                  ? Math.floor(Math.random() * chip.prompts.length)
+                  : (seen + 1) % chip.prompts.length;
+                counts[chip.label] = nextIdx;
+                setQuery(chip.prompts[nextIdx]);
+              }}
+              className="text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-3.5 py-1.5 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 transition-colors"
             >
-              {chip}
+              {chip.label}
             </button>
           ))}
         </div>

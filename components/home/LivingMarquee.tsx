@@ -25,7 +25,9 @@ function MarqueeRow({ talents, duration, cardHeight }: MarqueeRowProps) {
         }}
       >
         {doubled.map((talent, i) => {
-          const img = talent.imgThumbnail || talent.img;
+          // Prefer the environmental/scene portrait when available (marketing
+          // surface), otherwise fall back to the studio thumbnail/portrait.
+          const img = talent.sceneImg || talent.imgThumbnail || talent.img;
           return (
             <a
               key={`${talent.id}-${i}`}
@@ -68,11 +70,15 @@ export default function LivingMarquee() {
     return <div className="h-[560px] bg-gray-50" />;
   }
 
-  // Split into 3 groups with some overlap for visual variety
-  const third = Math.ceil(talents.length / 3);
-  const row1 = talents.slice(0, third);
-  const row2 = talents.slice(third, third * 2);
-  const row3 = talents.slice(third * 2);
+  // Row 2 is reserved for environmental scene portraits (characters shown
+  // "in their world"). Rows 1 and 3 use studio portraits only. This keeps the
+  // cinematic row visually distinct and avoids mixing tones within a row.
+  const sceneCharacters = talents.filter(t => t.sceneImg);
+  const studioCharacters = talents.filter(t => !t.sceneImg);
+  const half = Math.ceil(studioCharacters.length / 2);
+  const row1 = studioCharacters.slice(0, half);
+  const row2 = sceneCharacters;
+  const row3 = studioCharacters.slice(half);
 
   return (
     <div className="relative w-full">

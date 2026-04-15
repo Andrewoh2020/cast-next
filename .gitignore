@@ -47,3 +47,6 @@ next-env.d.ts
 # hero reel source clips — only commit the compiled reel
 /public/hero-videos/*
 !/public/hero-videos/reel.mp4
+
+# scene portraits generated locally — lives in Blob, no need to commit
+/public/scene-portraits/
