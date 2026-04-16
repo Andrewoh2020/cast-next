@@ -255,7 +255,6 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
       });
       setCanvasImg(result.imageUrl);
       setCanvasLabel(result.prompt || (isOutfit ? 'New outfit' : 'New scene'));
-      setPrompt('');
       setReferenceFile(null);
     } catch (err) {
       clearTimeout(timeoutId);
@@ -278,7 +277,6 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
               setCanvasImg(freshWorkshop.outfits?.[0]?.imageUrl ?? canvasImg);
               setCanvasLabel(freshWorkshop.outfits?.[0]?.prompt ?? canvasLabel);
               setError(null);
-              setPrompt('');
               setReferenceFile(null);
             } else {
               setError('Generation is still processing, or may have failed due to an inappropriate prompt. Try a different description or refresh in a moment.');
@@ -421,7 +419,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
                       img={a.data.imageUrl}
                       label={a.kind === 'outfit' ? 'Look' : 'Shot'}
                       active={canvasImg === a.data.imageUrl}
-                      onClick={() => { setCanvasImg(a.data.imageUrl); setCanvasLabel(a.data.prompt); }}
+                      onClick={() => { setCanvasImg(a.data.imageUrl); setCanvasLabel(a.data.prompt); setPrompt(a.data.prompt); }}
                       onDelete={async () => {
                         const endpoint = a.kind === 'outfit'
                           ? `${apiBase}/outfits/${a.data.id}`
