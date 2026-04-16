@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
+import FooterWrapper from "@/components/FooterWrapper";
 import { Toaster } from "sonner";
 import { readSeo } from "@/lib/seo.server";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -98,7 +98,7 @@ export default async function RootLayout({
       <body className={`${geist.variable} antialiased`}>
         <Nav />
         {children}
-        <Footer />
+        <FooterWrapper />
         <Toaster position="bottom-right" richColors />
       </body>
     </html>
