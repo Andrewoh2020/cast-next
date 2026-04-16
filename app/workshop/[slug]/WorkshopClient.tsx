@@ -624,7 +624,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
       {/* Modals */}
       {showRefSheet && character?.referenceSheetUrl && <RefSheetModal url={character.referenceSheetUrl} onClose={() => setShowRefSheet(false)} />}
-      {showDownload && <DownloadModal workshop={workshop} apiBase={apiBase} onClose={() => setShowDownload(false)} />}
+      {showDownload && <DownloadModal workshop={workshop} apiBase={apiBase} characterName={character?.name ?? 'cast'} onClose={() => setShowDownload(false)} />}
       {showBuyCredits && <BuyCreditsModal onClose={() => setShowBuyCredits(false)} />}
 
 
@@ -821,7 +821,7 @@ function RefSheetModal({ url, onClose }: { url: string; onClose: () => void }) {
   );
 }
 
-function DownloadModal({ workshop, apiBase, onClose }: { workshop: WorkshopData; apiBase: string; onClose: () => void }) {
+function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop: WorkshopData; apiBase: string; characterName: string; onClose: () => void }) {
   const [downloading, setDownloading] = useState(false);
   const o = workshop.outfits.length, s = workshop.shots.length;
 
@@ -835,7 +835,8 @@ function DownloadModal({ workshop, apiBase, onClose }: { workshop: WorkshopData;
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'cast-package.zip';
+      const safeName = characterName.replace(/[\\/:*?"<>|]/g, '-').trim() || 'cast';
+      a.download = `${safeName}.zip`;
       a.click();
       URL.revokeObjectURL(url);
       onClose();

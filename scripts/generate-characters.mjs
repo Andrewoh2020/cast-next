@@ -42,7 +42,9 @@ const PROFILE_PROMPT = (description) =>
   `Full-body portrait of ${description}, head to toe visible. Plain seamless light warm-gray studio backdrop. Natural relaxed pose, sharp photorealistic DSLR photography style, Canon SL3 with 85mm lens, fine skin texture, no airbrushing, no CGI retouch, soft even diffused studio lighting, no text overlays. Not outdoors. HD quality.`;
 
 const REFERENCE_SHEET_PROMPT = (description) =>
-  `Create a professional 8-panel character reference sheet of ${description}. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays.
+  `Create a professional 8-panel character reference sheet of ${description}. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch.
+
+ABSOLUTELY NO TEXT OR NUMBERS anywhere in the image. Do NOT render panel numbers (no "1", "2", "3", "4", "5", "6", "7", "8"), panel labels, captions, watermarks, signatures, legends, titles, or any written characters of any language or script. The image must contain only photographic imagery of the subject — zero typography, zero numerals, zero letters. This rule overrides any implied labeling.
 
 CRITICAL RULE: Every panel must show a STRICTLY DIFFERENT camera angle. No two panels may share the same angle or orientation. Do not repeat any view. The 4 close-up panels must each show a clearly distinct direction — front, right 3/4, left 3/4, and back of head.
 

@@ -66,6 +66,7 @@ export default async function CustomWorkshopPage({ params }: Props) {
         slug: `custom-${workshop.id}`,
         name: workshop.name,
         img: workshop.sourceImageUrl,
+        referenceSheetUrl: workshop.referenceSheetUrl,
         isUploadedImage: true,
         licenseName: 'Your upload',
       }}

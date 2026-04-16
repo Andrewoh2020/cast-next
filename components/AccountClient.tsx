@@ -62,10 +62,10 @@ export default function AccountClient({
   initialPurchases,
   customCharacters = [],
   customWorkshops = [],
-  credits = 0,
 }: Props) {
   const [tab, setTab] = useState<TabKey>('workshops');
   const [favorites, setFavorites] = useState<Talent[]>(initialFavorites);
+  const [previewChar, setPreviewChar] = useState<CustomCharacterDraft | null>(null);
 
   const handleRemoveFavorite = async (talent: Talent) => {
     setFavorites((prev) => prev.filter((f) => f.id !== talent.id));
@@ -76,6 +76,19 @@ export default function AccountClient({
     });
   };
 
+  // Workshops auto-created from the /create flow are identified two ways
+  // (legacy drafts may have been linked before workshopId was tracked):
+  //   1. draft.workshopId matches the workshop id
+  //   2. draft.profileImageUrl matches the workshop's sourceImageUrl
+  const createdWorkshopIds = new Set(
+    customCharacters.map((d) => d.workshopId).filter((id): id is string => !!id)
+  );
+  const createdSourceUrls = new Set(
+    customCharacters.map((d) => d.profileImageUrl).filter((u): u is string => !!u)
+  );
+  const isCreatedWorkshop = (w: { id: string; sourceImageUrl: string }) =>
+    createdWorkshopIds.has(w.id) || createdSourceUrls.has(w.sourceImageUrl);
+
   const allWorkshops = [
     ...customWorkshops.map((w) => ({
       key: `custom-${w.id}`,
@@ -83,7 +96,7 @@ export default function AccountClient({
       name: w.name,
       img: w.sourceImageUrl,
       detail: `${w.outfitCount} outfits · ${w.shotCount} shots`,
-      kind: 'custom' as const,
+      kind: (isCreatedWorkshop(w) ? 'created' : 'custom') as 'created' | 'custom',
     })),
     ...initialPurchases.map((p) => ({
       key: `roster-${p.characterId}`,
@@ -95,28 +108,38 @@ export default function AccountClient({
     })),
   ];
 
+  const kindLabel = (kind: 'created' | 'custom' | 'roster') =>
+    kind === 'roster' ? 'Licensed' : kind === 'created' ? 'Created' : 'Custom';
+
   return (
     <div>
-      {/* Top stat row */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
-        <StatCard label="Credits" value={credits.toString()} accent />
-        <StatCard label="Workshops" value={allWorkshops.length.toString()} />
-        <StatCard label="Favorites" value={favorites.length.toString()} />
-      </div>
-
       {/* Tabs */}
       <div className="flex gap-1 bg-white border border-gray-100 rounded-xl p-1 w-fit mb-8 shadow-sm">
-        {(['workshops', 'purchases', 'characters', 'favorites'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all capitalize ${
-              tab === t ? 'bg-black text-white shadow-sm' : 'text-gray-500 hover:text-black'
-            }`}
-          >
-            {t === 'characters' ? 'My Characters' : t === 'workshops' ? 'Workshops' : t}
-          </button>
-        ))}
+        {(['workshops', 'purchases', 'characters', 'favorites'] as const).map((t) => {
+          const count =
+            t === 'workshops' ? allWorkshops.length
+            : t === 'purchases' ? initialPurchases.length
+            : t === 'characters' ? customCharacters.length
+            : favorites.length;
+          const label = t === 'characters' ? 'Created Characters' : t === 'workshops' ? 'Workshops' : t;
+          const active = tab === t;
+          return (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all capitalize flex items-center gap-2 ${
+                active ? 'bg-black text-white shadow-sm' : 'text-gray-500 hover:text-black'
+              }`}
+            >
+              {label}
+              <span className={`text-xs font-bold px-1.5 py-0.5 rounded-md ${
+                active ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+              }`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Workshops */}
@@ -151,8 +174,10 @@ export default function AccountClient({
                   <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={thumbUrl(w.img, 400)} alt={w.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute top-2 left-2 text-[9px] font-black uppercase tracking-widest text-white bg-black/70 backdrop-blur rounded px-2 py-0.5">
-                      {w.kind === 'roster' ? 'Licensed' : 'Custom'}
+                    <div className={`absolute top-2 left-2 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur rounded px-2 py-0.5 ${
+                      w.kind === 'created' ? 'bg-indigo-500/80' : 'bg-black/70'
+                    }`}>
+                      {kindLabel(w.kind)}
                     </div>
                   </div>
                   <div className="p-3">
@@ -285,7 +310,10 @@ export default function AccountClient({
           <div className="flex flex-col gap-4">
             {customCharacters.map((c) => (
               <div key={c.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-5">
-                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                <button
+                  onClick={() => c.status === 'complete' ? setPreviewChar(c) : null}
+                  className={`w-16 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ${c.status === 'complete' ? 'cursor-pointer ring-0 hover:ring-2 hover:ring-indigo-300 transition-all' : ''}`}
+                >
                   {(c.profileThumbnailUrl || c.profileImageUrl) ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
@@ -307,7 +335,7 @@ export default function AccountClient({
                       {c.name.charAt(0)}
                     </div>
                   )}
-                </div>
+                </button>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-black">{c.name}</p>
@@ -328,49 +356,108 @@ export default function AccountClient({
                     Created {new Date(c.completedAt || c.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
-                {c.status === 'complete' ? (() => {
-                  const files: { url: string; filename: string }[] = [];
-                  if (c.profileImageUrl) {
-                    files.push({
-                      url: `${c.profileImageUrl}${c.profileImageUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-profile`,
-                      filename: `${c.slug}-profile`,
-                    });
-                  }
-                  if (c.referenceSheetUrl) {
-                    files.push({
-                      url: `${c.referenceSheetUrl}${c.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-reference-sheet`,
-                      filename: `${c.slug}-reference-sheet`,
-                    });
-                  }
-                  return files.length > 0 ? (
-                    <DownloadButton
-                      files={files}
-                      label="Download"
-                      className="flex-shrink-0 text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 min-w-[80px] text-center"
-                    />
-                  ) : null;
-                })() : (
-                  <Link
-                    href={`/create?draft=${c.id}`}
-                    className="flex-shrink-0 text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors min-w-[80px] text-center"
-                  >
-                    {c.status === 'generating' ? 'View' : 'Continue'}
-                  </Link>
-                )}
+                <div className="flex flex-col gap-2 shrink-0">
+                  {c.status === 'complete' && (
+                    <button
+                      onClick={() => setPreviewChar(c)}
+                      className="text-xs font-semibold text-gray-600 border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors min-w-[80px] text-center"
+                    >
+                      Preview
+                    </button>
+                  )}
+                  {c.status === 'complete' ? (() => {
+                    const files: { url: string; filename: string }[] = [];
+                    if (c.profileImageUrl) {
+                      files.push({
+                        url: `${c.profileImageUrl}${c.profileImageUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-profile`,
+                        filename: `${c.slug}-profile`,
+                      });
+                    }
+                    if (c.referenceSheetUrl) {
+                      files.push({
+                        url: `${c.referenceSheetUrl}${c.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${c.slug}-reference-sheet`,
+                        filename: `${c.slug}-reference-sheet`,
+                      });
+                    }
+                    return files.length > 0 ? (
+                      <DownloadButton
+                        files={files}
+                        label="Download"
+                        className="text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 min-w-[80px] text-center"
+                      />
+                    ) : null;
+                  })() : (
+                    <Link
+                      href={`/create?draft=${c.id}`}
+                      className="text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors min-w-[80px] text-center"
+                    >
+                      {c.status === 'generating' ? 'View' : 'Continue'}
+                    </Link>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         )
       )}
+
+      {/* Character preview modal */}
+      {previewChar && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6" onClick={() => setPreviewChar(null)}>
+          <div className="relative bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setPreviewChar(null)} className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/90 hover:bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:text-black transition-colors shadow-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+            </button>
+
+            <div className="p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100">
+                  {(previewChar.profileThumbnailUrl || previewChar.profileImageUrl) && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={previewChar.profileThumbnailUrl || thumbUrl(previewChar.profileImageUrl!, 96)} alt="" className="w-full h-full object-cover" />
+                  )}
+                </div>
+                <div>
+                  <h2 className="text-xl font-black tracking-tight text-black">{previewChar.name}</h2>
+                  <p className="text-xs text-gray-500">Created {new Date(previewChar.completedAt || previewChar.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Profile photo */}
+                {previewChar.profileImageUrl && (
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Profile photo</p>
+                    <div className="rounded-2xl overflow-hidden bg-gray-100 ring-1 ring-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={thumbUrl(previewChar.profileImageUrl, 800)} alt={`${previewChar.name} profile`} className="w-full h-auto" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Reference sheet */}
+                {previewChar.referenceSheetUrl && (
+                  <div className="md:col-span-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Reference sheet</p>
+                    <div className="rounded-2xl overflow-hidden bg-gray-100 ring-1 ring-gray-200">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={thumbUrl(previewChar.referenceSheetUrl, 2000)} alt={`${previewChar.name} reference sheet`} className="w-full h-auto" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {previewChar.description && (
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Description</p>
+                  <p className="text-sm text-gray-600 leading-relaxed">{previewChar.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function StatCard({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className={`rounded-2xl p-4 border ${accent ? 'bg-indigo-50 border-indigo-100' : 'bg-white border-gray-100'} shadow-sm`}>
-      <p className={`text-2xl font-black tracking-tight ${accent ? 'text-indigo-600' : 'text-black'}`}>{value}</p>
-      <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-0.5">{label}</p>
-    </div>
-  );
-}

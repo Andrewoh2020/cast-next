@@ -16,6 +16,13 @@ export interface CustomCharacterAttributes {
   style: TalentStyle;
 }
 
+export interface RefSheetAttempt {
+  id: string;
+  url: string;
+  thumbnailUrl?: string;
+  createdAt: string;
+}
+
 export interface CustomCharacterDraft {
   id: string;
   userId: string;
@@ -32,8 +39,10 @@ export interface CustomCharacterDraft {
   profileThumbnailUrl?: string;
   referenceSheetUrl?: string;
   referenceSheetThumbnailUrl?: string;
+  referenceSheetAttempts?: RefSheetAttempt[];
   iterations: number;
   refSheetRegenerations?: number;
+  workshopId?: string;
   showInShowcase: boolean;
   createdAt: string;
   updatedAt: string;

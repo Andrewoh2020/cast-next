@@ -88,10 +88,14 @@ export async function deductCredit(userId: string): Promise<number> {
   return updated.credits;
 }
 
-// ── Signup promo: 2 free credits for every new account ──────────────
+// ── Signup promo: time-limited credit grants ────────────────────────
+// Workshop launch promo: 10 credits until April 25 2026, then 5 credits
 
 const PROMO_KEY = 'launch-promo.json';
-const PROMO_CREDITS = 2;
+const WORKSHOP_PROMO_DEADLINE = new Date('2026-04-26T00:00:00Z'); // end of April 25
+const PROMO_CREDITS_LAUNCH = 10;  // during promo period
+const PROMO_CREDITS_DEFAULT = 5;  // after promo period
+const PROMO_CREDITS = Date.now() < WORKSHOP_PROMO_DEADLINE.getTime() ? PROMO_CREDITS_LAUNCH : PROMO_CREDITS_DEFAULT;
 
 interface PromoData {
   claimedUserIds: string[];

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { CustomCharacterDraft, CustomCharacterAttributes } from '@/lib/custom-characters.server';
-import { RACE_LABELS, AGE_LABELS, BUILD_LABELS, HEIGHT_LABELS, STYLE_LABELS, TalentRace, TalentAgeRange, TalentBuild, TalentHeight, TalentStyle } from '@/lib/talent';
+import { RACE_LABELS, AGE_LABELS, BUILD_LABELS, HEIGHT_LABELS, TalentRace, TalentAgeRange, TalentBuild, TalentHeight } from '@/lib/talent';
 
 const sexOptions: ('male' | 'female')[] = ['male', 'female'];
 const raceOptions = Object.keys(RACE_LABELS) as TalentRace[];
@@ -393,23 +393,6 @@ export default function DescribeStep({ draft, onComplete, initialPrompt, initial
           </div>
         </div>
 
-        {/* Style */}
-        <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Style</label>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(STYLE_LABELS).map(([value, label]) => (
-              <button
-                key={value}
-                onClick={() => setAttributes({ ...attributes, style: value as TalentStyle })}
-                className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
-                  attributes.style === value ? 'border-indigo-500 bg-indigo-50 text-indigo-600' : 'border-gray-200 text-gray-500 hover:border-gray-400'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Continue */}

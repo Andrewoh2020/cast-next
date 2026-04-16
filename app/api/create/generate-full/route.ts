@@ -3,6 +3,7 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { getDraft, saveDraft, addToShowcase } from '@/lib/custom-characters.server';
 import { deductCredit, addCredits } from '@/lib/user-data.server';
 import { generateFull } from '@/lib/generation.server';
+import { createCustomWorkshop } from '@/lib/custom-workshop.server';
 
 export const maxDuration = 300;
 
@@ -61,6 +62,31 @@ export async function POST(req: NextRequest) {
     }, blobPrefix, draft.sourceProfileUrl);
 
     const now = new Date().toISOString();
+
+    // Auto-create a custom workshop so every generated character is immediately editable
+    let workshopId: string | undefined = draft.workshopId;
+    if (!workshopId) {
+      try {
+        workshopId = `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+        await createCustomWorkshop(userId, {
+          id: workshopId,
+          name: draft.name,
+          sourceImageUrl: profile.url,
+          referenceSheetUrl: refSheet.url,
+        });
+      } catch (workshopErr) {
+        console.error('Auto-create workshop error:', workshopErr);
+        workshopId = undefined;
+      }
+    }
+
+    const firstAttempt = {
+      id: 'v1',
+      url: refSheet.url,
+      thumbnailUrl: refSheetThumbUrl,
+      createdAt: now,
+    };
+
     await saveDraft(userId, {
       ...draft,
       status: 'complete',
@@ -68,6 +94,8 @@ export async function POST(req: NextRequest) {
       profileThumbnailUrl: profileThumbUrl,
       referenceSheetUrl: refSheet.url,
       referenceSheetThumbnailUrl: refSheetThumbUrl,
+      referenceSheetAttempts: [firstAttempt],
+      workshopId,
       paidAt: draft.paidAt ?? now,
       completedAt: now,
     });

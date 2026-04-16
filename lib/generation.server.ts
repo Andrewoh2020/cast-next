@@ -14,7 +14,9 @@ const FAL_TIMEOUT = 160_000; // 2 minutes 40 seconds
 // ── Prompts ──────────────────────────────────────────────────────────────
 
 export const REFERENCE_SHEET_PROMPT = (description: string) =>
-  `Create a professional 8-panel character reference sheet of ${description}. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch, no text overlays.
+  `Create a professional 8-panel character reference sheet of ${description}. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch.
+
+ABSOLUTELY NO TEXT OR NUMBERS anywhere in the image. Do NOT render panel numbers (no "1", "2", "3", "4", "5", "6", "7", "8"), panel labels, captions, watermarks, signatures, legends, titles, or any written characters of any language or script. The image must contain only photographic imagery of the subject — zero typography, zero numerals, zero letters. This rule overrides any implied labeling.
 
 CRITICAL RULE: Every panel must show a STRICTLY DIFFERENT camera angle. No two panels may share the same angle or orientation. Do not repeat any view. The 4 close-up panels must each show a clearly distinct direction — front, right 3/4, left 3/4, and back of head.
 

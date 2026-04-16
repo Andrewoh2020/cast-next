@@ -18,14 +18,22 @@ export default function WorkshopSection() {
           {/* Change outfit */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all">
             <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/api/media?p=custom%2Fuser_3CM1Wxh6LIF4NfkCwMyfn1qZUkp%2Fmin-ji-park-refsheet-1776181227543.jpg&w=600"
-                alt="8-panel reference sheet showing character in new outfit"
-                className="w-full h-full object-cover object-left-top"
-              />
+              <div className="grid grid-cols-2 w-full h-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/home/workshop-outfit-1.png"
+                  alt="Character in original outfit"
+                  className="w-full h-full object-cover object-top"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/home/workshop-outfit-2.png"
+                  alt="Same character in a new outfit"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
               <div className="absolute top-3 left-3 text-[9px] font-black uppercase tracking-widest text-white bg-black/70 backdrop-blur rounded-md px-2.5 py-1">
-                8 angles
+                Same identity
               </div>
             </div>
             <div className="p-5">
@@ -41,7 +49,7 @@ export default function WorkshopSection() {
             <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/api/media?p=scene-portraits%2Fmin-ji-park-1776252882422.jpg&w=600"
+                src="/home/workshop-scene.jpg"
                 alt="Character placed in a cinematic scene"
                 className="w-full h-full object-cover object-top"
               />
@@ -92,7 +100,7 @@ export default function WorkshopSection() {
             </svg>
             Open the Workshop
           </Link>
-          <p className="text-xs text-gray-500 mt-3">2 free credits with every signup</p>
+          <p className="text-xs text-gray-500 mt-3">10 free credits with every signup — limited time</p>
         </div>
       </div>
     </section>

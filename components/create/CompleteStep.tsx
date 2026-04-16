@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { CustomCharacterDraft } from '@/lib/custom-characters.server';
+import { CustomCharacterDraft, RefSheetAttempt } from '@/lib/custom-characters.server';
 import { thumbUrl } from '@/lib/talent';
 
 interface Props {
@@ -10,24 +10,70 @@ interface Props {
   generating?: boolean;
   generationError?: string;
   onRetry?: () => void;
-  onNewCharacter: () => void;
 }
 
 const MAX_REFSHEET_REGENS = 3;
 
-export default function CompleteStep({ draft, generating, generationError, onRetry, onNewCharacter }: Props) {
+function buildInitialAttempts(draft: CustomCharacterDraft): RefSheetAttempt[] {
+  if (draft.referenceSheetAttempts && draft.referenceSheetAttempts.length > 0) {
+    return draft.referenceSheetAttempts;
+  }
+  if (draft.referenceSheetUrl) {
+    return [{
+      id: 'v1',
+      url: draft.referenceSheetUrl,
+      thumbnailUrl: draft.referenceSheetThumbnailUrl,
+      createdAt: draft.completedAt ?? draft.updatedAt,
+    }];
+  }
+  return [];
+}
+
+export default function CompleteStep({ draft, generating, generationError, onRetry }: Props) {
   const [downloadingProfile, setDownloadingProfile] = useState(false);
   const [downloadingRef, setDownloadingRef] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [regenError, setRegenError] = useState<string | null>(null);
-  const [refSheetUrl, setRefSheetUrl] = useState(draft.referenceSheetUrl);
+  const [attempts, setAttempts] = useState<RefSheetAttempt[]>(() => buildInitialAttempts(draft));
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    const initial = buildInitialAttempts(draft);
+    const match = initial.find((a) => a.url === draft.referenceSheetUrl);
+    return match?.id ?? initial[initial.length - 1]?.id ?? null;
+  });
+  const [selecting, setSelecting] = useState(false);
   const [regenCount, setRegenCount] = useState(draft.refSheetRegenerations ?? 0);
+  const [sendingToWorkshop, setSendingToWorkshop] = useState(false);
+  const [workshopError, setWorkshopError] = useState<string | null>(null);
+
+  const selectedAttempt = attempts.find((a) => a.id === selectedId);
+  const refSheetUrl = selectedAttempt?.url ?? draft.referenceSheetUrl;
+
+  const sendToWorkshop = async () => {
+    setSendingToWorkshop(true);
+    setWorkshopError(null);
+    try {
+      const res = await fetch('/api/create/send-to-workshop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ draftId: draft.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to open Workshop');
+      window.location.href = `/workshop/custom/${data.workshopId}`;
+    } catch (err) {
+      setWorkshopError(err instanceof Error ? err.message : 'Failed to open Workshop');
+      setSendingToWorkshop(false);
+    }
+  };
 
   // Keep local state in sync when draft prop updates (e.g., after generation completes or switching drafts)
   useEffect(() => {
-    setRefSheetUrl(draft.referenceSheetUrl);
+    const nextAttempts = buildInitialAttempts(draft);
+    setAttempts(nextAttempts);
+    const match = nextAttempts.find((a) => a.url === draft.referenceSheetUrl);
+    setSelectedId(match?.id ?? nextAttempts[nextAttempts.length - 1]?.id ?? null);
     setRegenCount(draft.refSheetRegenerations ?? 0);
-  }, [draft.id, draft.referenceSheetUrl, draft.refSheetRegenerations]);
+  }, [draft.id, draft.referenceSheetUrl, draft.refSheetRegenerations, draft.referenceSheetAttempts]);
 
   // Animated progress bar for ref sheet generation — climbs to 95% over ~180s
   const [progress, setProgress] = useState(0);
@@ -65,12 +111,31 @@ export default function CompleteStep({ draft, generating, generationError, onRet
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Regeneration failed');
-      setRefSheetUrl(data.referenceSheetUrl);
+      setAttempts(data.attempts ?? []);
+      setSelectedId(data.selectedId);
       setRegenCount(data.refSheetRegenerations);
     } catch (err) {
       setRegenError(err instanceof Error ? err.message : 'Regeneration failed');
     }
     setRegenerating(false);
+  };
+
+  const selectAttempt = async (attemptId: string) => {
+    if (attemptId === selectedId || selecting) return;
+    const previousId = selectedId;
+    setSelectedId(attemptId);
+    setSelecting(true);
+    try {
+      const res = await fetch('/api/create/select-refsheet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ draftId: draft.id, attemptId }),
+      });
+      if (!res.ok) throw new Error('Failed to select attempt');
+    } catch {
+      setSelectedId(previousId);
+    }
+    setSelecting(false);
   };
 
   const downloadFile = async (url: string, filename: string, setLoading: (v: boolean) => void) => {
@@ -178,9 +243,40 @@ export default function CompleteStep({ draft, generating, generationError, onRet
       </div>
 
       <h2 className="text-2xl font-black tracking-tight text-black mb-1">Your Character is Ready!</h2>
-      <p className="text-sm text-gray-400 mb-8">
-        <strong className="text-black">{draft.name}</strong> has been purchased. Download your assets below.
+      <p className="text-sm text-gray-400 mb-5">
+        <strong className="text-black">{draft.name}</strong> has been purchased. The real magic happens next.
       </p>
+
+      {/* Primary CTA — Take to Workshop (moved above assets so it's visible without scrolling) */}
+      <div className="max-w-lg mx-auto mb-8 bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-5 text-left">
+        <div className="flex items-center gap-2 mb-1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
+          </svg>
+          <p className="text-xs font-black uppercase tracking-widest text-indigo-600">Next step — Workshop</p>
+        </div>
+        <h3 className="text-base font-black text-black mb-1">Unlock {draft.name}&apos;s full potential</h3>
+        <p className="text-xs text-gray-600 leading-relaxed mb-4">
+          Dress them in new outfits, place them in any scene, and export a package ready for Kling, Runway, or Veo.
+        </p>
+        <button
+          onClick={sendToWorkshop}
+          disabled={sendingToWorkshop}
+          className="w-full bg-indigo-500 text-white font-bold py-3 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-60 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
+        >
+          {sendingToWorkshop ? (
+            <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Opening Workshop...</>
+          ) : (
+            <>Open in Workshop
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </>
+          )}
+        </button>
+        {workshopError && <p className="mt-2 text-xs text-red-500 text-center">{workshopError}</p>}
+      </div>
 
       {/* Images */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
@@ -218,6 +314,44 @@ export default function CompleteStep({ draft, generating, generationError, onRet
               className="w-full rounded-xl object-cover"
               key={refSheetUrl}
             />
+
+            {/* Attempt switcher — shown when there are 2+ attempts */}
+            {attempts.length > 1 && (
+              <div className="mt-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5 text-left">
+                  Choose your favorite ({attempts.length} attempts)
+                </p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {attempts.map((a) => {
+                    const active = a.id === selectedId;
+                    return (
+                      <button
+                        key={a.id}
+                        onClick={() => selectAttempt(a.id)}
+                        disabled={selecting}
+                        className={`relative shrink-0 rounded-lg overflow-hidden border-2 transition-all ${
+                          active ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200 hover:border-gray-400'
+                        } disabled:opacity-60`}
+                        title={active ? 'Selected' : `Use ${a.id.toUpperCase()}`}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={thumbUrl(a.thumbnailUrl ?? a.url, 200)}
+                          alt={`Attempt ${a.id}`}
+                          className="w-24 h-12 object-cover"
+                        />
+                        <span className={`absolute bottom-0.5 left-0.5 text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                          active ? 'bg-indigo-500 text-white' : 'bg-black/60 text-white'
+                        }`}>
+                          {a.id}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             <button
               disabled={downloadingRef}
               onClick={() => downloadFile(refSheetUrl!, `${draft.slug}-reference-sheet`, setDownloadingRef)}
@@ -238,7 +372,7 @@ export default function CompleteStep({ draft, generating, generationError, onRet
                 {regenerating ? (
                   <><div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />Regenerating...</>
                 ) : (
-                  <>Regenerate Reference Sheet ({MAX_REFSHEET_REGENS - regenCount} {MAX_REFSHEET_REGENS - regenCount === 1 ? 'attempt' : 'attempts'} remaining)</>
+                  <>Try Another Version ({MAX_REFSHEET_REGENS - regenCount} {MAX_REFSHEET_REGENS - regenCount === 1 ? 'attempt' : 'attempts'} left)</>
                 )}
               </button>
             ) : (
@@ -251,21 +385,6 @@ export default function CompleteStep({ draft, generating, generationError, onRet
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex flex-col gap-3 max-w-sm mx-auto">
-        <button
-          onClick={onNewCharacter}
-          className="w-full bg-indigo-500 text-white font-bold py-3.5 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200"
-        >
-          Create Another Character
-        </button>
-        <a
-          href="/account"
-          className="w-full border border-gray-200 text-gray-600 font-semibold py-3.5 rounded-xl hover:border-gray-400 transition-colors block text-center"
-        >
-          View in My Account
-        </a>
-      </div>
     </div>
   );
 }

@@ -19,6 +19,7 @@ export interface CustomWorkshopMeta {
   userId: string;
   name: string;
   sourceImageUrl: string;
+  referenceSheetUrl?: string;
   createdAt: string;
 }
 
@@ -27,6 +28,7 @@ export interface CustomWorkshopData {
   userId: string;
   name: string;
   sourceImageUrl: string;
+  referenceSheetUrl?: string;
   outfits: OutfitVariant[];
   shots: SceneShot[];
   voice?: VoiceSpec;
@@ -158,6 +160,7 @@ export async function createCustomWorkshop(userId: string, params: {
   id: string;
   name: string;
   sourceImageUrl: string;
+  referenceSheetUrl?: string;
 }): Promise<CustomWorkshopData> {
   const now = new Date().toISOString();
   const meta: CustomWorkshopMeta = {
@@ -165,6 +168,7 @@ export async function createCustomWorkshop(userId: string, params: {
     userId,
     name: params.name,
     sourceImageUrl: params.sourceImageUrl,
+    referenceSheetUrl: params.referenceSheetUrl,
     createdAt: now,
   };
   await writeJson(metaKey(userId, params.id), meta);
@@ -226,6 +230,7 @@ export async function readCustomWorkshop(userId: string, id: string): Promise<Cu
     userId: meta.userId,
     name: meta.name,
     sourceImageUrl: meta.sourceImageUrl,
+    referenceSheetUrl: meta.referenceSheetUrl,
     outfits: validOutfits,
     shots: validShots,
     createdAt: meta.createdAt,
@@ -308,4 +313,11 @@ export async function removeCustomShot(userId: string, workshopId: string, shotI
 
 export async function deleteCustomWorkshop(userId: string, id: string): Promise<void> {
   await removeFromIndex(userId, id);
+}
+
+/** Update just the reference sheet URL on a workshop's meta. */
+export async function updateCustomWorkshopRefSheet(userId: string, id: string, referenceSheetUrl: string): Promise<void> {
+  const meta = await readJson<CustomWorkshopMeta | null>(metaKey(userId, id), null);
+  if (!meta) return;
+  await writeJson(metaKey(userId, id), { ...meta, referenceSheetUrl });
 }

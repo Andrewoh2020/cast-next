@@ -383,49 +383,73 @@ export default function CreateClient() {
           <div className="flex-1 min-w-0">
             {/* Step indicator */}
             <div className="flex items-center gap-1 sm:gap-2 mb-6">
-              {(['describe', 'preview', 'payment', 'complete'] as Step[]).map((s, i) => {
-                // Determine the furthest step the draft has reached
+              {([
+                { key: 'describe', label: 'Describe' },
+                { key: 'preview', label: 'Preview' },
+                { key: 'payment', label: 'Payment' },
+                { key: 'complete', label: 'Download' },
+                { key: 'workshop', label: 'Workshop' },
+              ] as const).map((entry, i, arr) => {
+                const isWorkshop = entry.key === 'workshop';
                 const stepOrder: Step[] = ['describe', 'preview', 'payment', 'complete'];
                 const currentIdx = stepOrder.indexOf(step);
                 const targetIdx = i;
-                let maxReachable = 0; // describe is always reachable
+                let maxReachable = 0;
                 if (currentDraft) {
-                  if (currentDraft.previewImageUrl) maxReachable = 1; // can go to preview
-                  if (currentDraft.status === 'preview' || currentDraft.status === 'paid' || currentDraft.status === 'complete' || currentDraft.status === 'generating') maxReachable = 2; // can go to payment
-                  if (currentDraft.status === 'complete' || currentDraft.status === 'generating') maxReachable = 3; // can go to download
+                  if (currentDraft.previewImageUrl) maxReachable = 1;
+                  if (currentDraft.status === 'preview' || currentDraft.status === 'paid' || currentDraft.status === 'complete' || currentDraft.status === 'generating') maxReachable = 2;
+                  if (currentDraft.status === 'complete' || currentDraft.status === 'generating') maxReachable = 3;
                 }
-                // Also allow going back to any step before current
-                const canNavigate = currentDraft && targetIdx <= Math.max(currentIdx, maxReachable) && s !== step;
-                const isPast = currentIdx > targetIdx;
+
+                // Workshop step: enabled only after character is complete
+                const workshopReady = isWorkshop && currentDraft?.status === 'complete' && !!currentDraft.workshopId;
+                const canNavigate = !isWorkshop && currentDraft && targetIdx <= Math.max(currentIdx, maxReachable) && entry.key !== step;
+                const isPast = !isWorkshop && currentIdx > targetIdx;
+                const isActive = !isWorkshop && step === entry.key;
+
+                const handleClick = () => {
+                  if (isWorkshop) {
+                    if (workshopReady && currentDraft?.workshopId) {
+                      window.location.href = `/workshop/custom/${currentDraft.workshopId}`;
+                    }
+                    return;
+                  }
+                  if (canNavigate) setStep(entry.key as Step);
+                };
+
+                const circleClass = isWorkshop
+                  ? workshopReady
+                    ? 'bg-indigo-500 text-white hover:bg-indigo-600 cursor-pointer'
+                    : 'bg-gray-100 text-gray-400 cursor-default'
+                  : isActive ? 'bg-indigo-500 text-white'
+                  : isPast || canNavigate ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200 cursor-pointer'
+                  : 'bg-gray-100 text-gray-400 cursor-default';
+
+                const labelClass = isWorkshop
+                  ? workshopReady ? 'text-indigo-600 font-bold hover:text-indigo-700 cursor-pointer' : 'text-gray-400 cursor-default'
+                  : isActive ? 'text-black'
+                  : canNavigate ? 'text-gray-500 hover:text-black cursor-pointer'
+                  : 'text-gray-400 cursor-default';
 
                 return (
-                  <div key={s} className="flex items-center gap-1 sm:gap-2">
+                  <div key={entry.key} className="flex items-center gap-1 sm:gap-2">
                     <button
                       type="button"
-                      disabled={!canNavigate}
-                      onClick={() => canNavigate && setStep(s)}
-                      className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold flex-shrink-0 transition-colors ${
-                        step === s ? 'bg-indigo-500 text-white' :
-                        isPast ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200 cursor-pointer' :
-                        canNavigate ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200 cursor-pointer' :
-                        'bg-gray-100 text-gray-400'
-                      } ${canNavigate ? '' : 'cursor-default'}`}
+                      disabled={isWorkshop ? !workshopReady : !canNavigate}
+                      onClick={handleClick}
+                      className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold flex-shrink-0 transition-colors ${circleClass}`}
                     >
                       {i + 1}
                     </button>
                     <button
                       type="button"
-                      disabled={!canNavigate}
-                      onClick={() => canNavigate && setStep(s)}
-                      className={`text-[11px] sm:text-xs font-medium capitalize whitespace-nowrap transition-colors ${
-                        step === s ? 'text-black' :
-                        canNavigate ? 'text-gray-500 hover:text-black cursor-pointer' :
-                        'text-gray-400'
-                      } ${canNavigate ? '' : 'cursor-default'}`}
+                      disabled={isWorkshop ? !workshopReady : !canNavigate}
+                      onClick={handleClick}
+                      className={`text-[11px] sm:text-xs font-medium capitalize whitespace-nowrap transition-colors ${labelClass}`}
                     >
-                      {s === 'complete' ? 'Download' : s}
+                      {entry.label}
                     </button>
-                    {i < 3 && <div className="flex-1 min-w-3 sm:min-w-8 h-px bg-gray-200" />}
+                    {i < arr.length - 1 && <div className="flex-1 min-w-3 sm:min-w-8 h-px bg-gray-200" />}
                   </div>
                 );
               })}
@@ -470,7 +494,6 @@ export default function CreateClient() {
                   fullGenTriggeredRef.current.delete(currentDraft.id);
                   generateFull(currentDraft.id);
                 }}
-                onNewCharacter={handleNewCharacter}
               />
             )}
           </div>
