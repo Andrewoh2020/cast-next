@@ -30,7 +30,7 @@ export default function SocialProofStrip() {
         <div className="flex items-center justify-center gap-4">
           <p className="text-xs text-gray-400 uppercase tracking-widest">Featured on</p>
           <a
-            href="https://www.producthunt.com/posts/cast-ai-character-casting-agency"
+            href="https://www.producthunt.com/products/cast-6?launch=cast-6"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 hover:shadow-sm transition-all"
