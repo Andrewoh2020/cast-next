@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import HeroB2 from '@/components/home/HeroB2';
 import HeroReel from '@/components/home/HeroReel';
+import SocialProofStrip from '@/components/home/SocialProofStrip';
 import LiveDemoSection from '@/components/home/LiveDemoSection';
 import DirectabilityStrip from '@/components/home/DirectabilityStrip';
 import CopyrightSafeSection from '@/components/home/CopyrightSafeSection';
+import WorkshopSection from '@/components/home/WorkshopSection';
 import RosterSection from '@/components/home/RosterSection';
 import CommunityShowcase from '@/components/CommunityShowcase';
 import FinalCTA from '@/components/home/FinalCTA';
@@ -13,9 +15,11 @@ export default function Home() {
     <main>
       <HeroB2 />
       <HeroReel />
+      <SocialProofStrip />
       <LiveDemoSection />
       <DirectabilityStrip />
       <CopyrightSafeSection />
+      <WorkshopSection />
       <RosterSection />
       <CommunityShowcase />
 

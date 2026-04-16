@@ -64,11 +64,22 @@ export default async function CharacterPage({ params }: Props) {
     ...(character.race || []).map((r) => RACE_LABELS[r]),
   ];
 
+  // Format height: "5'9" (175 cm)" if specific, else category
+  const heightDisplay = character.heightCm
+    ? `${Math.floor(character.heightCm / 2.54 / 12)}'${Math.round(character.heightCm / 2.54 % 12)}" (${character.heightCm} cm)`
+    : HEIGHT_LABELS[character.height];
+
+  // Format weight: "155 lbs (70 kg)" if specific
+  const weightDisplay = character.weightKg
+    ? `${Math.round(character.weightKg * 2.205)} lbs (${character.weightKg} kg)`
+    : null;
+
   const details = [
     { label: 'Sex', value: SEX_LABELS[character.sex] },
     { label: 'Age', value: character.age ? `${character.age}` : AGE_LABELS[character.ageRange] },
     { label: 'Build', value: BUILD_LABELS[character.build] },
-    { label: 'Height', value: HEIGHT_LABELS[character.height] },
+    { label: 'Height', value: heightDisplay },
+    ...(weightDisplay ? [{ label: 'Weight', value: weightDisplay }] : []),
     { label: 'Race', value: (character.race || []).map((r) => RACE_LABELS[r]).join(', ') || '—' },
     { label: 'Ethnicity', value: character.ethnicity || '—' },
   ];

@@ -47,6 +47,8 @@ When given a request, respond with a JSON object containing:
   - "ageRange": one of "child", "teen", "20s", "30s", "40s", "50s", "60s+"
   - "build": one of "slim", "athletic", "average", "stocky", "curvy", "plus-size"
   - "height": one of "short", "average", "tall"
+  - "heightCm": realistic height in centimeters as a number (e.g. 175). Infer from the character's sex, age, build, and ethnicity. Use real-world population averages as a baseline.
+  - "weightKg": realistic weight in kilograms as a number (e.g. 70). Infer from height, build, sex, and age. Match the build category — e.g. "athletic" should be lean-muscular, "plus-size" should be heavier.
   - "hairLength": a short descriptor (e.g. "buzzcut", "short crop", "ear-length", "chin-length bob", "shoulder-length", "mid-back", "waist-length")
   - "style": one of "realistic", "anime", "cartoon", "3d-cgi", "stylized"
 

@@ -49,6 +49,8 @@ export interface Talent {
   ageRange: TalentAgeRange;
   build: TalentBuild;
   height: TalentHeight;
+  heightCm?: number;   // e.g. 175 — specific measurement for comp card display
+  weightKg?: number;   // e.g. 70 — specific measurement for comp card display
   hairLength?: string;
   style: TalentStyle;
   prices: PriceOption[];

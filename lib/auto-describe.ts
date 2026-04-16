@@ -30,6 +30,8 @@ export interface DescribeResult {
     ageRange: string;
     build: string;
     height: string;
+    heightCm?: number;
+    weightKg?: number;
     style: string;
   };
   claudeCost: number;
