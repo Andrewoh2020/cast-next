@@ -53,8 +53,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ shot, workshop: updated });
   } catch (err) {
     await addCredits(userId, 1, 0, `refund-custom-shot-${Date.now()}`).catch(() => {});
-    const message = err instanceof Error ? err.message : 'Generation failed';
-    console.error('[workshop/custom/shots] failed:', message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const raw = err instanceof Error ? err.message : 'Generation failed';
+    console.error('[workshop/custom/shots] failed:', raw);
+    const isModeration = /policy|prohibited|filtered|safety|blocked|content.*violation|nsfw/i.test(raw);
+    const message = isModeration
+      ? 'This prompt was flagged by the AI model\'s content policy. Try a different scene description — suggestive, violent, or explicit content is not supported.'
+      : raw;
+    return NextResponse.json({ error: message, moderation: isModeration }, { status: isModeration ? 422 : 500 });
   }
 }

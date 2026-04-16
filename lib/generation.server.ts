@@ -9,7 +9,7 @@ const KIE_API_URL = 'https://api.kie.ai/api/v1/jobs/createTask';
 const KIE_STATUS_URL = 'https://api.kie.ai/api/v1/jobs/recordInfo';
 const KIE_POLL_INTERVAL = 2000;
 const KIE_MAX_POLL_TIME = 120_000;
-const FAL_TIMEOUT = 180_000; // 3 minutes
+const FAL_TIMEOUT = 160_000; // 2 minutes 40 seconds
 
 // ── Prompts ──────────────────────────────────────────────────────────────
 
@@ -263,7 +263,7 @@ async function falGenerate(
 
   const result = await Promise.race([
     fal.subscribe(endpoint, { input }),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('fal.ai: generation timed out after 3 minutes')), FAL_TIMEOUT)),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('fal.ai: generation timed out after 160 seconds')), FAL_TIMEOUT)),
   ]) as unknown as {
     data?: { images: { url: string }[] };
     images?: { url: string }[];
@@ -316,18 +316,30 @@ export async function generateAndUpload(
 
   try {
     let imageUrl: string;
+    // Workshop operations (outfit/shot) skip Google fallback and go straight
+    // to Kie.ai, which gives clear content-policy errors instead of hanging.
+    const isWorkshop = type === 'outfit' || type === 'shot';
+
     try {
       imageUrl = await falGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
       provider = 'fal';
     } catch (falErr) {
-      console.warn(`[generation] fal.ai failed for ${type}, falling back to Google: ${falErr instanceof Error ? falErr.message : falErr}`);
-      try {
-        imageUrl = await googleGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
-        provider = 'google';
-      } catch (googleErr) {
-        console.warn(`[generation] Google failed for ${type}, falling back to Kie.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
+      const falMsg = falErr instanceof Error ? falErr.message : String(falErr);
+
+      if (isWorkshop) {
+        console.warn(`[generation] fal.ai failed for ${type}, falling back to Kie.ai: ${falMsg}`);
         imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
         provider = 'kie';
+      } else {
+        console.warn(`[generation] fal.ai failed for ${type}, falling back to Google: ${falMsg}`);
+        try {
+          imageUrl = await googleGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+          provider = 'google';
+        } catch (googleErr) {
+          console.warn(`[generation] Google failed for ${type}, falling back to Kie.ai: ${googleErr instanceof Error ? googleErr.message : googleErr}`);
+          imageUrl = await kieGenerate(prompt, aspectRatio, resolution, referenceImageUrls);
+          provider = 'kie';
+        }
       }
     }
 
@@ -617,6 +629,40 @@ export async function generateFull(
 /** Alias for admin flow — generates both profile and reference sheet from scratch. */
 export const generateBoth = generateFull;
 
+// ── Aspect ratio detection ──────────────────────────────────────────────
+
+const SUPPORTED_RATIOS: [string, number][] = [
+  ['1:1', 1],
+  ['4:3', 4/3],
+  ['3:2', 3/2],
+  ['16:9', 16/9],
+  ['21:9', 21/9],
+  ['8:1', 8],
+  ['3:4', 3/4],
+  ['2:3', 2/3],
+  ['9:16', 9/16],
+  ['4:5', 4/5],
+  ['5:4', 5/4],
+  ['1:4', 1/4],
+  ['4:1', 4],
+  ['1:8', 1/8],
+];
+
+/** Find the closest supported aspect ratio string for a given width × height. */
+function findClosestAspectRatio(width: number, height: number): string {
+  const ratio = width / height;
+  let best = '3:4';
+  let bestDiff = Infinity;
+  for (const [label, value] of SUPPORTED_RATIOS) {
+    const diff = Math.abs(ratio - value);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = label;
+    }
+  }
+  return best;
+}
+
 // ── Workshop: outfit & scene generation ─────────────────────────────────
 
 /**
@@ -624,7 +670,25 @@ export const generateBoth = generateFull;
  * swaps wardrobe, with lighting-integration guidance so the subject doesn't
  * pop forward like a sticker pasted into the scene.
  */
-function outfitPrompt(outfit: string): string {
+function outfitPrompt(outfit: string, sourceType: 'profile' | 'refsheet' | 'other' = 'profile'): string {
+  if (sourceType === 'refsheet') {
+    return (
+      `This is a multi-panel character reference sheet showing the same person from multiple angles. ` +
+      `Recreate this EXACT reference sheet — same layout, same number of panels, same poses, same angles, same framing, same background. ` +
+      `The ONLY change: dress the person in ${outfit}. ` +
+      `Keep their face, skin tone, hair, body type, and proportions IDENTICAL across all panels — this must clearly be the same person. ` +
+      `Every panel must show the new outfit from the same angle as the original. ` +
+      `Maintain the same studio lighting, backdrop, and overall composition. No text, no watermarks.`
+    );
+  }
+  if (sourceType === 'other') {
+    return (
+      `Recreate this EXACT image — same person, same pose, same angle, same framing, same background, same lighting, same composition. ` +
+      `Change ONLY their clothing to: ${outfit}. ` +
+      `Everything else must remain pixel-perfect identical: face, skin tone, hair, body position, expression, environment, camera angle. ` +
+      `This must look like the same photograph with only a wardrobe swap. No text, no watermarks.`
+    );
+  }
   return (
     `Dress this person in: ${outfit}. ` +
     `Keep their face, skin tone, hair, and body type IDENTICAL to the reference — this must clearly be the same person, no facial changes, no rejuvenation, no reshaping. ` +
@@ -636,10 +700,11 @@ function outfitPrompt(outfit: string): string {
 
 function scenePrompt(scene: string): string {
   return (
-    `Place this person in a scene: ${scene}. ` +
-    `Keep their face, skin tone, hair, and body type IDENTICAL to the reference — this must clearly be the same person, no facial changes. ` +
-    `Preserve their current outfit exactly unless the scene obviously requires otherwise. ` +
-    `Lighting integration: the subject must be lit by the ambient scene light only — no studio lighting, no brightening of the subject relative to the environment. Match skin tone and exposure to the scene's ambient light (color temperature, shadows, contrast, reflections). ` +
+    `Place this person naturally into a scene: ${scene}. ` +
+    `CRITICAL IDENTITY: Keep their face, skin tone, hair, and body type IDENTICAL to the reference — this must clearly be the same person. ` +
+    `NATURAL INTEGRATION: The person must look like they belong in this scene. Give them a natural pose and body language that fits the context — walking, sitting, leaning, interacting with the environment. Do NOT copy their pose from the reference photo. They should be actively part of the scene, not standing stiffly in front of a backdrop. ` +
+    `SCENE-APPROPRIATE CLOTHING: Dress them in clothing that fits the scene naturally. If the scene is a beach, put them in beachwear. If it's a formal event, dress them formally. If it's a street scene, dress them in contextually appropriate streetwear. Do not keep their studio outfit unless it genuinely fits the scene. ` +
+    `LIGHTING: The subject must be lit by the ambient scene light only — match skin tone and exposure to the scene's color temperature, shadows, and reflections. No studio lighting, no unnatural brightening. ` +
     `Photorealistic cinematic framing, 35mm film look, shallow depth of field, commercial editorial photography.`
   );
 }
@@ -661,6 +726,7 @@ export async function generateOutfit(params: {
   sourceImageUrl: string;
   outfitPrompt: string;
   garmentRefUrl?: string;
+  sourceType?: 'profile' | 'refsheet' | 'other';
   userId: string;
   characterId: number;
   characterSlug: string;
@@ -684,9 +750,22 @@ export async function generateOutfit(params: {
     refs.push(await uploadToFalCdn(garmentBuf, garmentCt));
   }
 
+  // Auto-detect aspect ratio from the source image for non-profile sources.
+  // Profiles always use 3:4. For everything else, read dimensions and find the
+  // closest supported ratio so reference sheets and uploads keep their shape.
+  let aspectRatio = '3:4';
+  if (params.sourceType !== 'profile') {
+    try {
+      const meta = await sharp(Buffer.from(sourceBuf)).metadata();
+      if (meta.width && meta.height) {
+        aspectRatio = findClosestAspectRatio(meta.width, meta.height);
+      }
+    } catch {}
+  }
+
   const result = await generateAndUpload(
-    outfitPrompt(params.outfitPrompt),
-    '3:4',
+    outfitPrompt(params.outfitPrompt, params.sourceType),
+    aspectRatio,
     '2K',
     `${params.characterSlug}-outfit`,
     'outfit',

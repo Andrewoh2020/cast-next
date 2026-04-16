@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { WorkshopData, OutfitVariant, SceneShot } from '@/lib/workshop.server';
+import BuyCreditsModal from '@/components/BuyCreditsModal';
 
 export interface WorkshopCharacter {
   id: number | string;
@@ -14,6 +15,7 @@ export interface WorkshopCharacter {
   img: string;
   referenceSheetUrl?: string;
   licenseName: string;
+  isUploadedImage?: boolean;
 }
 
 export interface WorkshopSummary {
@@ -53,7 +55,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const [workshop, setWorkshop] = useState<WorkshopData>(initialWorkshop ?? { characterId: 0, outfits: [], shots: [], updatedAt: '' });
   const [credits, setCredits] = useState(initialCredits);
   const [canvasImg, setCanvasImg] = useState(initChar?.img ?? '');
-  const [canvasLabel, setCanvasLabel] = useState(initChar ? 'Profile headshot' : '');
+  const [canvasLabel, setCanvasLabel] = useState(initChar ? (initChar.isUploadedImage ? 'Uploaded image' : 'Profile headshot') : '');
   const [prompt, setPrompt] = useState('');
   const [referenceFile, setReferenceFile] = useState<{ url: string; name: string } | null>(null);
   const [stage, setStage] = useState<Stage>('idle');
@@ -71,6 +73,23 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const hasCharacter = !!character;
   const creditConfirmedRef = useRef(false);
 
+  // Restore prompt + mode from sessionStorage after Stripe redirect
+  useEffect(() => {
+    try {
+      const savedPrompt = sessionStorage.getItem('workshop_prompt');
+      const savedMode = sessionStorage.getItem('workshop_mode');
+      if (savedPrompt) {
+        setPrompt(savedPrompt);
+        sessionStorage.removeItem('workshop_prompt');
+      }
+      if (savedMode === 'scene' || savedMode === 'outfit') {
+        setMode(savedMode);
+        sessionStorage.removeItem('workshop_mode');
+      }
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Handle credit purchase return from Stripe
   useEffect(() => {
     const purchased = searchParams.get('credits');
@@ -87,15 +106,24 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
           if (res.ok) {
             const data = await res.json();
             setCredits(data.credits);
+          } else {
+            // Confirmation failed — still sync credits in case they were already granted
+            await refreshCredits();
           }
-        } catch {}
+        } catch {
+          await refreshCredits();
+        }
         // Clean up URL params
         const url = new URL(window.location.href);
         url.searchParams.delete('credits');
         url.searchParams.delete('session_id');
         window.history.replaceState({}, '', url.toString());
       })();
+    } else if (!creditConfirmedRef.current) {
+      // No Stripe params but page just loaded — sync credits in case they're stale
+      refreshCredits();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const library: Asset[] = [
@@ -124,11 +152,17 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const improve = async () => {
     if (!prompt.trim() || improving) return;
     setImproving(true);
-    const suffix = mode === 'outfit'
-      ? ', fine fabric texture, editorial styling, soft window light, 35mm film grain'
-      : ', cinematic composition, shallow depth of field, ambient natural light, 35mm film look';
-    await new Promise((r) => setTimeout(r, 400));
-    setPrompt((p) => (p.endsWith(suffix) ? p : p + suffix));
+    try {
+      const res = await fetch('/api/workshop/improve-prompt', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ prompt: prompt.trim(), mode }),
+      });
+      if (res.ok) {
+        const { improved } = await res.json();
+        if (improved) setPrompt(improved);
+      }
+    } catch {}
     setImproving(false);
   };
 
@@ -151,43 +185,122 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
     }
   };
 
+  const deletedIdsRef = useRef<Set<string>>(new Set());
+
+  const refreshCredits = async () => {
+    try {
+      const res = await fetch('/api/create/credits');
+      if (res.ok) {
+        const data = await res.json();
+        setCredits(data.credits ?? 0);
+      }
+    } catch {}
+  };
+
   const generate = async () => {
-    if (!canGenerate || !character || !apiBase) return;
+    if (!character || !apiBase || !canGenerate) return;
     setStage('generating');
     setError(null);
 
     const isOutfit = mode === 'outfit';
     const firstName = character.name.split(' ')[0];
-    setStageText(isOutfit ? 'Sketching the wardrobe…' : 'Building the scene…');
-    const t1 = setTimeout(() => setStageText(isOutfit ? `Dressing ${firstName}…` : `Placing ${firstName}…`), 1500);
-    const t2 = setTimeout(() => setStageText('Final polish…'), 3500);
+
+    // Real-event-linked status messages with honest pacing
+    setStageText('Uploading to generation engine…');
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    timers.push(setTimeout(() => setStageText(isOutfit ? `Generating ${firstName}'s new look…` : `Placing ${firstName} in the scene…`), 3000));
+    timers.push(setTimeout(() => setStageText('Matching identity and rendering fabric details…'), 20000));
+    timers.push(setTimeout(() => setStageText('Refining lighting and skin texture…'), 40000));
+    timers.push(setTimeout(() => setStageText('Running final quality checks…'), 60000));
+    timers.push(setTimeout(() => setStageText('Switching to backup engine…'), 120000));
+    timers.push(setTimeout(() => setStageText('Still working on it — hang tight…'), 200000));
+
+    // Determine source type based on what's on the canvas
+    const isRefSheetSource = character?.referenceSheetUrl ? canvasImg === character.referenceSheetUrl : false;
+    const sourceType = isRefSheetSource ? 'refsheet' : (character?.isUploadedImage && canvasImg === character.img ? 'other' : 'profile');
 
     const endpoint = isOutfit ? `${apiBase}/outfits` : `${apiBase}/shots`;
     const bodyPayload = isOutfit
-      ? { prompt, sourceImageUrl: canvasImg, garmentRefUrl: referenceFile?.url }
+      ? { prompt, sourceImageUrl: canvasImg, garmentRefUrl: referenceFile?.url, sourceType }
       : { prompt, sourceImageUrl: canvasImg, sceneRefUrl: referenceFile?.url };
+
+    // 300s timeout — generation can take up to 3min with Fal timeout + fallback
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 300000);
 
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(bodyPayload),
+        signal: controller.signal,
       });
-      clearTimeout(t1); clearTimeout(t2);
-      if (!res.ok) throw new Error((await res.json())?.error || `Failed (${res.status})`);
+      clearTimeout(timeoutId);
+      timers.forEach(clearTimeout);
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        const err = new Error(errBody?.error || `Failed (${res.status})`);
+        (err as Error & { moderation?: boolean }).moderation = !!errBody?.moderation;
+        throw err;
+      }
       const json = await res.json();
       const result = (isOutfit ? json.outfit : json.shot) as OutfitVariant | SceneShot;
-      setWorkshop(json.workshop as WorkshopData);
-      setCredits((c) => c - 1);
+      // Filter out any previously deleted items from the server response
+      const serverWorkshop = json.workshop as WorkshopData;
+      const deleted = deletedIdsRef.current;
+      setWorkshop({
+        ...serverWorkshop,
+        outfits: serverWorkshop.outfits.filter((o) => !deleted.has(o.id)),
+        shots: serverWorkshop.shots.filter((s) => !deleted.has(s.id)),
+      });
       setCanvasImg(result.imageUrl);
       setCanvasLabel(result.prompt || (isOutfit ? 'New outfit' : 'New scene'));
       setPrompt('');
       setReferenceFile(null);
     } catch (err) {
-      clearTimeout(t1); clearTimeout(t2);
-      setError(err instanceof Error ? err.message : String(err));
+      clearTimeout(timeoutId);
+      timers.forEach(clearTimeout);
+
+      const isTimeout = err instanceof DOMException && err.name === 'AbortError';
+      const isModeration = !!(err as Error & { moderation?: boolean })?.moderation;
+
+      if (isTimeout) {
+        // Server may have completed — refresh workshop data to check
+        setError('Generation took longer than expected. This can happen if the prompt was flagged as inappropriate. Checking…');
+        try {
+          const checkRes = await fetch(`${apiBase}/outfits`);
+          if (checkRes.ok) {
+            const data = await checkRes.json();
+            if (data.outfits?.length > workshop.outfits.length) {
+              // It DID complete — update state
+              const freshWorkshop = await fetch(`${apiBase}/outfits`).then(r => r.json());
+              setWorkshop((prev) => ({ ...prev, outfits: freshWorkshop.outfits ?? prev.outfits }));
+              setCanvasImg(freshWorkshop.outfits?.[0]?.imageUrl ?? canvasImg);
+              setCanvasLabel(freshWorkshop.outfits?.[0]?.prompt ?? canvasLabel);
+              setError(null);
+              setPrompt('');
+              setReferenceFile(null);
+            } else {
+              setError('Generation is still processing, or may have failed due to an inappropriate prompt. Try a different description or refresh in a moment.');
+            }
+          }
+        } catch {
+          setError('Generation is still processing, or may have failed due to an inappropriate prompt. Try a different description or refresh in a moment.');
+        }
+      } else {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        const message = isModeration ? errMsg : `${errMsg}. Your credit has been refunded. Please try again.`;
+        setError(message);
+        // Notify admin of persistent failure (non-blocking)
+        fetch('/api/workshop/notify-failure', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ characterName: character.name, mode, prompt, error: errMsg }),
+        }).catch(() => {});
+      }
     } finally {
       setStage('idle');
+      refreshCredits(); // Always sync credits with server after any generation attempt
     }
   };
 
@@ -211,19 +324,24 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   };
 
   const isRefSheet = character ? canvasImg === character.referenceSheetUrl : false;
+  // Use contain mode for: ref sheets, uploaded images, and ANY generated variant
+  // (generated variants from ref sheets may have different aspect ratios than the profile).
+  // Only the profile headshot uses cover mode with 3:4 crop.
+  const isProfileImg = character ? canvasImg === character.img : false;
+  const isUploadedSource = !isProfileImg || !!character?.isUploadedImage;
 
   return (
     <div className={`flex flex-col bg-[#faf7f2] text-gray-900 ${hasCharacter ? 'fixed inset-0 overflow-hidden' : 'min-h-screen'}`}>
       {/* Header */}
-      <header className="flex items-center justify-between px-6 h-14 border-b border-gray-100 bg-white shrink-0 z-20">
+      <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-gray-100 bg-white shrink-0 z-20 relative">
         <div className="flex items-center gap-4 min-w-0">
           <Link href="/" className="text-xl font-black tracking-tight text-black shrink-0">Cast<span className="text-indigo-500">.</span></Link>
-          <span className="text-gray-300">·</span>
+          <span className="text-gray-300 hidden sm:inline">·</span>
           {hasCharacter ? (
             <button onClick={() => setShowSwitcher(!showSwitcher)} className="flex items-center gap-2 min-w-0 px-2 py-1 -ml-2 rounded-lg hover:bg-gray-50 transition-colors">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`${character.img}${character.img.includes('?') ? '&' : '?'}w=96`} alt="" className="w-6 h-6 rounded-full object-cover object-top shrink-0" />
-              <span className="text-sm font-semibold truncate text-black">{character.name}</span>
+              <span className="text-sm font-semibold truncate text-black hidden sm:inline">{character.name}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="text-gray-400 shrink-0"><polyline points="6 9 12 15 18 9" /></svg>
             </button>
           ) : (
@@ -233,9 +351,12 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
         <div className="flex items-center gap-3 shrink-0">
           {hasCharacter && (
             <>
-              <button onClick={() => setShowDownload(true)} className="flex items-center gap-1.5 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">
+              <button onClick={() => setShowDownload(true)} className="hidden sm:flex items-center gap-1.5 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                 Export package
+              </button>
+              <button onClick={() => setShowDownload(true)} className="sm:hidden flex items-center justify-center w-8 h-8 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
               </button>
             </>
           )}
@@ -246,7 +367,9 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
       {/* Character switcher */}
       {showSwitcher && (
-        <div className="absolute top-14 left-24 z-30 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl p-2" onClick={() => setShowSwitcher(false)}>
+        <>
+        <div className="fixed inset-0 z-20" onClick={() => setShowSwitcher(false)} />
+        <div className="absolute top-14 left-24 z-30 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl p-2">
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-3 pt-2 pb-1">Your workshops</p>
           {workshops.map((w) => (
             <Link key={w.id} href={w.href} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-left">
@@ -265,21 +388,27 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             </Link>
           </div>
         </div>
+        </>
       )}
 
       {/* Main */}
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-y-auto md:overflow-hidden">
         {hasCharacter ? (
           <>
-            {/* Library rail */}
-            <div className="w-[120px] shrink-0 border-r border-gray-100 bg-white flex flex-col">
+            {/* Library — horizontal on mobile, vertical rail on desktop */}
+            <div className="w-full md:w-[120px] shrink-0 border-b md:border-b-0 md:border-r border-gray-100 bg-white flex md:flex-col overflow-hidden">
               <div className="p-3 pb-2 shrink-0">
-                <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 leading-tight">Library</p>
-                <p className="text-[9px] text-gray-400 mt-0.5">{library.length} looks & shots</p>
+                <div className="flex items-center justify-between mb-0.5">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 leading-tight">Library</p>
+                  <Link href="/workshop" title="New workshop" className="w-5 h-5 rounded-md bg-gray-100 hover:bg-indigo-100 hover:text-indigo-600 text-gray-500 flex items-center justify-center transition-colors">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                  </Link>
+                </div>
+                <p className="text-[9px] text-gray-400 hidden md:block">{library.length} looks & shots</p>
               </div>
-              <div className="flex-1 px-3 pb-3 overflow-y-auto">
-                <div className="flex flex-col gap-2">
-                  <ThumbBtn img={character.img} label="Profile" active={canvasImg === character.img} onClick={() => { setCanvasImg(character.img); setCanvasLabel('Profile headshot'); }} />
+              <div className="flex-1 px-3 pt-1 pb-3 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto">
+                <div className="flex md:flex-col gap-2">
+                  <ThumbBtn img={character.img} label={character.isUploadedImage ? 'Upload' : 'Profile'} active={canvasImg === character.img} onClick={() => { setCanvasImg(character.img); setCanvasLabel(character.isUploadedImage ? 'Uploaded image' : 'Profile headshot'); }} />
                   {character.referenceSheetUrl && (
                     <ThumbBtn img={character.referenceSheetUrl} label="Ref sheet" active={canvasImg === character.referenceSheetUrl} onClick={() => { setCanvasImg(character.referenceSheetUrl!); setCanvasLabel('8-panel reference sheet'); }} />
                   )}
@@ -287,19 +416,44 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
                   {library.length === 0 ? (
                     <div className="text-[10px] text-gray-400 py-2 px-1">Generate your first look.</div>
                   ) : library.map((a) => (
-                    <ThumbBtn key={a.data.id} img={a.data.imageUrl} label={a.kind === 'outfit' ? 'Look' : 'Shot'} active={canvasImg === a.data.imageUrl} onClick={() => { setCanvasImg(a.data.imageUrl); setCanvasLabel(a.data.prompt); }} />
+                    <ThumbBtn
+                      key={a.data.id}
+                      img={a.data.imageUrl}
+                      label={a.kind === 'outfit' ? 'Look' : 'Shot'}
+                      active={canvasImg === a.data.imageUrl}
+                      onClick={() => { setCanvasImg(a.data.imageUrl); setCanvasLabel(a.data.prompt); }}
+                      onDelete={async () => {
+                        const endpoint = a.kind === 'outfit'
+                          ? `${apiBase}/outfits/${a.data.id}`
+                          : `${apiBase}/shots/${a.data.id}`;
+                        try {
+                          deletedIdsRef.current.add(a.data.id);
+                          await fetch(endpoint, { method: 'DELETE' });
+                          setWorkshop((prev) => ({
+                            ...prev,
+                            outfits: prev.outfits.filter((o) => o.id !== a.data.id),
+                            shots: prev.shots.filter((s) => s.id !== a.data.id),
+                          }));
+                          // If the deleted item was on canvas, switch to the source image
+                          if (canvasImg === a.data.imageUrl && character) {
+                            setCanvasImg(character.img);
+                            setCanvasLabel(character.isUploadedImage ? 'Uploaded image' : 'Profile headshot');
+                          }
+                        } catch {}
+                      }}
+                    />
                   ))}
                 </div>
               </div>
             </div>
 
             {/* Canvas */}
-            <div className="flex-1 flex items-center justify-center p-8 min-w-0">
-              <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} />
+            <div className="flex-1 flex items-start justify-center p-4 md:p-8 min-w-0 overflow-y-auto">
+              <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} isWide={isUploadedSource} />
             </div>
 
             {/* Tool panel */}
-            <aside className="w-[440px] shrink-0 border-l border-gray-100 bg-white flex flex-col">
+            <aside className="w-full md:w-[440px] shrink-0 border-t md:border-t-0 md:border-l border-gray-100 bg-white flex flex-col">
               <div className="p-5 pb-3">
                 <div className="relative flex bg-gray-50 border border-gray-100 rounded-xl p-1">
                   <button onClick={() => setMode('outfit')} className={`flex-1 text-sm font-semibold py-2 rounded-lg transition-all ${mode === 'outfit' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'}`}>Outfit</button>
@@ -381,105 +535,90 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             </aside>
           </>
         ) : (
-          /* ── Empty state ──────────────────────────────────────────── */
-          <div className="flex-1 flex items-center justify-center p-8">
-            <div className="w-full max-w-xl text-center">
-              <div className="mb-8">
-                <div className="w-16 h-16 mx-auto mb-5 rounded-3xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth={2}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
-                </div>
-                <h2 className="text-2xl font-black tracking-tight text-black mb-2">Upload your character</h2>
-                <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                  Change their outfit, place them in any scene, and export a package ready for your AI video tools.
-                </p>
+          /* ── Empty state: workshop shell with upload/pick in the canvas ── */
+          <>
+            {/* Left rail — horizontal on mobile, vertical on desktop */}
+            <div className="w-full md:w-[120px] shrink-0 border-b md:border-b-0 md:border-r border-gray-100 bg-white flex md:flex-col">
+              <div className="p-3 pb-2 shrink-0">
+                <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 leading-tight">Your characters</p>
               </div>
-
-              <input type="file" ref={uploadInputRef} accept="image/jpeg,image/png,image/webp" className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUploadCharacter(f); e.currentTarget.value = ''; }} />
-
-              <button onClick={() => uploadInputRef.current?.click()} disabled={uploading}
-                className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-400 text-white font-bold text-sm px-6 py-4 rounded-2xl transition-all shadow-lg shadow-indigo-500/20 mb-4">
-                {uploading ? (<><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Uploading…</>) : (
-                  <><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>Upload your character</>
-                )}
-              </button>
-
-              {error && <p className="text-xs text-amber-700 mb-2">{error}</p>}
-
-              <div className="flex items-center gap-3 justify-center mb-8">
-                <div className="h-px w-12 bg-gray-200" /><span className="text-xs text-gray-400 uppercase tracking-widest">or</span><div className="h-px w-12 bg-gray-200" />
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link href="/#roster" className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-black border border-gray-200 hover:border-gray-400 px-5 py-3 rounded-xl transition-colors">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 00-16 0" /></svg>
-                  Pick from the roster
-                </Link>
-                <Link href="/create" className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-black border border-gray-200 hover:border-gray-400 px-5 py-3 rounded-xl transition-colors">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" /></svg>
-                  Generate from scratch
-                </Link>
-              </div>
-
-              {/* What you'll get */}
-              <div className="mt-12 pt-8 border-t border-gray-100">
-                <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-6">What you&apos;ll get</p>
-                <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-2">
-                  <div className="text-center">
-                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 ring-1 ring-gray-200 mb-2">
+              <div className="flex-1 px-3 pt-1 pb-3 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto">
+                <div className="flex md:flex-col gap-2">
+                  {workshops.length === 0 ? (
+                    <div className="text-[10px] text-gray-400 py-2 px-1">Upload or pick a character to start.</div>
+                  ) : workshops.map((w) => (
+                    <Link key={w.id} href={w.href} className="w-16 md:w-full shrink-0 relative rounded-lg overflow-hidden ring-1 ring-gray-200 hover:ring-gray-300 hover:shadow-sm transition-all" style={{ aspectRatio: '3/4' }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/api/media?p=custom%2Fuser_3CM1Wxh6LIF4NfkCwMyfn1qZUkp%2Fmin-ji-park-refsheet-1776181227543.jpg&w=400" alt="" className="w-full h-full object-cover object-left-top" />
-                      <div className="absolute top-1.5 left-1.5 text-[8px] font-black uppercase tracking-widest text-white bg-black/70 backdrop-blur rounded px-1.5 py-0.5">8 angles</div>
-                    </div>
-                    <p className="text-xs font-semibold text-black">Change their outfit</p>
-                    <p className="text-[10px] text-gray-500">Same identity, new wardrobe</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 ring-1 ring-gray-200 mb-2">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/api/media?p=scene-portraits%2Fmin-ji-park-1776252882422.jpg&w=400" alt="" className="w-full h-full object-cover object-top" />
-                      <div className="absolute top-1.5 left-1.5 text-[8px] font-black uppercase tracking-widest text-white bg-black/70 backdrop-blur rounded px-1.5 py-0.5">Scene</div>
-                    </div>
-                    <p className="text-xs font-semibold text-black">Place in any scene</p>
-                    <p className="text-[10px] text-gray-500">Any location, matched lighting</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-50 ring-1 ring-gray-200 mb-2 flex flex-col items-center justify-center p-3 gap-1.5">
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth={1.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
-                      <div className="space-y-1 w-full">
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500" /><span className="text-[9px] text-gray-600 text-left">Profile + ref sheet</span></div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500" /><span className="text-[9px] text-gray-600 text-left">All outfit variants</span></div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-indigo-500" /><span className="text-[9px] text-gray-600 text-left">All scene shots</span></div>
-                        <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-gray-300" /><span className="text-[9px] text-gray-400 text-left">Voice · coming soon</span></div>
+                      <img src={`${w.img}${w.img.includes('?') ? '&' : '?'}w=300`} alt={w.name} className="w-full h-full object-cover object-top" />
+                      <div className="absolute bottom-0 inset-x-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
+                        <p className="text-[8px] font-bold text-white truncate">{w.name}</p>
                       </div>
-                    </div>
-                    <p className="text-xs font-semibold text-black">Export package</p>
-                    <p className="text-[10px] text-gray-500">Ready for Kling, Runway, Veo</p>
-                  </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
-
-              {/* Continue a workshop */}
-              {workshops.length > 0 && (
-                <div className="mt-12 pt-8 border-t border-gray-100">
-                  <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">Continue a workshop</p>
-                  <div className="flex justify-center gap-3 flex-wrap">
-                    {workshops.map((w) => (
-                      <Link key={w.id} href={w.href}
-                        className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl px-4 py-3 hover:shadow-md hover:border-gray-200 transition-all text-left">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={`${w.img}${w.img.includes('?') ? '&' : '?'}w=96`} alt="" className="w-10 h-10 rounded-lg object-cover object-top" />
-                        <div>
-                          <p className="text-sm font-semibold text-black">{w.name}</p>
-                          <p className="text-[10px] text-gray-500">{w.detail}</p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
+
+            {/* Center — upload CTA in the canvas area */}
+            <div className="flex-1 flex items-start justify-center pt-[15vh] p-8 min-w-0">
+              <div className="w-full max-w-md text-center">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth={2}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+                </div>
+                <h2 className="text-xl font-black tracking-tight text-black mb-1">Upload your character</h2>
+                <p className="text-xs text-gray-500 max-w-xs mx-auto mb-5">
+                  Change their outfit, place them in scenes, and export for your AI video tool.
+                </p>
+
+                <input type="file" ref={uploadInputRef} accept="image/jpeg,image/png,image/webp" className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUploadCharacter(f); e.currentTarget.value = ''; }} />
+
+                <button onClick={() => uploadInputRef.current?.click()} disabled={uploading}
+                  className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-400 text-white font-bold text-sm px-5 py-3.5 rounded-xl transition-all shadow-sm shadow-indigo-500/20 mb-3">
+                  {uploading ? (<><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Uploading…</>) : (
+                    <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>Upload your character</>
+                  )}
+                </button>
+
+                {error && <p className="text-xs text-amber-700 mb-2">{error}</p>}
+
+                <div className="flex items-center gap-3 justify-center my-4">
+                  <div className="h-px w-10 bg-gray-200" /><span className="text-[10px] text-gray-400 uppercase tracking-widest">or</span><div className="h-px w-10 bg-gray-200" />
+                </div>
+
+                <div className="flex items-center justify-center gap-2">
+                  <Link href="/#roster" className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-black border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-lg transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 00-16 0" /></svg>
+                    Browse roster
+                  </Link>
+                  <Link href="/create" className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-black border border-gray-200 hover:border-gray-300 px-3.5 py-2 rounded-lg transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" /></svg>
+                    Generate new
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Right — tool panel dimmed */}
+            <aside className="hidden md:flex w-[440px] shrink-0 border-l border-gray-100 bg-white flex-col opacity-40 pointer-events-none select-none">
+              <div className="p-5 pb-3">
+                <div className="relative flex bg-gray-50 border border-gray-100 rounded-xl p-1">
+                  <div className="flex-1 text-sm font-semibold py-2 rounded-lg bg-white text-black shadow-sm text-center">Outfit</div>
+                  <div className="flex-1 text-sm font-semibold py-2 rounded-lg text-gray-500 text-center">Scene</div>
+                  <div className="flex-1 text-sm font-semibold py-2 rounded-lg text-gray-400 text-center">Voice</div>
+                </div>
+                <p className="text-[11px] text-gray-500 mt-2 px-1">Load a character to start.</p>
+              </div>
+              <div className="flex-1 px-5">
+                <div className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-400 h-40">
+                  Describe an outfit…
+                </div>
+              </div>
+              <div className="p-5 pt-3 border-t border-gray-100">
+                <div className="w-full bg-indigo-200 text-white/70 font-bold text-sm px-5 py-3.5 rounded-xl text-center">Generate · 1 credit</div>
+              </div>
+            </aside>
+          </>
         )}
       </div>
 
@@ -487,6 +626,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
       {showRefSheet && character?.referenceSheetUrl && <RefSheetModal url={character.referenceSheetUrl} onClose={() => setShowRefSheet(false)} />}
       {showDownload && <DownloadModal workshop={workshop} apiBase={apiBase} onClose={() => setShowDownload(false)} />}
       {showBuyCredits && <BuyCreditsModal onClose={() => setShowBuyCredits(false)} />}
+
 
       {/* License gate modal — roster characters only */}
       {showLicenseGate && character && (
@@ -588,9 +728,9 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
       <style jsx global>{`
         @keyframes workshop-shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
-        @keyframes workshop-progress { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes workshop-progress { 0% { width: 0%; } 10% { width: 15%; } 30% { width: 40%; } 60% { width: 65%; } 80% { width: 80%; } 100% { width: 88%; } }
         .animate-workshop-shimmer { animation: workshop-shimmer 2s ease-in-out infinite; }
-        .animate-workshop-progress { animation: workshop-progress 5s ease-out forwards; }
+        .animate-workshop-progress { animation: workshop-progress 240s cubic-bezier(0.1, 0.5, 0.2, 1) forwards; }
       `}</style>
     </div>
   );
@@ -609,75 +749,16 @@ function CreditsChip({ credits, onClick }: { credits: number; onClick: () => voi
   );
 }
 
-function BuyCreditsModal({ onClose }: { onClose: () => void }) {
-  const [loading, setLoading] = useState<number | null>(null);
-
-  const packages = [
-    { credits: 1, price: '$10', label: '1 credit', desc: '1 outfit or scene generation', index: 0 },
-    { credits: 7, price: '$50', label: '7 credits', desc: 'Best value — 7 generations', index: 1 },
-  ];
-
-  const handleBuy = async (pkgIndex: number) => {
-    setLoading(pkgIndex);
-    try {
-      const returnUrl = window.location.pathname;
-      const res = await fetch('/api/create/purchase-credits', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ packageIndex: pkgIndex, returnUrl }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error ?? 'Checkout failed');
-      window.location.href = data.url;
-    } catch {
-      setLoading(null);
-    }
-  };
-
+function CanvasArea({ img, label, stage, stageText, isRefSheet, isWide }: { img: string; label: string; stage: Stage; stageText: string; isRefSheet?: boolean; isWide?: boolean }) {
+  const useContain = isRefSheet || isWide;
+  const cClass = useContain
+    ? 'relative w-fit max-w-5xl mx-auto rounded-3xl overflow-hidden bg-white shadow-xl shadow-gray-200/70 ring-1 ring-gray-100'
+    : 'relative w-full max-w-[520px] rounded-3xl overflow-hidden bg-white shadow-xl shadow-gray-200/70 ring-1 ring-gray-100';
+  const iClass = useContain
+    ? 'max-w-full max-h-[80vh] w-auto h-auto block'
+    : 'w-full h-auto';
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-8" onClick={onClose}>
-      <div className="relative bg-white rounded-3xl p-8 w-full max-w-sm border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-black text-xs font-medium">Esc</button>
-        <h2 className="text-xl font-black tracking-tight mb-1 text-black">Get more credits</h2>
-        <p className="text-xs text-gray-500 mb-6">Each credit generates one outfit or scene variant.</p>
-        <div className="space-y-3">
-          {packages.map((pkg) => (
-            <button
-              key={pkg.index}
-              onClick={() => handleBuy(pkg.index)}
-              disabled={loading !== null}
-              className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border transition-all text-left ${
-                pkg.index === 1
-                  ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 ring-1 ring-indigo-200'
-                  : 'bg-white border-gray-100 hover:bg-gray-50'
-              }`}
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-black">{pkg.label}</span>
-                  {pkg.index === 1 && <span className="text-[9px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-100 px-1.5 py-0.5 rounded">Best value</span>}
-                </div>
-                <p className="text-[10px] text-gray-500 mt-0.5">{pkg.desc}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {loading === pkg.index && <div className="w-4 h-4 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />}
-                <span className="text-lg font-black text-black">{pkg.price}</span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CanvasArea({ img, label, stage, stageText, isRefSheet }: { img: string; label: string; stage: Stage; stageText: string; isRefSheet?: boolean }) {
-  const cClass = isRefSheet
-    ? 'relative w-full max-w-5xl rounded-3xl overflow-hidden bg-white shadow-xl shadow-gray-200/70 ring-1 ring-gray-100'
-    : 'relative w-full max-w-[520px] aspect-[3/4] rounded-3xl overflow-hidden bg-white shadow-xl shadow-gray-200/70 ring-1 ring-gray-100';
-  const iClass = isRefSheet ? 'w-full h-auto object-contain' : 'w-full h-full object-cover object-top';
-  return (
-    <div className={`relative ${isRefSheet ? 'w-full max-w-5xl' : 'w-full max-w-[520px]'}`}>
+    <div className={`relative ${useContain ? 'w-full max-w-5xl' : 'w-full max-w-[520px]'}`}>
       <div className="absolute -inset-12 bg-gradient-to-br from-indigo-100/30 via-gray-100/40 to-amber-50/30 blur-3xl pointer-events-none" />
       <div className={cClass}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -692,7 +773,7 @@ function CanvasArea({ img, label, stage, stageText, isRefSheet }: { img: string;
             </div>
           </div>
         )}
-        <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
+        <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 via-black/30 to-transparent hidden md:block">
           <p className="text-[10px] text-white/70 font-black uppercase tracking-widest mb-0.5">Working from</p>
           <p className="text-white font-semibold text-sm truncate">{label}</p>
         </div>
@@ -701,13 +782,30 @@ function CanvasArea({ img, label, stage, stageText, isRefSheet }: { img: string;
   );
 }
 
-function ThumbBtn({ img, label, active, onClick }: { img: string; label: string; active: boolean; onClick: () => void }) {
+function ThumbBtn({ img, label, active, onClick, onDelete }: { img: string; label: string; active: boolean; onClick: () => void; onDelete?: () => void }) {
+  const [deleting, setDeleting] = useState(false);
   return (
-    <button onClick={onClick} className={`w-full relative rounded-lg overflow-hidden transition-all ${active ? 'ring-2 ring-indigo-500 shadow-md shadow-indigo-500/20' : 'ring-1 ring-gray-200 hover:ring-gray-300 hover:shadow-sm'}`} style={{ aspectRatio: '3/4' }} title={label}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`${img}${img.includes('?') ? '&' : '?'}w=300`} alt={label} className="w-full h-full object-cover object-top" />
-      <div className="absolute top-1 left-1 text-[8px] font-black uppercase tracking-widest text-white px-1.5 py-0.5 rounded bg-black/70 backdrop-blur">{label}</div>
-    </button>
+    <div className="w-16 md:w-full shrink-0 relative group">
+      <button onClick={onClick} disabled={deleting} className={`w-full relative rounded-lg overflow-hidden transition-all ${deleting ? 'opacity-40' : ''} ${active ? 'ring-2 ring-indigo-500 shadow-md shadow-indigo-500/20' : 'ring-1 ring-gray-200 hover:ring-gray-300 hover:shadow-sm'}`} style={{ aspectRatio: '3/4' }} title={label}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${img}${img.includes('?') ? '&' : '?'}w=300`} alt={label} className="w-full h-full object-cover object-top" />
+        <div className="absolute top-1 left-1 text-[8px] font-black uppercase tracking-widest text-white px-1.5 py-0.5 rounded bg-black/70 backdrop-blur">{label}</div>
+        {deleting && (
+          <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+            <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
+          </div>
+        )}
+      </button>
+      {onDelete && !deleting && (
+        <button
+          onClick={async (e) => { e.stopPropagation(); setDeleting(true); await onDelete(); }}
+          title="Delete"
+          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+        >
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+        </button>
+      )}
+    </div>
   );
 }
 

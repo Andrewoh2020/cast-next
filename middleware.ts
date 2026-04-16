@@ -6,6 +6,15 @@ const isAccountRoute = createRouteMatcher(['/account/:path*', '/account']);
 const isCreateRoute = createRouteMatcher(['/create/:path*', '/create']);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
+  // Canonical host: redirect apex castability.ai to www.castability.ai
+  const host = req.headers.get('host');
+  if (host === 'castability.ai') {
+    const url = new URL(req.url);
+    url.host = 'www.castability.ai';
+    url.protocol = 'https:';
+    return NextResponse.redirect(url, 301);
+  }
+
   // Protect account and create routes with Clerk
   if (isAccountRoute(req) || isCreateRoute(req)) {
     await auth.protect();

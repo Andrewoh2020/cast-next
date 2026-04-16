@@ -11,6 +11,30 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-17',
+    title: 'Workshop Storage Overhaul, Scene Generation, and Quality-of-Life Polish',
+    summary:
+      'Migrated workshop storage to separate blobs per outfit/shot — permanently fixes deleted items reappearing. Scene generation now produces natural poses and scene-appropriate clothing. Plus: smarter improve button, better loading states, credit purchase flow fixes, and mobile responsiveness.',
+    highlights: [
+      'Workshop storage migrated from single JSON to separate blob per outfit/shot — eliminates race conditions where deleted items reappeared after concurrent generations',
+      'Scene generation overhauled — characters now get natural poses, scene-appropriate clothing, and proper environmental integration instead of being pasted onto backgrounds',
+      'Improve button powered by Claude Haiku — outfit mode enriches clothing details (fabric, cut, accessories), scene mode adds director-style shot descriptions with action and wardrobe',
+      'Fal timeout reduced to 160s with Kie.ai as direct fallback for workshops — clear content policy errors surfaced to users instead of silent 3-minute stalls',
+      'Auto-detected aspect ratio for generated images — reference sheets and uploaded images keep their original dimensions',
+      'Credit purchase state preserved across Stripe redirects — prompt text and active tab restored on return',
+      'Credits sync on every page load — no more stale 0-credit display after purchases',
+      'Generation loading messages linked to real pipeline stages with 300s client timeout',
+      'Delete button on library items with loading spinner and permanent server-side deletion',
+      'Mobile-responsive workshop — horizontal library strip, stacked layout, icon-only export button',
+      'Social proof strip on homepage — Product Hunt badge + Kling, Runway, Veo, Seedance tool logos',
+      'Workshop section on homepage — visual explainer with three cards (outfit, scene, export package)',
+      'Height and weight on character profiles — auto-generated numbers displayed as comp card measurements',
+      'Custom workshop download package route — zip export now works for uploaded characters',
+      'License gate modal routes to real Stripe checkout for paid tiers',
+      'Signup promo uncapped — 2 free credits for every new account, no 200-user limit',
+    ],
+  },
+  {
     date: '2026-04-16',
     title: 'Environmental Portraits and Archetype Casting Chips',
     summary:

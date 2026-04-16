@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const workshop = await readCustomWorkshop(userId, id);
   if (!workshop) return NextResponse.json({ error: 'Workshop not found' }, { status: 404 });
 
-  let body: { prompt?: string; sourceImageUrl?: string; garmentRefUrl?: string };
+  let body: { prompt?: string; sourceImageUrl?: string; garmentRefUrl?: string; sourceType?: 'profile' | 'refsheet' | 'other' };
   try { body = await req.json(); } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }); }
 
   const prompt = (body.prompt ?? '').trim();
@@ -34,8 +34,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       sourceImageUrl,
       outfitPrompt: prompt || 'the garment shown in the reference photo',
       garmentRefUrl: body.garmentRefUrl,
+      sourceType: body.sourceType || 'profile',
       userId,
-      characterId: 0, // custom workshops have no roster id
+      characterId: 0,
       characterSlug: `custom-${workshop.id}`,
       characterName: workshop.name,
     });
@@ -53,8 +54,12 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json({ outfit, workshop: updated });
   } catch (err) {
     await addCredits(userId, 1, 0, `refund-custom-outfit-${Date.now()}`).catch(() => {});
-    const message = err instanceof Error ? err.message : 'Generation failed';
-    console.error('[workshop/custom/outfits] failed:', message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const raw = err instanceof Error ? err.message : 'Generation failed';
+    console.error('[workshop/custom/outfits] failed:', raw);
+    const isModeration = /policy|prohibited|filtered|safety|blocked|content.*violation|nsfw/i.test(raw);
+    const message = isModeration
+      ? 'This prompt was flagged by the AI model\'s content policy. Try a different outfit description — suggestive, violent, or explicit content is not supported.'
+      : raw;
+    return NextResponse.json({ error: message, moderation: isModeration }, { status: isModeration ? 422 : 500 });
   }
 }

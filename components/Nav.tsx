@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { UserButton, useUser } from '@clerk/nextjs';
+import BuyCreditsModal from './BuyCreditsModal';
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
@@ -13,7 +14,6 @@ export default function Nav() {
   const isHome = pathname === '/';
   const [scrolled, setScrolled] = useState(false);
   const [credits, setCredits] = useState<number | null>(null);
-  const [buyLoading, setBuyLoading] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isHome) return;
@@ -146,57 +146,7 @@ export default function Nav() {
       )}
     </nav>
 
-    {/* Global buy-credits modal */}
-    {showBuyCredits && (
-      <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-center justify-center p-8" onClick={() => setShowBuyCredits(false)}>
-        <div className="relative bg-white rounded-3xl p-8 w-full max-w-sm border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-          <button onClick={() => setShowBuyCredits(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black text-xs font-medium">Esc</button>
-          <h2 className="text-xl font-black tracking-tight mb-1 text-black">Get more credits</h2>
-          <p className="text-xs text-gray-500 mb-6">Each credit generates one outfit or scene variant.</p>
-          <div className="space-y-3">
-            {[
-              { credits: 1, price: '$10', label: '1 credit', desc: '1 outfit or scene generation', index: 0, best: false },
-              { credits: 7, price: '$50', label: '7 credits', desc: 'Best value — 7 generations', index: 1, best: true },
-            ].map((pkg) => (
-              <button
-                key={pkg.index}
-                disabled={buyLoading !== null}
-                onClick={async () => {
-                  setBuyLoading(pkg.index);
-                  try {
-                    const res = await fetch('/api/create/purchase-credits', {
-                      method: 'POST',
-                      headers: { 'content-type': 'application/json' },
-                      body: JSON.stringify({ packageIndex: pkg.index, returnUrl: pathname }),
-                    });
-                    const data = await res.json();
-                    if (!res.ok || !data.url) throw new Error(data.error ?? 'Checkout failed');
-                    window.location.href = data.url;
-                  } catch {
-                    setBuyLoading(null);
-                  }
-                }}
-                className={`w-full flex items-center justify-between px-5 py-4 rounded-xl border transition-all text-left ${
-                  pkg.best ? 'bg-indigo-50 border-indigo-200 hover:bg-indigo-100 ring-1 ring-indigo-200' : 'bg-white border-gray-100 hover:bg-gray-50'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-black">{pkg.label}</span>
-                    {pkg.best && <span className="text-[9px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-100 px-1.5 py-0.5 rounded">Best value</span>}
-                  </div>
-                  <p className="text-[10px] text-gray-500 mt-0.5">{pkg.desc}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {buyLoading === pkg.index && <div className="w-4 h-4 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />}
-                  <span className="text-lg font-black text-black">{pkg.price}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )}
+    {showBuyCredits && <BuyCreditsModal onClose={() => setShowBuyCredits(false)} />}
     </>
   );
 }

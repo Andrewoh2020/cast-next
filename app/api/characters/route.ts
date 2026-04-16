@@ -47,6 +47,23 @@ export async function PATCH(req: NextRequest) {
   const characters = await readCharacters();
   const idSet = new Set(ids);
 
+  // Slug dedup: a slug change applies to one character at a time. If the requested
+  // slug is taken by a different character, append -2, -3, etc. to keep it unique.
+  let finalSlug = update.slug;
+  if (update.slug !== undefined) {
+    if (ids.length !== 1) {
+      return NextResponse.json({ error: 'Slug updates must target a single character' }, { status: 400 });
+    }
+    const selfId = ids[0];
+    const takenSlugs = new Set(characters.filter((c) => c.id !== selfId).map((c) => c.slug));
+    finalSlug = update.slug;
+    if (finalSlug && takenSlugs.has(finalSlug)) {
+      let suffix = 2;
+      while (takenSlugs.has(`${update.slug}-${suffix}`)) suffix++;
+      finalSlug = `${update.slug}-${suffix}`;
+    }
+  }
+
   // Detect characters that are being unhidden (going public for the first time)
   const newlyVisible: string[] = [];
   if (update.hidden === false) {
@@ -57,7 +74,9 @@ export async function PATCH(req: NextRequest) {
     }
   }
 
-  const updated = characters.map((c) => idSet.has(c.id) ? { ...c, ...update, id: c.id } : c);
+  const updated = characters.map((c) =>
+    idSet.has(c.id) ? { ...c, ...update, slug: finalSlug ?? c.slug, id: c.id } : c
+  );
   await writeCharacters(updated);
 
   if (newlyVisible.length > 0) {
