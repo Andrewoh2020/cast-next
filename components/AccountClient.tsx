@@ -44,15 +44,27 @@ function LicenseExpiry({ licenseName, purchasedAt }: { licenseName: string; purc
   );
 }
 
+import type { CustomWorkshopSummary } from '@/lib/custom-workshop.server';
+
 interface Props {
   initialFavorites: Talent[];
   initialPurchases: PurchaseRecord[];
   allCharacters: Talent[];
   customCharacters?: CustomCharacterDraft[];
+  customWorkshops?: CustomWorkshopSummary[];
+  credits?: number;
 }
 
-export default function AccountClient({ initialFavorites, initialPurchases, customCharacters = [] }: Props) {
-  const [tab, setTab] = useState<'favorites' | 'purchases' | 'characters'>('favorites');
+type TabKey = 'workshops' | 'favorites' | 'purchases' | 'characters';
+
+export default function AccountClient({
+  initialFavorites,
+  initialPurchases,
+  customCharacters = [],
+  customWorkshops = [],
+  credits = 0,
+}: Props) {
+  const [tab, setTab] = useState<TabKey>('workshops');
   const [favorites, setFavorites] = useState<Talent[]>(initialFavorites);
 
   const handleRemoveFavorite = async (talent: Talent) => {
@@ -64,22 +76,95 @@ export default function AccountClient({ initialFavorites, initialPurchases, cust
     });
   };
 
+  const allWorkshops = [
+    ...customWorkshops.map((w) => ({
+      key: `custom-${w.id}`,
+      href: `/workshop/custom/${w.id}`,
+      name: w.name,
+      img: w.sourceImageUrl,
+      detail: `${w.outfitCount} outfits · ${w.shotCount} shots`,
+      kind: 'custom' as const,
+    })),
+    ...initialPurchases.map((p) => ({
+      key: `roster-${p.characterId}`,
+      href: `/workshop/${p.characterSlug}`,
+      name: p.characterName,
+      img: p.characterImg,
+      detail: `${p.licenseName} · Licensed`,
+      kind: 'roster' as const,
+    })),
+  ];
+
   return (
     <div>
+      {/* Top stat row */}
+      <div className="grid grid-cols-3 gap-3 mb-8">
+        <StatCard label="Credits" value={credits.toString()} accent />
+        <StatCard label="Workshops" value={allWorkshops.length.toString()} />
+        <StatCard label="Favorites" value={favorites.length.toString()} />
+      </div>
+
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit mb-8">
-        {(['favorites', 'purchases', 'characters'] as const).map((t) => (
+      <div className="flex gap-1 bg-white border border-gray-100 rounded-xl p-1 w-fit mb-8 shadow-sm">
+        {(['workshops', 'purchases', 'characters', 'favorites'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all capitalize ${
-              tab === t ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
+              tab === t ? 'bg-black text-white shadow-sm' : 'text-gray-500 hover:text-black'
             }`}
           >
-            {t === 'characters' ? 'My Characters' : t}
+            {t === 'characters' ? 'My Characters' : t === 'workshops' ? 'Workshops' : t}
           </button>
         ))}
       </div>
+
+      {/* Workshops */}
+      {tab === 'workshops' && (
+        allWorkshops.length === 0 ? (
+          <div className="bg-white border border-gray-100 rounded-3xl p-10 text-center shadow-sm">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-indigo-100 flex items-center justify-center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth={2.5}>
+                <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
+              </svg>
+            </div>
+            <p className="font-bold text-black text-lg mb-2">Your workshop is empty</p>
+            <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto">
+              Upload a character photo, license a Cast actor, or build one from scratch — then dress them, place them in scenes, and export.
+            </p>
+            <Link href="/workshop" className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold text-sm px-5 py-3 rounded-xl transition-colors">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
+              </svg>
+              Open Workshop
+            </Link>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-gray-500">{allWorkshops.length} workshops · click any to open</p>
+              <Link href="/workshop" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">+ New workshop</Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {allWorkshops.map((w) => (
+                <Link key={w.key} href={w.href} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                  <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={thumbUrl(w.img, 400)} alt={w.name} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute top-2 left-2 text-[9px] font-black uppercase tracking-widest text-white bg-black/70 backdrop-blur rounded px-2 py-0.5">
+                      {w.kind === 'roster' ? 'Licensed' : 'Custom'}
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <p className="font-bold text-sm text-black truncate">{w.name}</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">{w.detail}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )
+      )}
 
       {/* Favorites */}
       {tab === 'favorites' && (
@@ -149,28 +234,36 @@ export default function AccountClient({ initialFavorites, initialPurchases, cust
                     <LicenseExpiry licenseName={p.licenseName} purchasedAt={p.purchasedAt} />
                   </div>
                 </div>
-                {(() => {
-                  const files: { url: string; filename: string }[] = [];
-                  if (p.characterImg) {
-                    files.push({
-                      url: `${p.characterImg}${p.characterImg.includes('?') ? '&' : '?'}download=1&filename=${p.characterSlug}-profile`,
-                      filename: `${p.characterSlug}-profile`,
-                    });
-                  }
-                  if (p.referenceSheetUrl) {
-                    files.push({
-                      url: `${p.referenceSheetUrl}${p.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${p.characterSlug}-reference-sheet`,
-                      filename: `${p.characterSlug}-reference-sheet`,
-                    });
-                  }
-                  return files.length > 0 ? (
-                    <DownloadButton
-                      files={files}
-                      label="Download"
-                      className="flex-shrink-0 text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 min-w-[80px] text-center"
-                    />
-                  ) : null;
-                })()}
+                <div className="flex flex-col gap-2 shrink-0">
+                  <Link
+                    href={`/workshop/${p.characterSlug}`}
+                    className="text-xs font-bold text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-colors min-w-[100px] text-center"
+                  >
+                    Open Workshop
+                  </Link>
+                  {(() => {
+                    const files: { url: string; filename: string }[] = [];
+                    if (p.characterImg) {
+                      files.push({
+                        url: `${p.characterImg}${p.characterImg.includes('?') ? '&' : '?'}download=1&filename=${p.characterSlug}-profile`,
+                        filename: `${p.characterSlug}-profile`,
+                      });
+                    }
+                    if (p.referenceSheetUrl) {
+                      files.push({
+                        url: `${p.referenceSheetUrl}${p.referenceSheetUrl.includes('?') ? '&' : '?'}download=1&filename=${p.characterSlug}-reference-sheet`,
+                        filename: `${p.characterSlug}-reference-sheet`,
+                      });
+                    }
+                    return files.length > 0 ? (
+                      <DownloadButton
+                        files={files}
+                        label="Download assets"
+                        className="text-xs font-semibold text-indigo-500 border border-indigo-200 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors disabled:opacity-50 min-w-[100px] text-center"
+                      />
+                    ) : null;
+                  })()}
+                </div>
               </div>
             ))}
           </div>
@@ -269,6 +362,15 @@ export default function AccountClient({ initialFavorites, initialPurchases, cust
           </div>
         )
       )}
+    </div>
+  );
+}
+
+function StatCard({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className={`rounded-2xl p-4 border ${accent ? 'bg-indigo-50 border-indigo-100' : 'bg-white border-gray-100'} shadow-sm`}>
+      <p className={`text-2xl font-black tracking-tight ${accent ? 'text-indigo-600' : 'text-black'}`}>{value}</p>
+      <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-0.5">{label}</p>
     </div>
   );
 }

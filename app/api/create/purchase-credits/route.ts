@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { packageIndex, draftId } = await req.json();
+    const { packageIndex, draftId, returnUrl } = await req.json();
     const pkg = CREDIT_PACKAGES[packageIndex];
     if (!pkg) return NextResponse.json({ error: 'Invalid package' }, { status: 400 });
 
@@ -43,8 +43,12 @@ export async function POST(req: NextRequest) {
         amount: String(pkg.amount),
         draftId: draftId || '',
       },
-      success_url: `${origin}/create?credits=purchased&session_id={CHECKOUT_SESSION_ID}${draftId ? `&draft=${draftId}` : ''}`,
-      cancel_url: `${origin}/create${draftId ? `?draft=${draftId}` : ''}`,
+      success_url: returnUrl
+        ? `${origin}${returnUrl}${returnUrl.includes('?') ? '&' : '?'}credits=purchased&session_id={CHECKOUT_SESSION_ID}`
+        : `${origin}/create?credits=purchased&session_id={CHECKOUT_SESSION_ID}${draftId ? `&draft=${draftId}` : ''}`,
+      cancel_url: returnUrl
+        ? `${origin}${returnUrl}`
+        : `${origin}/create${draftId ? `?draft=${draftId}` : ''}`,
     });
 
     return NextResponse.json({ url: session.url });

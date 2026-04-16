@@ -70,22 +70,16 @@ export default function LivingMarquee() {
     return <div className="h-[560px] bg-gray-50" />;
   }
 
-  // Row 2 is reserved for environmental scene portraits (characters shown
-  // "in their world"). Rows 1 and 3 use studio portraits only. This keeps the
-  // cinematic row visually distinct and avoids mixing tones within a row.
+  // Two rows: scene portraits lead (cinematic first impression), studio
+  // headshots follow (signals breadth of the roster).
   const sceneCharacters = talents.filter(t => t.sceneImg);
   const studioCharacters = talents.filter(t => !t.sceneImg);
-  const half = Math.ceil(studioCharacters.length / 2);
-  const row1 = studioCharacters.slice(0, half);
-  const row2 = sceneCharacters;
-  const row3 = studioCharacters.slice(half);
 
   return (
     <div className="relative w-full">
       <div className="flex flex-col gap-3">
-        <MarqueeRow talents={row1} duration={90} cardHeight={220} />
-        <MarqueeRow talents={row2} duration={110} cardHeight={220} />
-        <MarqueeRow talents={row3} duration={130} cardHeight={220} />
+        <MarqueeRow talents={sceneCharacters} duration={100} cardHeight={220} />
+        <MarqueeRow talents={studioCharacters} duration={130} cardHeight={220} />
       </div>
     </div>
   );

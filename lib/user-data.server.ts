@@ -127,6 +127,39 @@ export async function getCredits(userId: string): Promise<number> {
   return data.credits ?? 0;
 }
 
+/**
+ * Deduct N credits atomically. Used when an action costs more than a single
+ * credit (e.g. locking in a voice). If the user doesn't have enough credits,
+ * throws before touching the balance.
+ */
+export async function deductCredits(userId: string, n: number): Promise<number> {
+  if (n <= 0) throw new Error('deductCredits(n>0) required');
+  const data = await getUserData(userId);
+  const current = data.credits ?? 0;
+  if (current < n) throw new Error(`Need ${n} credits, have ${current}`);
+  const updated: UserData = { ...data, credits: current - n };
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return updated.credits;
+}
+
+/**
+ * Check whether a user owns a license for a character. Considers Single Project
+ * and Studio licenses valid for 1 year from purchase; Exclusive Rights never
+ * expire. Used to gate workshop features on licensed characters only.
+ */
+export async function userOwnsCharacter(userId: string, characterId: number): Promise<boolean> {
+  const data = await getUserData(userId);
+  const now = Date.now();
+  return (data.purchases ?? []).some((p) => {
+    if (p.characterId !== characterId) return false;
+    if (p.licenseName === 'Exclusive Rights') return true;
+    // 1-year license window
+    const purchased = new Date(p.purchasedAt).getTime();
+    const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+    return now - purchased < ONE_YEAR_MS;
+  });
+}
+
 export async function recordPurchase(userId: string, purchase: PurchaseRecord): Promise<void> {
   const data = await getUserData(userId);
   if (purchase.sessionId && data.purchases.some((p) => p.sessionId === purchase.sessionId)) return;

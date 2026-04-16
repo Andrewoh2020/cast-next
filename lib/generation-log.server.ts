@@ -4,7 +4,7 @@ export interface GenerationEntry {
   characterId?: number;
   characterName?: string;
   characterSlug?: string;
-  type: 'profile' | 'refsheet';
+  type: 'profile' | 'refsheet' | 'outfit' | 'shot';
   cost: number;          // image generation cost
   claudeCost?: number;   // Claude API cost for description
   generatedAt: string;
@@ -26,14 +26,20 @@ export const GENERATION_COST = {
   google: {
     profile: 0.151,  // Google direct 4K Nano Banana 2
     refsheet: 0.151,
+    outfit: 0.04,    // smaller — identity-lock edits
+    shot: 0.04,
   },
   kie: {
     profile: 0.09,   // Kie.ai 4K nano-banana-2
     refsheet: 0.09,
+    outfit: 0.04,
+    shot: 0.04,
   },
   fal: {
     profile: 0.16,   // Fal.ai 4K nano-banana-2
     refsheet: 0.16,
+    outfit: 0.04,
+    shot: 0.04,
   },
 } as const;
 

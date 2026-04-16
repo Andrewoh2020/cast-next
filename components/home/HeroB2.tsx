@@ -184,7 +184,7 @@ export default function HeroB2() {
         </h1>
 
         <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto mb-7 leading-relaxed">
-          Photorealistic AI actors for commercial video. Browse the roster below or describe your own — ready for Kling, Runway, and Veo.
+          Photorealistic actors for films, ads, and stock photography. No shoot days required — ready for Kling, Runway, and Veo.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mb-4">
@@ -208,6 +208,10 @@ export default function HeroB2() {
             </button>
           </div>
         </form>
+
+        <p className="text-xs text-gray-500 mb-3">
+          Have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Dress them, place them in scenes, and export →</Link>
+        </p>
 
         <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
           <span className="text-xs text-gray-500 font-medium self-center mr-1">Cast a:</span>

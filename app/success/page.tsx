@@ -8,6 +8,7 @@ import Link from 'next/link';
 import AutoDownload from '@/components/AutoDownload';
 import DownloadButton from '@/components/DownloadButton';
 import PurchaseTracker from '@/components/PurchaseTracker';
+import WorkshopRedirect from './WorkshopRedirect';
 
 export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ session_id?: string }> }) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -106,14 +107,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
           );
         })()}
 
-        <div className="flex flex-col gap-3">
-          <Link href="/account" className="w-full bg-indigo-500 text-white font-bold py-3 rounded-xl hover:bg-indigo-600 transition-colors text-sm">
-            View in My Account
-          </Link>
-          <Link href="/#roster" className="w-full border border-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:border-gray-400 transition-colors text-sm">
-            Browse More Talent
-          </Link>
-        </div>
+        <WorkshopRedirect slug={m.characterSlug} />
       </div>
     </div>
   );

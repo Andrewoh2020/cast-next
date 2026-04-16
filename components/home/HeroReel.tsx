@@ -26,9 +26,6 @@ export default function HeroReel() {
               <span className="text-white/70 font-medium">Cast any character in 90 seconds — and take them anywhere.</span>
             </p>
           </div>
-          <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-white/50 hidden sm:block">
-            Reel · 19s · Loop
-          </p>
         </div>
       </div>
     </section>

@@ -305,7 +305,7 @@ export async function generateAndUpload(
   aspectRatio: string,
   resolution: string,
   slug: string,
-  type: 'profile' | 'refsheet',
+  type: 'profile' | 'refsheet' | 'outfit' | 'shot',
   meta: GenerateMeta,
   referenceImageUrls?: string[],
   blobPrefix = 'characters',
@@ -616,3 +616,135 @@ export async function generateFull(
 
 /** Alias for admin flow — generates both profile and reference sheet from scratch. */
 export const generateBoth = generateFull;
+
+// ── Workshop: outfit & scene generation ─────────────────────────────────
+
+/**
+ * Identity-lock prompt template. Preserves face/skin/hair/body and only
+ * swaps wardrobe, with lighting-integration guidance so the subject doesn't
+ * pop forward like a sticker pasted into the scene.
+ */
+function outfitPrompt(outfit: string): string {
+  return (
+    `Dress this person in: ${outfit}. ` +
+    `Keep their face, skin tone, hair, and body type IDENTICAL to the reference — this must clearly be the same person, no facial changes, no rejuvenation, no reshaping. ` +
+    `Maintain photorealistic skin texture and natural proportions. ` +
+    `Soft diffused studio lighting, neutral warm-gray seamless backdrop, 35mm film look, shallow depth of field. ` +
+    `Editorial full-body to 3/4 framing. No text, no watermarks.`
+  );
+}
+
+function scenePrompt(scene: string): string {
+  return (
+    `Place this person in a scene: ${scene}. ` +
+    `Keep their face, skin tone, hair, and body type IDENTICAL to the reference — this must clearly be the same person, no facial changes. ` +
+    `Preserve their current outfit exactly unless the scene obviously requires otherwise. ` +
+    `Lighting integration: the subject must be lit by the ambient scene light only — no studio lighting, no brightening of the subject relative to the environment. Match skin tone and exposure to the scene's ambient light (color temperature, shadows, contrast, reflections). ` +
+    `Photorealistic cinematic framing, 35mm film look, shallow depth of field, commercial editorial photography.`
+  );
+}
+
+export interface WorkshopGenerateResult {
+  /** /api/media?p=... path to serve through the blob proxy */
+  imageUrl: string;
+  /** Cost in USD of the underlying Fal call, for logging */
+  cost: number;
+}
+
+/**
+ * Generate an outfit variant of the character, preserving identity.
+ * `sourceImageUrl` is the current canvas image (usually /api/media?p=...).
+ * `garmentRefUrl` is optional — if present, the garment photo is sent as a
+ * second reference image so the model matches the specific garment.
+ */
+export async function generateOutfit(params: {
+  sourceImageUrl: string;
+  outfitPrompt: string;
+  garmentRefUrl?: string;
+  userId: string;
+  characterId: number;
+  characterSlug: string;
+  characterName: string;
+}): Promise<WorkshopGenerateResult> {
+  const refs: string[] = [];
+
+  // Source image → Fal CDN
+  const sourceFull = params.sourceImageUrl.startsWith('http')
+    ? params.sourceImageUrl
+    : `${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}${params.sourceImageUrl}${params.sourceImageUrl.includes('?') ? '&' : '?'}w=1200`;
+  const { buffer: sourceBuf, contentType: sourceCt } = await fetchImageBuffer(sourceFull);
+  refs.push(await uploadToFalCdn(sourceBuf, sourceCt));
+
+  // Optional garment reference → Fal CDN
+  if (params.garmentRefUrl) {
+    const garmentFull = params.garmentRefUrl.startsWith('http')
+      ? params.garmentRefUrl
+      : `${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}${params.garmentRefUrl}${params.garmentRefUrl.includes('?') ? '&' : '?'}w=1200`;
+    const { buffer: garmentBuf, contentType: garmentCt } = await fetchImageBuffer(garmentFull);
+    refs.push(await uploadToFalCdn(garmentBuf, garmentCt));
+  }
+
+  const result = await generateAndUpload(
+    outfitPrompt(params.outfitPrompt),
+    '3:4',
+    '2K',
+    `${params.characterSlug}-outfit`,
+    'outfit',
+    {
+      userId: params.userId,
+      characterId: params.characterId,
+      characterName: params.characterName,
+      characterSlug: params.characterSlug,
+    },
+    refs,
+    `workshop/${params.userId}/${params.characterId}`,
+  );
+
+  return { imageUrl: result.url, cost: result.cost };
+}
+
+/**
+ * Generate a scene shot. Mirrors outfit generation but applies the scene prompt.
+ */
+export async function generateSceneShot(params: {
+  sourceImageUrl: string;
+  scenePrompt: string;
+  sceneRefUrl?: string;
+  userId: string;
+  characterId: number;
+  characterSlug: string;
+  characterName: string;
+}): Promise<WorkshopGenerateResult> {
+  const refs: string[] = [];
+  const sourceFull = params.sourceImageUrl.startsWith('http')
+    ? params.sourceImageUrl
+    : `${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}${params.sourceImageUrl}${params.sourceImageUrl.includes('?') ? '&' : '?'}w=1200`;
+  const { buffer: sourceBuf, contentType: sourceCt } = await fetchImageBuffer(sourceFull);
+  refs.push(await uploadToFalCdn(sourceBuf, sourceCt));
+
+  if (params.sceneRefUrl) {
+    const sceneFull = params.sceneRefUrl.startsWith('http')
+      ? params.sceneRefUrl
+      : `${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}${params.sceneRefUrl}${params.sceneRefUrl.includes('?') ? '&' : '?'}w=1200`;
+    const { buffer: sceneBuf, contentType: sceneCt } = await fetchImageBuffer(sceneFull);
+    refs.push(await uploadToFalCdn(sceneBuf, sceneCt));
+  }
+
+  const result = await generateAndUpload(
+    scenePrompt(params.scenePrompt),
+    '3:4',
+    '2K',
+    `${params.characterSlug}-shot`,
+    'shot',
+    {
+      userId: params.userId,
+      characterId: params.characterId,
+      characterName: params.characterName,
+      characterSlug: params.characterSlug,
+    },
+    refs,
+    `workshop/${params.userId}/${params.characterId}`,
+  );
+
+  return { imageUrl: result.url, cost: result.cost };
+}
