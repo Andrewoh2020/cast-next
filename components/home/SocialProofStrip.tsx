@@ -7,21 +7,22 @@ export default function SocialProofStrip() {
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest shrink-0">
             Used by AI video creators alongside
           </p>
-          <div className="flex items-center gap-5 flex-wrap justify-center">
-            <a href="https://klingai.com" target="_blank" rel="noopener noreferrer" className="text-gray-800 font-black text-base tracking-tight hover:text-black transition-colors">
-              Kling
+          <div className="flex items-center gap-6 flex-wrap justify-center">
+            <a href="https://klingai.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-6 h-6 rounded-md bg-[#FF6B35] flex items-center justify-center"><span className="text-white text-xs font-black">K</span></div>
+              <span className="text-gray-800 font-black text-base tracking-tight">Kling</span>
             </a>
-            <span className="w-1 h-1 bg-gray-300 rounded-full" />
-            <a href="https://runwayml.com" target="_blank" rel="noopener noreferrer" className="text-gray-800 font-black text-base tracking-tight hover:text-black transition-colors">
-              Runway
+            <a href="https://runwayml.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-6 h-6 rounded-md bg-black flex items-center justify-center"><span className="text-white text-xs font-black">R</span></div>
+              <span className="text-gray-800 font-black text-base tracking-tight">Runway</span>
             </a>
-            <span className="w-1 h-1 bg-gray-300 rounded-full" />
-            <a href="https://deepmind.google/models/veo/" target="_blank" rel="noopener noreferrer" className="text-gray-800 font-black text-base tracking-tight hover:text-black transition-colors">
-              Veo
+            <a href="https://deepmind.google/models/veo/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-6 h-6 rounded-md bg-[#4285F4] flex items-center justify-center"><span className="text-white text-xs font-black">V</span></div>
+              <span className="text-gray-800 font-black text-base tracking-tight">Veo</span>
             </a>
-            <span className="w-1 h-1 bg-gray-300 rounded-full" />
-            <a href="https://seed.bytedance.com/en/seedance2_0" target="_blank" rel="noopener noreferrer" className="text-gray-800 font-black text-base tracking-tight hover:text-black transition-colors">
-              Seedance
+            <a href="https://seed.bytedance.com/en/seedance2_0" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-6 h-6 rounded-md bg-[#00D1FF] flex items-center justify-center"><span className="text-white text-xs font-black">S</span></div>
+              <span className="text-gray-800 font-black text-base tracking-tight">Seedance</span>
             </a>
           </div>
         </div>
