@@ -88,10 +88,9 @@ export async function deductCredit(userId: string): Promise<number> {
   return updated.credits;
 }
 
-// ── Launch promo: 2 free credits for first 200 accounts ─────────────
+// ── Signup promo: 2 free credits for every new account ──────────────
 
 const PROMO_KEY = 'launch-promo.json';
-const PROMO_MAX_ACCOUNTS = 200;
 const PROMO_CREDITS = 2;
 
 interface PromoData {
@@ -107,14 +106,12 @@ async function writePromoData(data: PromoData): Promise<void> {
 }
 
 /**
- * Grant launch promo credits if the user hasn't claimed them yet
- * and the 200-account cap hasn't been reached.
- * Returns the number of promo credits granted (0 if already claimed or cap reached).
+ * Grant signup promo credits if the user hasn't claimed them yet.
+ * Returns the number of promo credits granted (0 if already claimed).
  */
 export async function claimLaunchPromo(userId: string): Promise<number> {
   const promo = await getPromoData();
   if (promo.claimedUserIds.includes(userId)) return 0;
-  if (promo.claimedUserIds.length >= PROMO_MAX_ACCOUNTS) return 0;
 
   promo.claimedUserIds.push(userId);
   await writePromoData(promo);
