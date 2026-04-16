@@ -175,7 +175,7 @@ export default function HeroB2() {
       <div className="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-10 text-center">
         <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 mb-5">
           <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-          2 free credits for the first 200 signups
+          2 free credits with every signup
         </div>
 
         <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tighter text-black leading-[0.95] mb-5 max-w-3xl mx-auto">
@@ -210,7 +210,7 @@ export default function HeroB2() {
         </form>
 
         <p className="text-xs text-gray-500 mb-3">
-          Have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Dress them, place them in scenes, and export →</Link>
+          Have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Dress them, place them in scenes, and export for your AI video tool →</Link>
         </p>
 
         <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
