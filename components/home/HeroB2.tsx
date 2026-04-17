@@ -202,11 +202,18 @@ export default function HeroB2() {
             <button
               type="submit"
               disabled={!query.trim()}
-              className="bg-black text-white font-bold text-sm px-5 py-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-40 whitespace-nowrap"
+              className="hidden sm:block bg-black text-white font-bold text-sm px-5 py-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-40 whitespace-nowrap"
             >
               Generate Character
             </button>
           </div>
+          <button
+            type="submit"
+            disabled={!query.trim()}
+            className="sm:hidden w-full mt-3 bg-black text-white font-bold text-sm px-5 py-3.5 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-40"
+          >
+            Generate Character
+          </button>
         </form>
 
         <p className="text-xs text-gray-500 mb-3">
