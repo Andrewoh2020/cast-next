@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LivingMarquee from './LivingMarquee';
+import ExportReel, { type ReelCharacter } from './ExportReel';
 
 const PLACEHOLDER_EXAMPLES = [
   '30-year-old Korean man, detective in a rumpled blazer',
@@ -123,22 +124,48 @@ const ARCHETYPE_CHIPS: { label: string; prompts: string[] }[] = [
   },
 ];
 
+export type HeroVariant = 'marquee' | 'export-reel';
+
+interface HeroB2Props {
+  /** Bottom half of the hero. `marquee` (default) = character procession;
+   *  `export-reel` = narrative strip showing Cast → Kling/Runway/Veo → video. */
+  variant?: HeroVariant;
+  /** Characters to rotate through when variant === 'export-reel'. Ignored
+   *  for the marquee variant. */
+  reelCharacters?: ReelCharacter[];
+}
+
 /**
- * Variant B:2 — Text at top, marquee fills below
- * Every character visible and clickable; more utilitarian, marketplace-first
+ * Variant B:2 — Text at top, dynamic section below.
+ * Bottom section is either the LivingMarquee (default) or the ExportReel
+ * pipeline narrative, controlled by the `variant` prop.
  */
-export default function HeroB2() {
+export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: HeroB2Props) {
   const [query, setQuery] = useState('');
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
   const [cursorOn, setCursorOn] = useState(true);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const router = useRouter();
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   // Track per-chip click count so each click cycles to the next prompt variant
   const chipClickCountRef = useRef<Record<string, number>>({});
 
   useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduceMotion(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
+  useEffect(() => {
     if (query) return;
+    if (reduceMotion) {
+      setTypedPlaceholder(PLACEHOLDER_EXAMPLES[placeholderIdx]);
+      return;
+    }
     const target = PLACEHOLDER_EXAMPLES[placeholderIdx];
     let i = 0;
     const type = () => {
@@ -154,14 +181,17 @@ export default function HeroB2() {
     };
     type();
     return () => { if (typingTimerRef.current) clearTimeout(typingTimerRef.current); };
-  }, [placeholderIdx, query]);
+  }, [placeholderIdx, query, reduceMotion]);
 
-  // Blink the placeholder cursor every 530ms
+  // Blink the placeholder cursor every 530ms (respects reduced motion)
   useEffect(() => {
-    if (query) return;
+    if (query || reduceMotion) {
+      setCursorOn(false);
+      return;
+    }
     const interval = setInterval(() => setCursorOn(c => !c), 530);
     return () => clearInterval(interval);
-  }, [query]);
+  }, [query, reduceMotion]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,7 +204,7 @@ export default function HeroB2() {
       {/* Top text block */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-10 text-center">
         <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 mb-5">
-          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full motion-safe:animate-pulse" aria-hidden="true" />
           10 free credits with every signup — limited time
         </div>
 
@@ -184,20 +214,26 @@ export default function HeroB2() {
         </h1>
 
         <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto mb-7 leading-relaxed">
-          Photorealistic actors for films, ads, and stock photography. No shoot days required — ready for Kling, Runway, and Veo.
+          Photorealistic actors for films, ads, and stock photography. Made for every AI video tool. No shoot days required.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mb-4">
-          <div className="flex items-center bg-white rounded-2xl border border-black/10 shadow-xl shadow-indigo-500/5 pl-5 pr-2 py-2 focus-within:border-indigo-300 transition-all">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 shrink-0">
+          <label htmlFor="hero-character-prompt" className="sr-only">
+            Describe the character to generate
+          </label>
+          <div className="flex items-center bg-white rounded-2xl border border-black/10 shadow-xl shadow-indigo-500/5 pl-5 pr-2 py-2 focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-200 focus-within:ring-offset-1 transition-all">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 shrink-0" aria-hidden="true">
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
+              id="hero-character-prompt"
+              ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={typedPlaceholder + (!query && cursorOn ? '|' : '')}
-              className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base font-medium px-3 py-2 outline-none"
+              aria-label="Describe the character to generate"
+              className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 text-base font-medium px-3 py-2 outline-none"
             />
             <button
               type="submit"
@@ -217,10 +253,10 @@ export default function HeroB2() {
         </form>
 
         <p className="text-xs text-gray-500 mb-3">
-          Have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Dress them, place them in scenes, and export for your AI video tool →</Link>
+          Already have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Make them AI-video-ready in Workshop — dress, scene, and export →</Link>
         </p>
 
-        <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-2.5 sm:gap-2 max-w-xl mx-auto">
           <span className="text-xs text-gray-500 font-medium self-center mr-1">Cast a:</span>
           {ARCHETYPE_CHIPS.map((chip) => (
             <button
@@ -235,9 +271,19 @@ export default function HeroB2() {
                   ? Math.floor(Math.random() * chip.prompts.length)
                   : (seen + 1) % chip.prompts.length;
                 counts[chip.label] = nextIdx;
-                setQuery(chip.prompts[nextIdx]);
+                const nextPrompt = chip.prompts[nextIdx];
+                setQuery(nextPrompt);
+                // Move focus to input with caret at end so screen readers
+                // announce the new value and users can edit immediately.
+                const el = inputRef.current;
+                if (el) {
+                  el.focus();
+                  requestAnimationFrame(() => {
+                    el.setSelectionRange(nextPrompt.length, nextPrompt.length);
+                  });
+                }
               }}
-              className="text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-3.5 py-1.5 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 transition-colors"
+              className="text-sm sm:text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 sm:px-3.5 sm:py-1.5 hover:bg-white hover:border-indigo-300 hover:text-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-1 transition-colors"
             >
               {chip.label}
             </button>
@@ -245,12 +291,16 @@ export default function HeroB2() {
         </div>
       </div>
 
-      {/* Full marquee below */}
+      {/* Bottom section — either the character marquee or the export-pipeline reel */}
       <div className="pb-6">
-        <LivingMarquee />
+        {variant === 'export-reel' ? (
+          <ExportReel characters={reelCharacters} />
+        ) : (
+          <LivingMarquee />
+        )}
         <div className="text-center mt-4">
-          <Link href="#roster" className="text-xs font-semibold text-gray-500 hover:text-black transition-colors">
-            or browse the full roster ↓
+          <Link href="#roster" className="inline-block text-sm font-semibold text-gray-500 hover:text-black px-3 py-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 transition-colors">
+            or cast from the roster ↓
           </Link>
         </div>
       </div>

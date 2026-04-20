@@ -69,6 +69,20 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const [uploading, setUploading] = useState(false);
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const promptRef = useRef<HTMLTextAreaElement>(null);
+  const [promptCollapsed, setPromptCollapsed] = useState(false);
+
+  // Auto-resize the prompt textarea: starts as a single line, grows with content
+  // up to ~6 lines. When collapsed, forced to a single visible line so the image
+  // stays in view after generating.
+  useEffect(() => {
+    const el = promptRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = promptCollapsed
+      ? '44px'
+      : `${Math.min(el.scrollHeight, 160)}px`;
+  }, [prompt, mode, promptCollapsed]);
 
   const hasCharacter = !!character;
   const creditConfirmedRef = useRef(false);
@@ -256,6 +270,8 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
       setCanvasImg(result.imageUrl);
       setCanvasLabel(result.prompt || (isOutfit ? 'New outfit' : 'New scene'));
       setReferenceFile(null);
+      // Collapse the prompt field so the freshly generated image is fully visible
+      setPromptCollapsed(true);
     } catch (err) {
       clearTimeout(timeoutId);
       timers.forEach(clearTimeout);
@@ -336,11 +352,17 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
           <Link href="/" className="text-xl font-black tracking-tight text-black shrink-0">Cast<span className="text-indigo-500">.</span></Link>
           <span className="text-gray-300 hidden sm:inline">·</span>
           {hasCharacter ? (
-            <button onClick={() => setShowSwitcher(!showSwitcher)} className="flex items-center gap-2 min-w-0 px-2 py-1 -ml-2 rounded-lg hover:bg-gray-50 transition-colors">
+            <button
+              onClick={() => setShowSwitcher(!showSwitcher)}
+              aria-expanded={showSwitcher}
+              aria-haspopup="menu"
+              aria-label={`Switch workshop (current: ${character.name})`}
+              className="flex items-center gap-2 min-w-0 px-2 py-1 -ml-2 rounded-lg hover:bg-gray-50 transition-colors"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`${character.img}${character.img.includes('?') ? '&' : '?'}w=96`} alt="" className="w-6 h-6 rounded-full object-cover object-top shrink-0" />
               <span className="text-sm font-semibold truncate text-black hidden sm:inline">{character.name}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="text-gray-400 shrink-0"><polyline points="6 9 12 15 18 9" /></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="text-gray-400 shrink-0" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
             </button>
           ) : (
             <span className="text-sm text-gray-400">Workshop</span>
@@ -350,11 +372,11 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
           {hasCharacter && (
             <>
               <button onClick={() => setShowDownload(true)} className="hidden sm:flex items-center gap-1.5 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                 Export package
               </button>
-              <button onClick={() => setShowDownload(true)} className="sm:hidden flex items-center justify-center w-8 h-8 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+              <button onClick={() => setShowDownload(true)} aria-label="Export package" className="sm:hidden flex items-center justify-center w-11 h-11 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
               </button>
             </>
           )}
@@ -397,12 +419,12 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             <div className="w-full md:w-[120px] shrink-0 border-b md:border-b-0 md:border-r border-gray-100 bg-white flex md:flex-col overflow-hidden">
               <div className="p-3 pb-2 shrink-0">
                 <div className="flex items-center justify-between mb-0.5">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 leading-tight">Library</p>
-                  <Link href="/workshop" title="New workshop" className="w-5 h-5 rounded-md bg-gray-100 hover:bg-indigo-100 hover:text-indigo-600 text-gray-500 flex items-center justify-center transition-colors">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-tight">Library</p>
+                  <Link href="/workshop" title="New workshop" aria-label="Start a new workshop" className="w-7 h-7 rounded-md bg-gray-100 hover:bg-indigo-100 hover:text-indigo-600 text-gray-500 flex items-center justify-center transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                   </Link>
                 </div>
-                <p className="text-[9px] text-gray-400 hidden md:block">{library.length} looks & shots</p>
+                <p className="text-[10px] text-gray-500 hidden md:block">{library.length} looks & shots</p>
               </div>
               <div className="flex-1 px-3 pt-1 pb-3 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto">
                 <div className="flex md:flex-col gap-2">
@@ -453,23 +475,49 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             {/* Tool panel */}
             <aside className="w-full md:w-[440px] shrink-0 border-t md:border-t-0 md:border-l border-gray-100 bg-white flex flex-col">
               <div className="p-5 pb-3">
-                <div className="relative flex bg-gray-50 border border-gray-100 rounded-xl p-1">
-                  <button onClick={() => setMode('outfit')} className={`flex-1 text-sm font-semibold py-2 rounded-lg transition-all ${mode === 'outfit' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'}`}>Outfit</button>
-                  <button onClick={() => setMode('scene')} className={`flex-1 text-sm font-semibold py-2 rounded-lg transition-all ${mode === 'scene' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'}`}>Scene</button>
-                  <button disabled className="flex-1 text-sm font-semibold py-2 rounded-lg opacity-40 text-gray-400 cursor-not-allowed">Voice · soon</button>
+                <div role="tablist" aria-label="Generation mode" className="relative flex bg-gray-50 border border-gray-100 rounded-xl p-1">
+                  <button role="tab" aria-selected={mode === 'outfit'} onClick={() => setMode('outfit')} className={`flex-1 text-sm font-semibold py-2 rounded-lg transition-all ${mode === 'outfit' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'}`}>Outfit</button>
+                  <button role="tab" aria-selected={mode === 'scene'} onClick={() => setMode('scene')} className={`flex-1 text-sm font-semibold py-2 rounded-lg transition-all ${mode === 'scene' ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'}`}>Scene</button>
+                  <button role="tab" aria-selected={false} aria-disabled="true" disabled aria-label="Voice mode (coming soon)" className="flex-1 text-sm font-semibold py-2 rounded-lg opacity-40 text-gray-400 cursor-not-allowed">Voice · soon</button>
                 </div>
-                <p className="text-[11px] text-gray-500 mt-2 px-1">{mode === 'outfit' ? 'Swap the outfit. Identity stays locked.' : 'Place into any scene. Identity stays locked.'}</p>
+                <p className="text-xs text-gray-500 mt-2 px-1">{mode === 'outfit' ? 'Swap the outfit. Identity stays locked.' : 'Place into any scene. Identity stays locked.'}</p>
               </div>
 
               <div className="flex-1 px-5 overflow-y-auto">
                 <div className="relative">
-                  <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)}
+                  <label htmlFor="workshop-prompt" className="sr-only">
+                    {mode === 'outfit' ? 'Describe the outfit' : 'Describe the scene'}
+                  </label>
+                  <textarea
+                    id="workshop-prompt"
+                    ref={promptRef}
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    onFocus={() => setPromptCollapsed(false)}
                     placeholder={mode === 'outfit' ? 'Charcoal three-piece suit with a silk pocket square' : 'Shibuya crossing at dusk, neon billboards'}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 pb-12 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:bg-white resize-none transition-colors" rows={6} autoFocus />
-                  <button onClick={improve} disabled={!prompt.trim() || improving}
-                    className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 text-xs font-semibold bg-white border border-gray-200 shadow-sm text-gray-700 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md disabled:text-gray-300 disabled:border-gray-100 disabled:shadow-none disabled:cursor-not-allowed transition-all rounded-full px-3 py-1.5">
-                    {improving ? (<><div className="w-3 h-3 border-2 border-gray-200 border-t-indigo-500 rounded-full animate-spin" />Improving…</>) : (<><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" /></svg>Improve</>)}
-                  </button>
+                    aria-label={mode === 'outfit' ? 'Describe the outfit' : 'Describe the scene'}
+                    className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 pt-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-400 focus:bg-white resize-none transition-colors ${promptCollapsed ? 'pr-10 pb-3 overflow-hidden whitespace-nowrap' : 'pb-12 overflow-y-auto'}`}
+                    rows={1}
+                  />
+                  {prompt.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => setPromptCollapsed((v) => !v)}
+                      aria-label={promptCollapsed ? 'Expand prompt' : 'Collapse prompt'}
+                      aria-expanded={!promptCollapsed}
+                      className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-indigo-600 hover:bg-white transition-colors"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true" className={`transition-transform ${promptCollapsed ? '' : 'rotate-180'}`}>
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </button>
+                  )}
+                  {!promptCollapsed && (
+                    <button onClick={improve} disabled={!prompt.trim() || improving}
+                      className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 text-xs font-semibold bg-white border border-gray-200 shadow-sm text-gray-700 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md disabled:text-gray-300 disabled:border-gray-100 disabled:shadow-none disabled:cursor-not-allowed transition-all rounded-full px-3 py-1.5">
+                      {improving ? (<><div className="w-3 h-3 border-2 border-gray-200 border-t-indigo-500 rounded-full animate-spin" />Improving…</>) : (<><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" /></svg>Improve</>)}
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-5">
@@ -549,7 +597,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={`${w.img}${w.img.includes('?') ? '&' : '?'}w=300`} alt={w.name} className="w-full h-full object-cover object-top" />
                       <div className="absolute bottom-0 inset-x-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
-                        <p className="text-[8px] font-bold text-white truncate">{w.name}</p>
+                        <p className="text-[10px] font-bold text-white truncate">{w.name}</p>
                       </div>
                     </Link>
                   ))}
@@ -729,6 +777,10 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
         @keyframes workshop-progress { 0% { width: 0%; } 10% { width: 15%; } 30% { width: 40%; } 60% { width: 65%; } 80% { width: 80%; } 100% { width: 88%; } }
         .animate-workshop-shimmer { animation: workshop-shimmer 2s ease-in-out infinite; }
         .animate-workshop-progress { animation: workshop-progress 240s cubic-bezier(0.1, 0.5, 0.2, 1) forwards; }
+        @media (prefers-reduced-motion: reduce) {
+          .animate-workshop-shimmer { animation: none; }
+          .animate-workshop-progress { animation: none; width: 40%; }
+        }
       `}</style>
     </div>
   );
@@ -787,7 +839,7 @@ function ThumbBtn({ img, label, active, onClick, onDelete }: { img: string; labe
       <button onClick={onClick} disabled={deleting} className={`w-full relative rounded-lg overflow-hidden transition-all ${deleting ? 'opacity-40' : ''} ${active ? 'ring-2 ring-indigo-500 shadow-md shadow-indigo-500/20' : 'ring-1 ring-gray-200 hover:ring-gray-300 hover:shadow-sm'}`} style={{ aspectRatio: '3/4' }} title={label}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`${img}${img.includes('?') ? '&' : '?'}w=300`} alt={label} className="w-full h-full object-cover object-top" />
-        <div className="absolute top-1 left-1 text-[8px] font-black uppercase tracking-widest text-white px-1.5 py-0.5 rounded bg-black/70 backdrop-blur">{label}</div>
+        <div className="absolute top-1 left-1 text-[10px] font-black uppercase tracking-widest text-white px-1.5 py-0.5 rounded bg-black/70 backdrop-blur">{label}</div>
         {deleting && (
           <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
             <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
@@ -797,10 +849,11 @@ function ThumbBtn({ img, label, active, onClick, onDelete }: { img: string; labe
       {onDelete && !deleting && (
         <button
           onClick={async (e) => { e.stopPropagation(); setDeleting(true); await onDelete(); }}
+          aria-label={`Delete ${label}`}
           title="Delete"
-          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+          className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 focus-visible:opacity-100 transition-opacity shadow-sm z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-1"
         >
-          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
         </button>
       )}
     </div>
@@ -821,11 +874,13 @@ function RefSheetModal({ url, onClose }: { url: string; onClose: () => void }) {
 
 function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop: WorkshopData; apiBase: string; characterName: string; onClose: () => void }) {
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const o = workshop.outfits.length, s = workshop.shots.length;
 
   const handleDownload = async () => {
     if (!apiBase) return;
     setDownloading(true);
+    setDownloadError(null);
     try {
       const res = await fetch(`${apiBase}/package`);
       if (!res.ok) throw new Error('Download failed');
@@ -839,7 +894,7 @@ function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop
       URL.revokeObjectURL(url);
       onClose();
     } catch {
-      alert('Download failed — please try again.');
+      setDownloadError('Download failed — please try again.');
     } finally {
       setDownloading(false);
     }
@@ -858,6 +913,11 @@ function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop
           <PkgRow label={`${s} scene${s === 1 ? '' : 's'}`} muted={s === 0} />
           <PkgRow label="Kling / Runway / Veo guide (README)" />
         </div>
+        {downloadError && (
+          <div role="alert" className="mt-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            {downloadError}
+          </div>
+        )}
         <button
           onClick={handleDownload}
           disabled={downloading || !apiBase}
@@ -867,7 +927,7 @@ function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop
             <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Building package…</>
           ) : (
             <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
               Download package (Free)
             </>
           )}

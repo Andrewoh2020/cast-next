@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import HeroB2 from '@/components/home/HeroB2';
 import HeroReel from '@/components/home/HeroReel';
+import { pickReelCharacters } from '@/lib/reel-characters';
 import SocialProofStrip from '@/components/home/SocialProofStrip';
 import LiveDemoSection from '@/components/home/LiveDemoSection';
 import DirectabilityStrip from '@/components/home/DirectabilityStrip';
@@ -13,7 +14,7 @@ import FinalCTA from '@/components/home/FinalCTA';
 export default function Home() {
   return (
     <main>
-      <HeroB2 />
+      <HeroB2 variant="export-reel" reelCharacters={pickReelCharacters()} />
       <HeroReel />
       <SocialProofStrip />
       <LiveDemoSection />

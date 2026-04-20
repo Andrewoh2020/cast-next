@@ -2,8 +2,7 @@ export default function SocialProofStrip() {
   return (
     <section className="py-8 px-6 bg-gray-50 border-y border-gray-100">
       <div className="max-w-5xl mx-auto">
-        {/* Row 1 — Featured on */}
-        <div className="flex items-center justify-center gap-4 mb-4">
+        <div className="flex items-center justify-center gap-4">
           <p className="text-xs text-gray-400 uppercase tracking-widest">Featured on</p>
           <a
             href="https://www.producthunt.com/products/cast-6?launch=cast-6"
@@ -18,31 +17,6 @@ export default function SocialProofStrip() {
             </svg>
             <span className="text-sm font-bold text-gray-800">Product Hunt</span>
           </a>
-        </div>
-
-        {/* Row 2 — Tool ecosystem */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest shrink-0">
-            Used by AI video creators alongside
-          </p>
-          <div className="flex items-center gap-6 flex-wrap justify-center">
-            <a href="https://klingai.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-6 h-6 rounded-md bg-[#FF6B35] flex items-center justify-center"><span className="text-white text-xs font-black">K</span></div>
-              <span className="text-gray-800 font-black text-base tracking-tight">Kling</span>
-            </a>
-            <a href="https://runwayml.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-6 h-6 rounded-md bg-black flex items-center justify-center"><span className="text-white text-xs font-black">R</span></div>
-              <span className="text-gray-800 font-black text-base tracking-tight">Runway</span>
-            </a>
-            <a href="https://deepmind.google/models/veo/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-6 h-6 rounded-md bg-[#4285F4] flex items-center justify-center"><span className="text-white text-xs font-black">V</span></div>
-              <span className="text-gray-800 font-black text-base tracking-tight">Veo</span>
-            </a>
-            <a href="https://seed.bytedance.com/en/seedance2_0" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-6 h-6 rounded-md bg-[#00D1FF] flex items-center justify-center"><span className="text-white text-xs font-black">S</span></div>
-              <span className="text-gray-800 font-black text-base tracking-tight">Seedance</span>
-            </a>
-          </div>
         </div>
       </div>
     </section>
