@@ -158,7 +158,7 @@ export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
                 loop={current.videoLoop !== false}
                 playsInline
                 preload="auto"
-                poster={`${previewFallbackSrc}${previewFallbackSrc.includes('?') ? '&' : '?'}w=1200`}
+                poster={`${current.img}${current.img.includes('?') ? '&' : '?'}w=1200`}
                 aria-label={`${current.name} video preview`}
                 onEnded={current.videoLoop === false ? () => setIdx((i) => (i + 1) % characters.length) : undefined}
               >
