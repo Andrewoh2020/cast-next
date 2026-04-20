@@ -41,9 +41,20 @@ export default function BlogPost() {
     mainEntityOfPage: URL,
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.castability.ai' },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.castability.ai/blog' },
+      { '@type': 'ListItem', position: 3, name: 'Best AI Video Generators', item: URL },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-white pt-24 pb-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       <article className="max-w-3xl mx-auto px-6">
         {/* Breadcrumb */}
