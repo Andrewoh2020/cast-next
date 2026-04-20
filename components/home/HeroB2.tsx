@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LivingMarquee from './LivingMarquee';
+import ExportReel, { type ReelCharacter } from './ExportReel';
 
 const PLACEHOLDER_EXAMPLES = [
   '30-year-old Korean man, detective in a rumpled blazer',
@@ -123,11 +124,23 @@ const ARCHETYPE_CHIPS: { label: string; prompts: string[] }[] = [
   },
 ];
 
+export type HeroVariant = 'marquee' | 'export-reel';
+
+interface HeroB2Props {
+  /** Bottom half of the hero. `marquee` (default) = character procession;
+   *  `export-reel` = narrative strip showing Cast → Kling/Runway/Veo → video. */
+  variant?: HeroVariant;
+  /** Characters to rotate through when variant === 'export-reel'. Ignored
+   *  for the marquee variant. */
+  reelCharacters?: ReelCharacter[];
+}
+
 /**
- * Variant B:2 — Text at top, marquee fills below
- * Every character visible and clickable; more utilitarian, marketplace-first
+ * Variant B:2 — Text at top, dynamic section below.
+ * Bottom section is either the LivingMarquee (default) or the ExportReel
+ * pipeline narrative, controlled by the `variant` prop.
  */
-export default function HeroB2() {
+export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: HeroB2Props) {
   const [query, setQuery] = useState('');
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
@@ -201,7 +214,7 @@ export default function HeroB2() {
         </h1>
 
         <p className="text-base sm:text-lg text-gray-600 max-w-xl mx-auto mb-7 leading-relaxed">
-          Photorealistic actors for films, ads, and stock photography. No shoot days required — ready for Kling, Runway, and Veo.
+          Photorealistic actors for films, ads, and stock photography. Made for every AI video tool. No shoot days required.
         </p>
 
         <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto mb-4">
@@ -240,7 +253,7 @@ export default function HeroB2() {
         </form>
 
         <p className="text-xs text-gray-500 mb-3">
-          Already have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Make them AI-video-ready in Workshop — dress, stage, and export →</Link>
+          Already have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Make them AI-video-ready in Workshop — dress, scene, and export →</Link>
         </p>
 
         <div className="flex flex-wrap justify-center gap-2.5 sm:gap-2 max-w-xl mx-auto">
@@ -278,12 +291,16 @@ export default function HeroB2() {
         </div>
       </div>
 
-      {/* Full marquee below */}
+      {/* Bottom section — either the character marquee or the export-pipeline reel */}
       <div className="pb-6">
-        <LivingMarquee />
+        {variant === 'export-reel' ? (
+          <ExportReel characters={reelCharacters} />
+        ) : (
+          <LivingMarquee />
+        )}
         <div className="text-center mt-4">
           <Link href="#roster" className="inline-block text-sm font-semibold text-gray-500 hover:text-black px-3 py-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 transition-colors">
-            or browse the full roster ↓
+            or cast from the roster ↓
           </Link>
         </div>
       </div>
