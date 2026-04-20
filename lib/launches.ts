@@ -11,6 +11,28 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-20',
+    title: 'Subscriptions, Daily Free Credits, and Workshop Upgrades',
+    summary:
+      'Cast moves to a subscription-first model with four plans, a daily free credit drip on the Free plan, and top-up packs for overage. Workshop adds an aspect ratio picker, single-image download, and a re-generate label so you always know what an action will cost.',
+    highlights: [
+      'New subscription plans — Free, Starter, Studio, and Pro. Pick one in seconds, switch any time, and see your live credit balance in the nav at all times',
+      'Free plan now drips 10 credits a day, capped at 25 — try Cast every day without paying anything',
+      '35-credit signup bonus for every new account on the Free plan',
+      'Top-up packs (Boost and Power) for one-time credit boosts when you need overage on top of your plan',
+      'In-app plan switching with a clear preview of any prorated charge before you confirm — no browser pop-ups, no surprises',
+      'Manage payment methods, invoices, and cancellations from your account page or the customer billing portal',
+      'Email receipts for every billing event — welcome, monthly renewal, plan switch, downgrade, scheduled cancellation, final cancellation, and top-up',
+      'Workshop now shows an aspect ratio picker (cinema, landscape, square, portrait, vertical) — auto-detected from your character photo, but overridable per generation',
+      'Workshop button now reads "Re-generate" after a successful generation so it is obvious that clicking again will spend credits for a re-roll',
+      'Workshop credit cost shown on the button updates with the current action — no more stale numbers',
+      'New "Download image" button below Generate — save the current image directly without packaging the full export zip',
+      'Custom characters now include the reference sheet inside the export package',
+      'Statement descriptor on your bank statement now reads CASTABILITY.AI for clean accounting',
+      'Per-action credit costs reflect compute — light actions like outfits and scenes are 5 credits, full character generations are 25',
+    ],
+  },
+  {
     date: '2026-04-17',
     title: 'Introducing Workshop — Dress, Stage, and Export Your Characters',
     summary:
