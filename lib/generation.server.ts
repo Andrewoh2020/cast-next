@@ -733,6 +733,9 @@ export async function generateOutfit(params: {
   characterId: number;
   characterSlug: string;
   characterName: string;
+  /** Optional explicit aspect ratio (e.g. '16:9'). When omitted, the source
+   *  image is inspected and the closest supported ratio is used. */
+  aspectRatio?: string;
 }): Promise<WorkshopGenerateResult> {
   const refs: string[] = [];
 
@@ -752,11 +755,10 @@ export async function generateOutfit(params: {
     refs.push(await uploadToFalCdn(garmentBuf, garmentCt));
   }
 
-  // Auto-detect aspect ratio from the source image for non-profile sources.
-  // Profiles always use 3:4. For everything else, read dimensions and find the
-  // closest supported ratio so reference sheets and uploads keep their shape.
-  let aspectRatio = '3:4';
-  if (params.sourceType !== 'profile') {
+  // Explicit caller-provided ratio wins. Otherwise auto-detect from the source
+  // image: profiles default to 3:4; everything else reads dimensions.
+  let aspectRatio = params.aspectRatio ?? '3:4';
+  if (!params.aspectRatio && params.sourceType !== 'profile') {
     try {
       const meta = await sharp(Buffer.from(sourceBuf)).metadata();
       if (meta.width && meta.height) {
@@ -795,6 +797,8 @@ export async function generateSceneShot(params: {
   characterId: number;
   characterSlug: string;
   characterName: string;
+  /** Optional explicit aspect ratio. Defaults to 3:4 when omitted. */
+  aspectRatio?: string;
 }): Promise<WorkshopGenerateResult> {
   const refs: string[] = [];
   const sourceFull = params.sourceImageUrl.startsWith('http')
@@ -813,7 +817,7 @@ export async function generateSceneShot(params: {
 
   const result = await generateAndUpload(
     scenePrompt(params.scenePrompt),
-    '3:4',
+    params.aspectRatio ?? '3:4',
     '2K',
     `${params.characterSlug}-shot`,
     'shot',

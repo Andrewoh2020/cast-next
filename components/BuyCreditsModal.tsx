@@ -1,39 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 interface Props {
   onClose: () => void;
 }
 
+interface Pack {
+  name: string;
+  credits: number;
+  price: number;
+  perCredit: string;
+  priceId: string | undefined;
+  highlighted?: boolean;
+}
+
+// Next.js statically replaces process.env.NEXT_PUBLIC_* only at literal access
+// sites — dynamic lookups like process.env[varName] return undefined in the
+// browser bundle. So bind each priceId here directly.
+const PACKS: Pack[] = [
+  { name: 'Boost', credits: 500, price: 25, perCredit: '$0.05', priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_TOPUP_BOOST },
+  { name: 'Power', credits: 1500, price: 60, perCredit: '$0.04', priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_TOPUP_POWER, highlighted: true },
+];
+
 export default function BuyCreditsModal({ onClose }: Props) {
-  const [loading, setLoading] = useState<number | null>(null);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [tier, setTier] = useState<string>('free');
   const pathname = usePathname();
 
-  const packages = [
-    { index: 0, credits: 1, price: 10, label: '1 credit', perCredit: '$10' },
-    { index: 1, credits: 7, price: 50, label: '7 credits', perCredit: '$7.14', savings: '29% off' },
-  ];
+  useEffect(() => {
+    fetch('/api/billing/state').then((r) => r.json()).then((d) => setTier(d.tier ?? 'free')).catch(() => {});
+  }, []);
 
-  const handleBuy = async (pkgIndex: number) => {
-    setLoading(pkgIndex);
-    // Save current workshop state so it can be restored after Stripe redirect
+  const handleBuy = async (pack: Pack) => {
+    setLoading(pack.name);
     try {
       const textarea = document.querySelector('textarea');
-      if (textarea?.value) {
-        sessionStorage.setItem('workshop_prompt', textarea.value);
-      }
+      if (textarea?.value) sessionStorage.setItem('workshop_prompt', textarea.value);
       const activeTab = document.querySelector('[class*="bg-white"][class*="text-black"][class*="shadow-sm"]');
       if (activeTab?.textContent) {
         sessionStorage.setItem('workshop_mode', activeTab.textContent.trim().toLowerCase().startsWith('scene') ? 'scene' : 'outfit');
       }
     } catch {}
+
+    if (!pack.priceId) {
+      alert(`${pack.name} pack not yet configured`);
+      setLoading(null);
+      return;
+    }
+
     try {
-      const res = await fetch('/api/create/purchase-credits', {
+      const res = await fetch('/api/billing/subscribe', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ packageIndex: pkgIndex, returnUrl: pathname }),
+        body: JSON.stringify({ priceId: pack.priceId, returnUrl: pathname }),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error ?? 'Checkout failed');
@@ -46,12 +68,11 @@ export default function BuyCreditsModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-center justify-center p-6" onClick={onClose}>
       <div className="relative bg-white rounded-3xl w-full max-w-md border border-gray-100 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
         <div className="px-8 pt-8 pb-4">
           <div className="flex items-start justify-between mb-1">
             <div>
               <h2 className="text-2xl font-black tracking-tight text-black">Top up credits</h2>
-              <p className="text-sm text-gray-500 mt-1">Each credit generates one outfit or scene variant.</p>
+              <p className="text-sm text-gray-500 mt-1">5 cr per outfit/scene · 25 cr per character.</p>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors mt-1">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
@@ -59,15 +80,24 @@ export default function BuyCreditsModal({ onClose }: Props) {
           </div>
         </div>
 
-        {/* Packages */}
+        {tier === 'free' && (
+          <div className="mx-8 mb-4 bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+            <p className="text-sm font-bold text-indigo-900">A plan is usually a better deal</p>
+            <p className="text-xs text-indigo-700 mt-1">Studio gets you 1,200 credits/mo for $49 — that&apos;s $0.041/credit vs $0.05 for top-ups.</p>
+            <Link href="/pricing" onClick={onClose} className="inline-block mt-2 text-xs font-bold text-indigo-700 hover:text-indigo-900 underline">
+              See plans →
+            </Link>
+          </div>
+        )}
+
         <div className="px-8 pb-4 space-y-3">
-          {packages.map((pkg) => (
+          {PACKS.map((pack) => (
             <button
-              key={pkg.index}
-              onClick={() => handleBuy(pkg.index)}
+              key={pack.name}
+              onClick={() => handleBuy(pack)}
               disabled={loading !== null}
               className={`w-full text-left rounded-2xl border-2 p-5 transition-all ${
-                pkg.index === 1
+                pack.highlighted
                   ? 'border-indigo-500 bg-indigo-50/50 hover:bg-indigo-50 ring-1 ring-indigo-500/20'
                   : 'border-gray-100 bg-white hover:bg-gray-50 hover:border-gray-200'
               }`}
@@ -75,58 +105,31 @@ export default function BuyCreditsModal({ onClose }: Props) {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-black text-black">{pkg.label}</span>
-                    {pkg.savings && (
-                      <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full">{pkg.savings}</span>
-                    )}
+                    <span className="text-lg font-black text-black">{pack.name}</span>
+                    <span className="text-sm font-semibold text-gray-700">{pack.credits.toLocaleString()} credits</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">{pkg.perCredit} per credit</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{pack.perCredit} per credit · never expires</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {loading === pkg.index && <div className="w-5 h-5 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />}
-                  <span className="text-3xl font-black text-black">${pkg.price}</span>
+                  {loading === pack.name && <div className="w-5 h-5 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />}
+                  <span className="text-3xl font-black text-black">${pack.price}</span>
                 </div>
               </div>
             </button>
           ))}
         </div>
 
-        {/* What you get */}
-        <div className="mx-8 mb-6 bg-gray-50 rounded-xl p-4">
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">Each credit lets you</p>
-          <div className="space-y-2">
-            {[
-              'Generate a new outfit variant',
-              'Place your character in any scene',
-              'Upload a garment or scene photo as reference',
-              'Export everything as a ready-to-use package',
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-2.5">
-                <div className="w-4 h-4 rounded-full bg-indigo-500 flex items-center justify-center shrink-0">
-                  <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3.5}><polyline points="20 6 9 17 4 12" /></svg>
-                </div>
-                <span className="text-sm text-gray-700">{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Footer */}
         <div className="px-8 pb-8 flex gap-3">
           <button onClick={onClose} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm py-3 rounded-xl transition-colors">
             Cancel
           </button>
-          <button
-            onClick={() => handleBuy(1)}
-            disabled={loading !== null}
-            className="flex-[2] bg-black hover:bg-gray-800 text-white font-bold text-sm py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
+          <Link
+            href="/pricing"
+            onClick={onClose}
+            className="flex-[2] bg-black hover:bg-gray-800 text-white font-bold text-sm py-3 rounded-xl transition-colors flex items-center justify-center"
           >
-            {loading !== null ? (
-              <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Processing…</>
-            ) : (
-              'Get 7 credits — $50'
-            )}
-          </button>
+            See subscription plans
+          </Link>
         </div>
       </div>
     </div>

@@ -4,7 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { WorkshopData, OutfitVariant, SceneShot } from '@/lib/workshop.server';
+import { CREDIT_COSTS } from '@/lib/credit-costs';
 import BuyCreditsModal from '@/components/BuyCreditsModal';
+import AspectRatioPicker, { type AspectRatio, ASPECT_RATIOS } from '@/components/AspectRatioPicker';
 
 export interface WorkshopCharacter {
   id: number | string;
@@ -45,21 +47,56 @@ type Asset = { kind: 'outfit' | 'scene'; data: OutfitVariant | SceneShot };
 export default function WorkshopClient({ character: initChar, initialWorkshop, initialCredits, apiBase: initApi, workshops = [], isRosterCharacter = false, hasLicense: initHasLicense = false }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [character, setCharacter] = useState<WorkshopCharacter | null>(initChar ?? null);
-  const [apiBase, setApiBase] = useState(initApi ?? '');
-  const [hasLicense, setHasLicense] = useState(initHasLicense);
+  const [character] = useState<WorkshopCharacter | null>(initChar ?? null);
+  const [apiBase] = useState(initApi ?? '');
+  const [, setHasLicense] = useState(initHasLicense);
   const [showLicenseGate, setShowLicenseGate] = useState(isRosterCharacter && !initHasLicense && !!initChar);
   const [acceptingLicense, setAcceptingLicense] = useState(false);
   const [licenseError, setLicenseError] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>('outfit');
   const [workshop, setWorkshop] = useState<WorkshopData>(initialWorkshop ?? { characterId: 0, outfits: [], shots: [], updatedAt: '' });
   const [credits, setCredits] = useState(initialCredits);
+  const [planTier, setPlanTier] = useState<string>('free');
+  const [planPeriodEnd, setPlanPeriodEnd] = useState<string | null>(null);
   const [canvasImg, setCanvasImg] = useState(initChar?.img ?? '');
   const [canvasLabel, setCanvasLabel] = useState(initChar ? (initChar.isUploadedImage ? 'Uploaded image' : 'Profile headshot') : '');
   const [prompt, setPrompt] = useState('');
   const [referenceFile, setReferenceFile] = useState<{ url: string; name: string } | null>(null);
   const [stage, setStage] = useState<Stage>('idle');
   const [stageText, setStageText] = useState('');
+  // True after a successful generation in the current session, until the user
+  // edits the prompt or switches mode. Drives the "Re-generate" button label
+  // so users explicitly know clicking again will burn another credit.
+  const [justGenerated, setJustGenerated] = useState(false);
+  useEffect(() => { setJustGenerated(false); }, [prompt, mode]);
+  const generateCost = mode === 'outfit' ? CREDIT_COSTS.outfit : CREDIT_COSTS.shot;
+
+  // Aspect ratio: auto-detected from current canvas image; user can override.
+  // userAspectRatio === null means "follow the source"; once set, the user's
+  // explicit choice persists across source switches.
+  const [autoAspectRatio, setAutoAspectRatio] = useState<AspectRatio>('3:4');
+  const [userAspectRatio, setUserAspectRatio] = useState<AspectRatio | null>(null);
+  const activeAspectRatio: AspectRatio = userAspectRatio ?? autoAspectRatio;
+  useEffect(() => {
+    if (!canvasImg) return;
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      if (cancelled || !img.naturalWidth || !img.naturalHeight) return;
+      const r = img.naturalWidth / img.naturalHeight;
+      // Snap to the nearest of our 6 supported ratios.
+      let best: AspectRatio = '3:4';
+      let bestDiff = Infinity;
+      for (const label of ASPECT_RATIOS) {
+        const [a, b] = label.split(':').map(Number);
+        const diff = Math.abs(r - a / b);
+        if (diff < bestDiff) { bestDiff = diff; best = label; }
+      }
+      setAutoAspectRatio(best);
+    };
+    img.src = canvasImg;
+    return () => { cancelled = true; };
+  }, [canvasImg]);
   const [improving, setImproving] = useState(false);
   const [showRefSheet, setShowRefSheet] = useState(false);
   const [showDownload, setShowDownload] = useState(false);
@@ -101,33 +138,34 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
         sessionStorage.removeItem('workshop_mode');
       }
     } catch {}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Handle credit purchase return from Stripe
+  // Handle credit purchase return from Stripe. The webhook is the source of
+  // truth — poll briefly until credits land, then clean up URL params.
   useEffect(() => {
     const purchased = searchParams.get('credits');
-    const sessionId = searchParams.get('session_id');
-    if (purchased === 'purchased' && sessionId && !creditConfirmedRef.current) {
+    if (purchased === 'purchased' && !creditConfirmedRef.current) {
       creditConfirmedRef.current = true;
       (async () => {
-        try {
-          const res = await fetch('/api/create/confirm-credits', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ sessionId }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            setCredits(data.credits);
-          } else {
-            // Confirmation failed — still sync credits in case they were already granted
-            await refreshCredits();
-          }
-        } catch {
-          await refreshCredits();
+        const before = initialCredits;
+        const start = Date.now();
+        while (Date.now() - start < 8000) {
+          try {
+            const res = await fetch('/api/create/credits', { cache: 'no-store' });
+            if (res.ok) {
+              const data = await res.json();
+              if ((data.credits ?? 0) !== before) {
+                setCredits(data.credits ?? 0);
+                if (data.tier) setPlanTier(data.tier);
+                setPlanPeriodEnd(data.currentPeriodEnd ?? null);
+                break;
+              }
+            }
+          } catch {}
+          await new Promise((r) => setTimeout(r, 750));
         }
-        // Clean up URL params
+        // Final sync in case nothing changed (shouldn't happen, but be safe)
+        await refreshCredits();
         const url = new URL(window.location.href);
         url.searchParams.delete('credits');
         url.searchParams.delete('session_id');
@@ -203,10 +241,15 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
   const refreshCredits = async () => {
     try {
-      const res = await fetch('/api/create/credits');
+      const res = await fetch('/api/create/credits', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         setCredits(data.credits ?? 0);
+        if (data.tier) setPlanTier(data.tier);
+        setPlanPeriodEnd(data.currentPeriodEnd ?? null);
+        // Notify the persistent Nav chip so it doesn't lag behind the workshop's
+        // local view after generations / refunds / post-checkout returns.
+        window.dispatchEvent(new Event('cast:credits-refresh'));
       }
     } catch {}
   };
@@ -235,8 +278,8 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
     const endpoint = isOutfit ? `${apiBase}/outfits` : `${apiBase}/shots`;
     const bodyPayload = isOutfit
-      ? { prompt, sourceImageUrl: canvasImg, garmentRefUrl: referenceFile?.url, sourceType }
-      : { prompt, sourceImageUrl: canvasImg, sceneRefUrl: referenceFile?.url };
+      ? { prompt, sourceImageUrl: canvasImg, garmentRefUrl: referenceFile?.url, sourceType, aspectRatio: activeAspectRatio }
+      : { prompt, sourceImageUrl: canvasImg, sceneRefUrl: referenceFile?.url, aspectRatio: activeAspectRatio };
 
     // 300s timeout — generation can take up to 3min with Fal timeout + fallback
     const controller = new AbortController();
@@ -270,6 +313,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
       setCanvasImg(result.imageUrl);
       setCanvasLabel(result.prompt || (isOutfit ? 'New outfit' : 'New scene'));
       setReferenceFile(null);
+      setJustGenerated(true);
       // Collapse the prompt field so the freshly generated image is fully visible
       setPromptCollapsed(true);
     } catch (err) {
@@ -381,7 +425,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             </>
           )}
           <div className="h-7 w-px bg-gray-200" />
-          <CreditsChip credits={credits} onClick={() => setShowBuyCredits(true)} />
+          <CreditsChip credits={credits} tier={planTier} periodEnd={planPeriodEnd} onClick={() => setShowBuyCredits(true)} />
         </div>
       </header>
 
@@ -546,6 +590,26 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
               </div>
 
               <div className="p-5 pt-3 border-t border-gray-100 shrink-0">
+                <div className="mb-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Aspect ratio</p>
+                    {userAspectRatio && userAspectRatio !== autoAspectRatio && (
+                      <button
+                        type="button"
+                        onClick={() => setUserAspectRatio(null)}
+                        className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800"
+                      >
+                        Reset to source ({autoAspectRatio})
+                      </button>
+                    )}
+                  </div>
+                  <AspectRatioPicker
+                    value={activeAspectRatio}
+                    autoDetected={autoAspectRatio}
+                    onChange={(r) => setUserAspectRatio(r)}
+                    disabled={stage !== 'idle'}
+                  />
+                </div>
                 {credits === 0 ? (
                 <button onClick={() => setShowBuyCredits(true)}
                   className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm px-5 py-3.5 rounded-xl transition-all shadow-sm shadow-amber-500/30">
@@ -574,9 +638,26 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
                 >
                   {stage === 'generating' ? (<><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Generating…</>) :
                    stage === 'uploading' ? (<><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Uploading…</>) :
-                   (<>Generate <span className="text-white/80">· 1 credit</span></>)}
+                   (<>{justGenerated ? 'Re-generate' : 'Generate'} <span className="text-white/80">· {generateCost} credits</span></>)}
                 </button>
               )}
+              <button
+                onClick={() => {
+                  if (!canvasImg) return;
+                  const filename = (canvasLabel || 'cast-image').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'cast-image';
+                  const sep = canvasImg.includes('?') ? '&' : '?';
+                  window.location.assign(`${canvasImg}${sep}download=1&filename=${filename}`);
+                }}
+                disabled={!canvasImg}
+                className="w-full mt-2 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 text-sm font-bold px-5 py-3 rounded-xl border border-gray-200 transition-all flex items-center justify-center gap-2"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Download image
+              </button>
               </div>
             </aside>
           </>
@@ -661,7 +742,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
                 </div>
               </div>
               <div className="p-5 pt-3 border-t border-gray-100">
-                <div className="w-full bg-indigo-200 text-white/70 font-bold text-sm px-5 py-3.5 rounded-xl text-center">Generate · 1 credit</div>
+                <div className="w-full bg-indigo-200 text-white/70 font-bold text-sm px-5 py-3.5 rounded-xl text-center">Generate · {CREDIT_COSTS.outfit} credits</div>
               </div>
             </aside>
           </>
@@ -788,12 +869,20 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
 // ── Sub-components ──────────────────────────────────────────────────────
 
-function CreditsChip({ credits, onClick }: { credits: number; onClick: () => void }) {
-  const low = credits <= 3;
+function CreditsChip({ credits, tier, periodEnd, onClick }: { credits: number; tier: string; periodEnd: string | null; onClick: () => void }) {
+  // 25 cr = one character; below that the chip turns amber to nudge top-up.
+  const low = credits < 25;
+  const tierLabel = tier && tier !== 'free' ? tier.charAt(0).toUpperCase() + tier.slice(1) : 'Free';
+  const renewalLabel = periodEnd
+    ? new Date(periodEnd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    : null;
+  const tooltip = renewalLabel
+    ? `${tierLabel} plan · renews ${renewalLabel} · click to top up`
+    : `${tierLabel} plan · click to top up or upgrade`;
   return (
-    <button onClick={onClick} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${low ? 'bg-amber-50 border-amber-200 hover:bg-amber-100' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
+    <button onClick={onClick} title={tooltip} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${low ? 'bg-amber-50 border-amber-200 hover:bg-amber-100' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`}>
       <div className={`w-1.5 h-1.5 rounded-full ${low ? 'bg-amber-500' : 'bg-indigo-500'}`} />
-      <span className="text-sm font-semibold tabular-nums text-black">{credits}</span>
+      <span className="text-sm font-semibold tabular-nums text-black">{credits.toLocaleString()}</span>
       <span className="text-[10px] text-gray-500 uppercase tracking-wider">credits</span>
     </button>
   );

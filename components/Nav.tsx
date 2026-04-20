@@ -4,16 +4,21 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { UserButton, useUser } from '@clerk/nextjs';
-import BuyCreditsModal from './BuyCreditsModal';
+
+const TIER_LABEL: Record<string, string> = {
+  starter: 'STARTER',
+  studio: 'STUDIO',
+  pro: 'PRO',
+};
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  const [showBuyCredits, setShowBuyCredits] = useState(false);
   const { isSignedIn } = useUser();
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [scrolled, setScrolled] = useState(false);
   const [credits, setCredits] = useState<number | null>(null);
+  const [tier, setTier] = useState<string>('free');
 
   useEffect(() => {
     if (!isHome) return;
@@ -25,10 +30,20 @@ export default function Nav() {
 
   useEffect(() => {
     if (!isSignedIn) return;
-    fetch('/api/create/credits')
-      .then(r => r.json())
-      .then(d => setCredits(d.credits ?? 0))
-      .catch(() => {});
+    const fetchCredits = () => {
+      fetch('/api/create/credits', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(d => {
+          setCredits(d.credits ?? 0);
+          if (d.tier) setTier(d.tier);
+        })
+        .catch(() => {});
+    };
+    fetchCredits();
+    // Re-fetch when something elsewhere (BillingSuccessPoller, etc.) signals
+    // a credit/tier change. Plain DOM event so no shared store needed.
+    window.addEventListener('cast:credits-refresh', fetchCredits);
+    return () => window.removeEventListener('cast:credits-refresh', fetchCredits);
   }, [isSignedIn]);
 
   // The new homepage hero has a white background, so the nav stays solid
@@ -54,9 +69,9 @@ export default function Nav() {
           <Link href="/how-it-works" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
             How It Works
           </Link>
-          <a href="/create" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
+          <Link href="/create" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
             Create
-          </a>
+          </Link>
           <Link href="/workshop" className={`text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${transparent ? 'text-white hover:text-white' : 'text-indigo-600 hover:text-indigo-700'}`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
@@ -66,12 +81,21 @@ export default function Nav() {
           <Link href="/launches" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
             Recent Launches
           </Link>
+          <Link href="/pricing" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
+            Pricing
+          </Link>
           {isSignedIn ? (
             <>
               {credits !== null && (
-                <button onClick={() => setShowBuyCredits(true)} className={`text-xs font-bold px-3 py-1 rounded-full transition-colors ${credits === 0 ? 'bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100' : transparent ? 'bg-white/20 text-white border border-white/30' : 'bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100'}`}>
-                  {credits} {credits === 1 ? 'credit' : 'credits'}
-                </button>
+                <Link href="/pricing" className={`text-xs font-bold px-3 py-1 rounded-full transition-colors inline-flex items-center gap-1.5 ${credits === 0 ? 'bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100' : transparent ? 'bg-white/20 text-white border border-white/30' : 'bg-indigo-50 text-indigo-600 border border-indigo-100 hover:bg-indigo-100'}`}>
+                  <span>{credits.toLocaleString()} credits</span>
+                  {TIER_LABEL[tier] && (
+                    <>
+                      <span className="opacity-40">·</span>
+                      <span className="tracking-widest">{TIER_LABEL[tier]}</span>
+                    </>
+                  )}
+                </Link>
               )}
               <Link href="/account" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
                 My Account
@@ -108,9 +132,9 @@ export default function Nav() {
           <Link href="/how-it-works" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
             How It Works
           </Link>
-          <a href="/create" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+          <Link href="/create" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
             Create Character
-          </a>
+          </Link>
           <Link href="/workshop" onClick={() => setOpen(false)} className="py-3 text-sm font-semibold text-indigo-600 border-b border-gray-100 flex items-center gap-2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
@@ -120,12 +144,20 @@ export default function Nav() {
           <Link href="/launches" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
             Recent Launches
           </Link>
+          <Link href="/pricing" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
+            Pricing
+          </Link>
           {isSignedIn ? (
             <>
               {credits !== null && (
-                <Link href="/create" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100 flex items-center justify-between">
+                <Link href="/pricing" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100 flex items-center justify-between">
                   Credits
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600">{credits}</span>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 inline-flex items-center gap-1.5">
+                    <span>{credits.toLocaleString()}</span>
+                    {TIER_LABEL[tier] && (
+                      <><span className="opacity-40">·</span><span className="tracking-widest">{TIER_LABEL[tier]}</span></>
+                    )}
+                  </span>
                 </Link>
               )}
               <Link href="/account" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
@@ -146,7 +178,6 @@ export default function Nav() {
       )}
     </nav>
 
-    {showBuyCredits && <BuyCreditsModal onClose={() => setShowBuyCredits(false)} />}
     </>
   );
 }

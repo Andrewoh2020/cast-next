@@ -1,16 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { get } from '@vercel/blob';
 import { readCustomWorkshop } from '@/lib/custom-workshop.server';
 import archiver from 'archiver';
 
 export const maxDuration = 120;
 
-const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-
+// Internal blob URLs (/api/media?p=<encoded-path>) are read directly from
+// Vercel Blob — going over HTTP back to ourselves was the source of a prod
+// bug where NEXT_PUBLIC_BASE_URL missed in production and every image fetch
+// failed silently, shipping ZIPs that contained only the README.
 async function fetchBuffer(url: string): Promise<Buffer> {
-  const full = url.startsWith('http') ? url : `${BASE}${url}${url.includes('?') ? '&' : '?'}w=2000`;
-  const res = await fetch(full);
-  if (!res.ok) throw new Error(`Fetch ${full}: ${res.status}`);
+  const mediaMatch = url.match(/[?&]p=([^&]+)/);
+  if (mediaMatch) {
+    const blobPath = decodeURIComponent(mediaMatch[1]);
+    const result = await get(blobPath, { access: 'private' });
+    if (!result?.stream) throw new Error(`Blob not found: ${blobPath}`);
+    return Buffer.from(await new Response(result.stream).arrayBuffer());
+  }
+  if (!url.startsWith('http')) throw new Error(`Unsupported URL: ${url}`);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Fetch ${url}: ${res.status}`);
   return Buffer.from(await res.arrayBuffer());
 }
 
@@ -33,26 +43,36 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     archive.on('error', reject);
   });
 
-  // Source image
-  try {
-    const buf = await fetchBuffer(workshop.sourceImageUrl);
-    archive.append(buf, { name: `${slug}-source.jpg` });
-  } catch {}
-
-  // Outfits
-  for (let i = 0; i < workshop.outfits.length; i++) {
+  // Track whether any image actually made it into the archive. If every
+  // fetch fails the ZIP would otherwise ship with only the README.
+  let imagesAdded = 0;
+  const tryAppend = async (url: string, name: string, label: string) => {
     try {
-      const buf = await fetchBuffer(workshop.outfits[i].imageUrl);
-      archive.append(buf, { name: `wardrobe/${slug}-outfit-${i + 1}.jpg` });
-    } catch {}
+      const buf = await fetchBuffer(url);
+      archive.append(buf, { name });
+      imagesAdded++;
+    } catch (err) {
+      console.error(`[workshop/custom/package] ${label} fetch failed: ${err instanceof Error ? err.message : String(err)} (url=${url})`);
+    }
+  };
+
+  await tryAppend(workshop.sourceImageUrl, `${slug}-source.jpg`, 'source');
+  if (workshop.referenceSheetUrl) {
+    await tryAppend(workshop.referenceSheetUrl, `${slug}-reference-sheet.jpg`, 'reference-sheet');
+  }
+  for (let i = 0; i < workshop.outfits.length; i++) {
+    await tryAppend(workshop.outfits[i].imageUrl, `wardrobe/${slug}-outfit-${i + 1}.jpg`, `outfit-${i + 1}`);
+  }
+  for (let i = 0; i < workshop.shots.length; i++) {
+    await tryAppend(workshop.shots[i].imageUrl, `scenes/${slug}-scene-${i + 1}.jpg`, `scene-${i + 1}`);
   }
 
-  // Scenes
-  for (let i = 0; i < workshop.shots.length; i++) {
-    try {
-      const buf = await fetchBuffer(workshop.shots[i].imageUrl);
-      archive.append(buf, { name: `scenes/${slug}-scene-${i + 1}.jpg` });
-    } catch {}
+  if (imagesAdded === 0) {
+    console.error(`[workshop/custom/package] all image fetches failed for workshop ${id} user ${userId} — refusing to ship README-only ZIP`);
+    return NextResponse.json(
+      { error: 'Could not assemble your package. Please try again shortly, or contact admin@castability.ai if this persists.' },
+      { status: 502 },
+    );
   }
 
   // README
@@ -60,6 +80,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 ## Contents
 - ${slug}-source.jpg — Source image
+${workshop.referenceSheetUrl ? `- ${slug}-reference-sheet.jpg — 4K 8-panel reference sheet\n` : ''}
 - wardrobe/ — ${workshop.outfits.length} outfit variant(s)
 - scenes/ — ${workshop.shots.length} scene shot(s)
 

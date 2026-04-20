@@ -64,6 +64,7 @@ export default function MockWorkshopV2() {
     return () => window.removeEventListener('keydown', handler);
   }, [hasCharacter]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setReferenceFile(null); }, [mode]);
 
   const canGenerate = !!(prompt.trim() || referenceFile) && stage === 'idle' && credits > 0;
@@ -335,7 +336,7 @@ export default function MockWorkshopV2() {
                   {stage === 'generating' ? (
                     <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Generating…</>
                   ) : (
-                    <>Generate <span className="text-white/80">· 1 credit</span></>
+                    <>Generate <span className="text-white/80">· 5 credits</span></>
                   )}
                 </button>
               </div>

@@ -57,10 +57,10 @@ export default function CreditPurchaseReceipt({
               Payment Confirmed
             </Text>
             <Text style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-0.5px', color: '#000', margin: '0 0 4px' }}>
-              {credits} Character {credits === 1 ? 'Credit' : 'Credits'} Added
+              {credits.toLocaleString()} Credits Added
             </Text>
             <Text style={{ fontSize: 14, color: '#6b7280', margin: '0 0 0', lineHeight: '1.5' }}>
-              Your credits are ready. Use them anytime to generate custom AI characters with hi-res profile photos and 8-panel reference sheets.
+              Your credits are ready. Spend them on outfit and scene generations (5 credits each) or full character generations (25 credits each). Top-up credits never expire.
             </Text>
           </Section>
 

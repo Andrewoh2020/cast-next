@@ -1,5 +1,12 @@
 import { put, get } from '@vercel/blob';
 import { appendPurchaseLog } from './purchases-log.server';
+import {
+  DRIP_BALANCE_CAP,
+  DRIP_PER_DAY,
+  SIGNUP_BONUS,
+  TIER_MONTHLY_CREDITS,
+  type SubscriptionTier,
+} from './credit-costs';
 
 export interface PurchaseRecord {
   characterId: number;
@@ -20,11 +27,70 @@ export interface CreditPurchaseRecord {
   sessionId: string;
 }
 
+export type SubscriptionStatus =
+  | 'active'
+  | 'trialing'
+  | 'past_due'
+  | 'canceled'
+  | 'incomplete'
+  | 'none';
+
+export interface SubscriptionState {
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  tier: SubscriptionTier;
+  status: SubscriptionStatus;
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  cancelAtPeriodEnd?: boolean;
+  lastGrantedPeriodId?: string;
+  priorPeriodCreditsExpireAt?: string;
+  // Last priceId we observed for this sub. Used to detect plan switches in
+  // customer.subscription.updated events (when this differs from the new
+  // priceId, we treat it as an upgrade/downgrade and apply prorated credits).
+  lastPriceId?: string;
+  // Last ~20 Stripe event IDs we've sent transactional emails for. Used to
+  // dedupe webhook replays so users don't get the same email twice.
+  recentNotificationEvents?: string[];
+}
+
+export interface DripState {
+  lastDripAt?: string;
+  signupBonusGrantedAt?: string;
+}
+
+export type LedgerReason =
+  | 'signup-bonus'
+  | 'daily-drip'
+  | 'sub-grant'
+  | 'sub-rollover-expire'
+  | 'top-up'
+  | 'refund'
+  | 'spend-outfit'
+  | 'spend-shot'
+  | 'spend-character'
+  | 'spend-voice'
+  | 'migration'
+  | 'admin-grant';
+
+export interface CreditLedgerEntry {
+  ts: string;
+  delta: number;
+  reason: LedgerReason;
+  meta?: Record<string, string | number>;
+}
+
+const LEDGER_MAX_ENTRIES = 200;
+
 export interface UserData {
   favorites: number[]; // character IDs
   purchases: PurchaseRecord[];
   credits: number;
   creditPurchases: CreditPurchaseRecord[];
+  subscription?: SubscriptionState;
+  drip?: DripState;
+  ledger?: CreditLedgerEntry[];
+  schemaVersion?: number;
 }
 
 function userKey(userId: string, file: string) {
@@ -57,6 +123,91 @@ export async function getUserData(userId: string): Promise<UserData> {
   return readUserBlob<UserData>(userKey(userId, 'data.json'), { favorites: [], purchases: [], credits: 0, creditPurchases: [] });
 }
 
+function appendLedger(data: UserData, entry: Omit<CreditLedgerEntry, 'ts'> & { ts?: string }): void {
+  const next: CreditLedgerEntry = { ts: entry.ts ?? new Date().toISOString(), delta: entry.delta, reason: entry.reason, meta: entry.meta };
+  const existing = data.ledger ?? [];
+  // Newest first; cap to LEDGER_MAX_ENTRIES
+  data.ledger = [next, ...existing].slice(0, LEDGER_MAX_ENTRIES);
+}
+
+/**
+ * Lazy-grant signup bonus + daily drip credits on read.
+ *
+ *  - Grants SIGNUP_BONUS once per account.
+ *  - For free-tier accounts, drips DRIP_PER_DAY credits per elapsed day,
+ *    capped so balance never exceeds DRIP_BALANCE_CAP via drip alone.
+ *  - Paying subscribers (active|trialing on a non-free tier) skip drip —
+ *    their monthly allowance covers usage.
+ *
+ * If a write is needed, the function re-reads the blob immediately before
+ * writing and merges only the credit/drip/ledger fields it owns. This
+ * prevents clobbering concurrent writes to subscription state from the
+ * Stripe webhook (sub-create can race with the redirect's /api/create/credits
+ * call, which triggers this function).
+ */
+export async function ensureDripApplied(userId: string): Promise<UserData> {
+  const initial = await getUserData(userId);
+  const now = new Date();
+  const drip: DripState = { ...(initial.drip ?? {}) };
+
+  let creditsDelta = 0;
+  const ledgerEntriesToAppend: Array<Omit<CreditLedgerEntry, 'ts'>> = [];
+
+  if (!drip.signupBonusGrantedAt) {
+    creditsDelta += SIGNUP_BONUS;
+    drip.signupBonusGrantedAt = now.toISOString();
+    ledgerEntriesToAppend.push({ delta: SIGNUP_BONUS, reason: 'signup-bonus' });
+  }
+
+  const tier = initial.subscription?.tier ?? 'free';
+  const status = initial.subscription?.status ?? 'none';
+  const isPaid = tier !== 'free' && (status === 'active' || status === 'trialing');
+
+  let advanceLastDripTo: string | null = null;
+  if (!isPaid) {
+    const last = drip.lastDripAt ? new Date(drip.lastDripAt) : null;
+    if (!last) {
+      drip.lastDripAt = now.toISOString();
+      advanceLastDripTo = drip.lastDripAt;
+    } else {
+      const MS_PER_DAY = 86_400_000;
+      const daysOwed = Math.floor((now.getTime() - last.getTime()) / MS_PER_DAY);
+      if (daysOwed > 0) {
+        const headroom = Math.max(0, DRIP_BALANCE_CAP - (initial.credits ?? 0));
+        const grant = Math.min(DRIP_PER_DAY * daysOwed, headroom);
+        if (grant > 0) {
+          creditsDelta += grant;
+          ledgerEntriesToAppend.push({ delta: grant, reason: 'daily-drip', meta: { daysOwed } });
+        }
+        // Advance baseline by full days consumed, preserving sub-day remainder.
+        advanceLastDripTo = new Date(last.getTime() + daysOwed * MS_PER_DAY).toISOString();
+      }
+    }
+  }
+
+  const mutated = creditsDelta !== 0
+    || ledgerEntriesToAppend.length > 0
+    || drip.signupBonusGrantedAt !== initial.drip?.signupBonusGrantedAt
+    || advanceLastDripTo !== null;
+  if (!mutated) return initial;
+
+  // Re-read fresh data right before write so we merge in any concurrent
+  // updates (esp. the Stripe webhook setting subscription state).
+  const fresh = await getUserData(userId);
+  const merged: UserData = {
+    ...fresh,
+    credits: (fresh.credits ?? 0) + creditsDelta,
+    drip: {
+      ...(fresh.drip ?? {}),
+      signupBonusGrantedAt: drip.signupBonusGrantedAt ?? fresh.drip?.signupBonusGrantedAt,
+      lastDripAt: advanceLastDripTo ?? fresh.drip?.lastDripAt,
+    },
+  };
+  for (const entry of ledgerEntriesToAppend) appendLedger(merged, entry);
+  await writeUserBlob(userKey(userId, 'data.json'), merged);
+  return merged;
+}
+
 export async function toggleFavorite(userId: string, characterId: number): Promise<number[]> {
   const data = await getUserData(userId);
   const already = data.favorites.includes(characterId);
@@ -79,52 +230,8 @@ export async function addCredits(userId: string, credits: number, amount: number
   return updated.credits;
 }
 
-export async function deductCredit(userId: string): Promise<number> {
-  const data = await getUserData(userId);
-  const current = data.credits ?? 0;
-  if (current <= 0) throw new Error('No credits available');
-  const updated: UserData = { ...data, credits: current - 1 };
-  await writeUserBlob(userKey(userId, 'data.json'), updated);
-  return updated.credits;
-}
-
-// ── Signup promo: time-limited credit grants ────────────────────────
-// Workshop launch promo: 10 credits until April 25 2026, then 5 credits
-
-const PROMO_KEY = 'launch-promo.json';
-const WORKSHOP_PROMO_DEADLINE = new Date('2026-04-26T00:00:00Z'); // end of April 25
-const PROMO_CREDITS_LAUNCH = 10;  // during promo period
-const PROMO_CREDITS_DEFAULT = 5;  // after promo period
-const PROMO_CREDITS = Date.now() < WORKSHOP_PROMO_DEADLINE.getTime() ? PROMO_CREDITS_LAUNCH : PROMO_CREDITS_DEFAULT;
-
-interface PromoData {
-  claimedUserIds: string[];
-}
-
-async function getPromoData(): Promise<PromoData> {
-  return readUserBlob<PromoData>(PROMO_KEY, { claimedUserIds: [] });
-}
-
-async function writePromoData(data: PromoData): Promise<void> {
-  await writeUserBlob(PROMO_KEY, data);
-}
-
-/**
- * Grant signup promo credits if the user hasn't claimed them yet.
- * Returns the number of promo credits granted (0 if already claimed).
- */
-export async function claimLaunchPromo(userId: string): Promise<number> {
-  const promo = await getPromoData();
-  if (promo.claimedUserIds.includes(userId)) return 0;
-
-  promo.claimedUserIds.push(userId);
-  await writePromoData(promo);
-  await addCredits(userId, PROMO_CREDITS, 0, `launch-promo-${userId}`);
-  return PROMO_CREDITS;
-}
-
 export async function getCredits(userId: string): Promise<number> {
-  const data = await getUserData(userId);
+  const data = await ensureDripApplied(userId);
   return data.credits ?? 0;
 }
 
@@ -133,14 +240,176 @@ export async function getCredits(userId: string): Promise<number> {
  * credit (e.g. locking in a voice). If the user doesn't have enough credits,
  * throws before touching the balance.
  */
-export async function deductCredits(userId: string, n: number): Promise<number> {
+export async function deductCredits(userId: string, n: number, reason?: LedgerReason): Promise<number> {
   if (n <= 0) throw new Error('deductCredits(n>0) required');
+  await ensureDripApplied(userId);
   const data = await getUserData(userId);
   const current = data.credits ?? 0;
   if (current < n) throw new Error(`Need ${n} credits, have ${current}`);
   const updated: UserData = { ...data, credits: current - n };
+  if (reason) appendLedger(updated, { delta: -n, reason });
   await writeUserBlob(userKey(userId, 'data.json'), updated);
   return updated.credits;
+}
+
+/**
+ * Apply a one-off top-up purchase (Boost / Power packs). Idempotent on sessionId.
+ * Returns `granted=false` when the sessionId was already credited (so the
+ * caller can skip side effects like sending receipt emails on event replays).
+ */
+export async function applyTopUp(userId: string, opts: { credits: number; amount: number; sessionId: string }): Promise<{ credits: number; granted: boolean }> {
+  const data = await getUserData(userId);
+  if ((data.creditPurchases ?? []).some((p) => p.sessionId === opts.sessionId)) {
+    return { credits: data.credits ?? 0, granted: false };
+  }
+  const updated: UserData = {
+    ...data,
+    credits: (data.credits ?? 0) + opts.credits,
+    creditPurchases: [
+      { credits: opts.credits, amount: opts.amount, purchasedAt: new Date().toISOString(), sessionId: opts.sessionId },
+      ...(data.creditPurchases ?? []),
+    ],
+  };
+  appendLedger(updated, { delta: opts.credits, reason: 'top-up', meta: { sessionId: opts.sessionId, amountCents: opts.amount } });
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return { credits: updated.credits, granted: true };
+}
+
+/**
+ * Apply a subscription credit grant (initial sub or renewal). Idempotent on
+ * the periodId (subscriptionId + ':' + periodStart). On renewal, expires any
+ * unspent credits attributed to the prior period (one-cycle rollover policy)
+ * before granting the new allowance.
+ */
+export async function applySubGrant(userId: string, opts: {
+  tier: SubscriptionTier;
+  periodId: string;
+  periodStart: string;
+  periodEnd: string;
+  eventId?: string;
+}): Promise<{ data: UserData; granted: boolean; allowance: number }> {
+  const data = await getUserData(userId);
+  const sub = data.subscription;
+  // Idempotency: same periodId already granted
+  if (sub?.lastGrantedPeriodId === opts.periodId) return { data, granted: false, allowance: 0 };
+  // Event-level idempotency
+  if (opts.eventId && (data.ledger ?? []).some((e) => e.meta?.eventId === opts.eventId)) return { data, granted: false, allowance: 0 };
+
+  const allowance = TIER_MONTHLY_CREDITS[opts.tier] ?? 0;
+
+  // Expire prior-period unspent sub credits (one-cycle rollover deadline already passed)
+  let expiredAmount = 0;
+  if (sub?.priorPeriodCreditsExpireAt) {
+    const expireAt = new Date(sub.priorPeriodCreditsExpireAt).getTime();
+    if (Date.now() >= expireAt) {
+      // Conservative: any balance carried beyond the prior allowance is sub-leftover.
+      // If we can't tell what's sub vs top-up, expire min(balance, lastAllowance).
+      const lastAllowance = TIER_MONTHLY_CREDITS[sub.tier] ?? 0;
+      expiredAmount = Math.min(data.credits ?? 0, lastAllowance);
+    }
+  }
+
+  const newCredits = (data.credits ?? 0) - expiredAmount + allowance;
+
+  const updated: UserData = {
+    ...data,
+    credits: newCredits,
+    subscription: {
+      ...(sub ?? { tier: 'free', status: 'none' }),
+      tier: opts.tier,
+      status: 'active',
+      currentPeriodStart: opts.periodStart,
+      currentPeriodEnd: opts.periodEnd,
+      lastGrantedPeriodId: opts.periodId,
+      priorPeriodCreditsExpireAt: opts.periodEnd, // expires at next renewal
+    },
+  };
+
+  if (expiredAmount > 0) {
+    appendLedger(updated, { delta: -expiredAmount, reason: 'sub-rollover-expire', meta: { fromTier: sub?.tier ?? 'free' } });
+  }
+  appendLedger(updated, {
+    delta: allowance,
+    reason: 'sub-grant',
+    meta: { tier: opts.tier, periodId: opts.periodId, ...(opts.eventId ? { eventId: opts.eventId } : {}) },
+  });
+
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return { data: updated, granted: true, allowance };
+}
+
+/**
+ * Apply a mid-cycle tier change. On upgrade (newAllowance > oldAllowance), grants
+ * the prorated credit difference based on days remaining in the current period.
+ * On downgrade, no clawback — user keeps the credits they paid for; the next
+ * cycle just lands the smaller allowance.
+ *
+ * Idempotent on eventId so webhook replays don't double-grant.
+ */
+export async function applyTierUpgrade(userId: string, opts: {
+  newTier: SubscriptionTier;
+  oldAllowance: number;
+  newAllowance: number;
+  daysRemaining: number;
+  totalDays: number;
+  eventId: string;
+}): Promise<{ granted: boolean; delta: number }> {
+  const data = await getUserData(userId);
+  if ((data.ledger ?? []).some((e) => e.meta?.eventId === opts.eventId && e.meta?.kind === 'upgrade-proration')) {
+    return { granted: false, delta: 0 };
+  }
+  const ratio = opts.totalDays > 0 ? Math.max(0, Math.min(1, opts.daysRemaining / opts.totalDays)) : 0;
+  const delta = Math.max(0, Math.round((opts.newAllowance - opts.oldAllowance) * ratio));
+  if (delta <= 0) return { granted: false, delta: 0 };
+
+  const updated: UserData = {
+    ...data,
+    credits: (data.credits ?? 0) + delta,
+  };
+  appendLedger(updated, {
+    delta,
+    reason: 'sub-grant',
+    meta: { eventId: opts.eventId, kind: 'upgrade-proration', newTier: opts.newTier, ratio: Number(ratio.toFixed(3)) },
+  });
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return { granted: true, delta };
+}
+
+/**
+ * Reserve an event ID for sending a transactional email. Returns true if this
+ * is the first time we've seen the event (caller should send the email),
+ * false if a previous webhook fire already sent it.
+ *
+ * Best-effort dedupe — concurrent webhook replays could both pass the check
+ * before either commits, but Stripe rarely fires the same event in parallel,
+ * and a duplicate email is preferable to a missed one.
+ */
+export async function tryClaimNotificationEvent(userId: string, eventId: string): Promise<boolean> {
+  const data = await getUserData(userId);
+  const recent = data.subscription?.recentNotificationEvents ?? [];
+  if (recent.includes(eventId)) return false;
+  await applySubscriptionStateChange(userId, {
+    recentNotificationEvents: [eventId, ...recent].slice(0, 20),
+  });
+  return true;
+}
+
+/**
+ * Sync subscription state (status, period, cancelAtPeriodEnd, customer/sub IDs)
+ * without touching credit balance. Used for non-renewal subscription.updated /
+ * subscription.deleted events.
+ */
+export async function applySubscriptionStateChange(userId: string, patch: Partial<SubscriptionState>): Promise<UserData> {
+  const data = await getUserData(userId);
+  const updated: UserData = {
+    ...data,
+    subscription: {
+      ...(data.subscription ?? { tier: 'free', status: 'none' }),
+      ...patch,
+    },
+  };
+  await writeUserBlob(userKey(userId, 'data.json'), updated);
+  return updated;
 }
 
 /**

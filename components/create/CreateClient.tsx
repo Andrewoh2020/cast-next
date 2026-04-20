@@ -151,21 +151,35 @@ export default function CreateClient() {
 
       (async () => {
         try {
-          // Confirm credits with Stripe
-          const confirmRes = await fetch('/api/create/confirm-credits', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId }),
-          });
-
-          if (confirmRes.ok) {
-            const confirmData = await confirmRes.json();
-            setCredits(confirmData.credits);
-            // GA: track credit purchase
-            trackPurchaseCredits(sessionId, confirmData.added ?? 0, (confirmData.amount ?? 0) / 100);
-          } else {
-            const err = await confirmRes.json();
-            toast.error(err.error || 'Failed to confirm purchase');
+          // Webhook is the source of truth — poll briefly until credits land.
+          let beforeCredits = 0;
+          try {
+            const initial = await fetch('/api/create/credits', { cache: 'no-store' }).then((r) => r.json());
+            beforeCredits = initial.credits ?? 0;
+          } catch {}
+          const start = Date.now();
+          let added = 0;
+          let newCredits = beforeCredits;
+          while (Date.now() - start < 8000) {
+            try {
+              const res = await fetch('/api/create/credits', { cache: 'no-store' });
+              if (res.ok) {
+                const data = await res.json();
+                newCredits = data.credits ?? 0;
+                if (newCredits !== beforeCredits) {
+                  added = newCredits - beforeCredits;
+                  break;
+                }
+              }
+            } catch {}
+            await new Promise((r) => setTimeout(r, 750));
+          }
+          setCredits(newCredits);
+          if (added > 0) {
+            // GA: track credit purchase. We don't know the exact dollar amount
+            // here without the Stripe invoice — pass 0 and rely on the webhook
+            // to log the precise amount in the user's ledger.
+            trackPurchaseCredits(sessionId, added, 0);
           }
 
           // Load draft and go directly to download step + auto-generate

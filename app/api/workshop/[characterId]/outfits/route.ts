@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { readCharacters } from '@/lib/characters.server';
 import { readWorkshop, addOutfit, OutfitVariant } from '@/lib/workshop.server';
-import { deductCredit, addCredits, getCredits } from '@/lib/user-data.server';
+import { deductCredits, addCredits, getCredits } from '@/lib/user-data.server';
 import { generateOutfit } from '@/lib/generation.server';
+import { CREDIT_COSTS } from '@/lib/credit-costs';
 
 export const maxDuration = 300;
 
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
   if (!characterId) return NextResponse.json({ error: 'Invalid characterId' }, { status: 400 });
 
 
-  let body: { prompt?: string; sourceImageUrl?: string; garmentRefUrl?: string; sourceType?: 'profile' | 'refsheet' | 'other' };
+  let body: { prompt?: string; sourceImageUrl?: string; garmentRefUrl?: string; sourceType?: 'profile' | 'refsheet' | 'other'; aspectRatio?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }); }
 
   const prompt = (body.prompt ?? '').trim();
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
   }
 
   const balance = await getCredits(userId);
-  if (balance < 1) return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 });
+  if (balance < CREDIT_COSTS.outfit) return NextResponse.json({ error: `Need ${CREDIT_COSTS.outfit} credits` }, { status: 402 });
 
   // Need source image — default to character profile if client didn't supply
   let sourceImageUrl = body.sourceImageUrl;
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
   if (!sourceImageUrl) sourceImageUrl = character.img;
 
   // Deduct credit up front — refund on failure
-  await deductCredit(userId);
+  await deductCredits(userId, CREDIT_COSTS.outfit, 'spend-outfit');
   try {
     const result = await generateOutfit({
       sourceImageUrl,
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
       characterId,
       characterSlug: character.slug,
       characterName: character.name,
+      aspectRatio: body.aspectRatio,
     });
 
     const outfit: OutfitVariant = {
@@ -72,13 +74,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
       garmentRefUrl: body.garmentRefUrl,
       imageUrl: result.imageUrl,
       createdAt: new Date().toISOString(),
-      creditsSpent: 1,
+      creditsSpent: CREDIT_COSTS.outfit,
     };
 
     const workshop = await addOutfit(userId, characterId, outfit);
     return NextResponse.json({ outfit, workshop });
   } catch (err) {
-    await addCredits(userId, 1, 0, `refund-outfit-${Date.now()}`).catch(() => {});
+    await addCredits(userId, CREDIT_COSTS.outfit, 0, `refund-outfit-${Date.now()}`).catch(() => {});
     const raw = err instanceof Error ? err.message : 'Generation failed';
     console.error('[workshop/outfits] generation failed:', raw);
 
