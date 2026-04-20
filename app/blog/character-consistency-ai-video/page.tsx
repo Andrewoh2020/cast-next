@@ -390,12 +390,12 @@ export default function BlogPost() {
           <h3 className="text-2xl font-black text-black mb-2">Ready to try it?</h3>
           <p className="text-gray-500 mb-8 max-w-md mx-auto">Browse 100+ AI characters or create your own with a full 8-panel reference sheet.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="/" className="bg-black text-white font-bold text-sm px-8 py-3.5 rounded-xl hover:bg-gray-800 transition-colors">
+            <Link href="/" className="bg-black text-white font-bold text-sm px-8 py-3.5 rounded-xl hover:bg-gray-800 transition-colors">
               Browse Characters
-            </a>
-            <a href="/create" className="border border-gray-200 text-gray-700 font-semibold text-sm px-8 py-3.5 rounded-xl hover:border-gray-400 transition-colors">
+            </Link>
+            <Link href="/create" className="border border-gray-200 text-gray-700 font-semibold text-sm px-8 py-3.5 rounded-xl hover:border-gray-400 transition-colors">
               Create Your Own
-            </a>
+            </Link>
           </div>
         </div>
       </article>

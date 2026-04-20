@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 import { recordPurchase } from '@/lib/user-data.server';
-import Link from 'next/link';
 import AutoDownload from '@/components/AutoDownload';
 import DownloadButton from '@/components/DownloadButton';
 import PurchaseTracker from '@/components/PurchaseTracker';

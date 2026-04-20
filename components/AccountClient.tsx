@@ -66,6 +66,9 @@ export default function AccountClient({
   const [tab, setTab] = useState<TabKey>('workshops');
   const [favorites, setFavorites] = useState<Talent[]>(initialFavorites);
   const [previewChar, setPreviewChar] = useState<CustomCharacterDraft | null>(null);
+  // Capture "now" once at mount so we have a stable fallback for character-card
+  // creation dates without calling Date.now() during render (impure).
+  const [renderTime] = useState(() => Date.now());
 
   const handleRemoveFavorite = async (talent: Talent) => {
     setFavorites((prev) => prev.filter((f) => f.id !== talent.id));
@@ -353,7 +356,7 @@ export default function AccountClient({
                   </div>
                   <p className="text-sm text-gray-500 truncate">{c.description}</p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    Created {new Date(c.completedAt || c.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    Created {new Date(c.completedAt || c.createdAt || renderTime).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 shrink-0">
@@ -419,7 +422,7 @@ export default function AccountClient({
                 </div>
                 <div>
                   <h2 className="text-xl font-black tracking-tight text-black">{previewChar.name}</h2>
-                  <p className="text-xs text-gray-500">Created {new Date(previewChar.completedAt || previewChar.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  <p className="text-xs text-gray-500">Created {new Date(previewChar.completedAt || previewChar.createdAt || renderTime).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
               </div>
 

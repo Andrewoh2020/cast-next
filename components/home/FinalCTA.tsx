@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function FinalCTA() {
@@ -50,13 +51,13 @@ export default function FinalCTA() {
         </form>
 
         <div className="flex items-center justify-center gap-4 text-sm">
-          <a href="/#roster" className="font-semibold text-gray-600 hover:text-black transition-colors">
+          <Link href="/#roster" className="font-semibold text-gray-600 hover:text-black transition-colors">
             Browse the roster →
-          </a>
+          </Link>
           <span className="text-gray-300">·</span>
-          <a href="/how-it-works" className="font-semibold text-gray-600 hover:text-black transition-colors">
+          <Link href="/how-it-works" className="font-semibold text-gray-600 hover:text-black transition-colors">
             How it works →
-          </a>
+          </Link>
         </div>
       </div>
     </section>

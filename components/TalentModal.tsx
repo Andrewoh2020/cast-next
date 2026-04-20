@@ -12,7 +12,7 @@ import {
   HEIGHT_LABELS,
   thumbUrl,
 } from '@/lib/talent';
-import { trackViewCharacter, trackSelectLicense, trackBeginCheckout, trackFreeDownload } from '@/lib/analytics';
+import { trackViewCharacter, trackBeginCheckout, trackFreeDownload } from '@/lib/analytics';
 
 const FREE_LICENSE_IDX = -1;
 
@@ -23,13 +23,13 @@ interface Props {
 }
 
 export default function TalentModal({ talent, onClose, onPurchase }: Props) {
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [activeImg, setActiveImg] = useState('');
-  const [emailStep, setEmailStep] = useState(false);
+  const [, setEmailStep] = useState(false);
   const [attributionStep, setAttributionStep] = useState(false);
   const [attributionAgreed, setAttributionAgreed] = useState(false);
-  const [email, setEmail] = useState('');
+  const [, setEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState('');
 
@@ -169,34 +169,6 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
     });
     setSending(false);
     onPurchase(talent, FREE_LICENSE_IDX);
-  };
-
-  const handleConfirmPurchase = async () => {
-    if (!email.trim() || !email.includes('@')) {
-      setSendError('Please enter a valid email address.');
-      return;
-    }
-    setSending(true);
-    setSendError('');
-    try {
-      const res = await fetch('/api/email/send-reference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), characterId: talent.id, licenseIndex: selectedIdx }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setSendError(data.error ?? 'Failed to send email. Please try again.');
-        setSending(false);
-        return;
-      }
-    } catch {
-      setSendError('Network error. Please try again.');
-      setSending(false);
-      return;
-    }
-    setSending(false);
-    onPurchase(talent, selectedIdx);
   };
 
   return (
@@ -402,7 +374,7 @@ export default function TalentModal({ talent, onClose, onPurchase }: Props) {
 
               <div className="bg-gray-50 rounded-xl p-4 mb-5 text-[11px] text-gray-600 leading-relaxed border border-gray-200">
                 <strong className="block text-gray-800 mb-1">Example credit:</strong>
-                "AI characters provided by <span className="text-indigo-600 font-semibold">Cast</span> — castability.ai"
+                &ldquo;AI characters provided by <span className="text-indigo-600 font-semibold">Cast</span> — castability.ai&rdquo;
               </div>
 
               <label className="flex items-start gap-3 cursor-pointer mb-6">

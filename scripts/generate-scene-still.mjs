@@ -10,7 +10,6 @@ import { fal } from '@fal-ai/client';
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 import fs from 'node:fs/promises';
-import path from 'node:path';
 
 if (!process.env.FAL_API_KEY) {
   console.error('FAL_API_KEY missing.');
