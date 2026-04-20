@@ -29,6 +29,9 @@ export default function PreviewStep({ draft, isGenerating, generationError, cred
 
   useEffect(() => {
     if (isGenerating) {
+      // Reset + tick are both legitimate state syncs to the isGenerating prop;
+      // an extra render on the start tick is acceptable.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress(0);
       const startTime = Date.now();
       const targetMs = 180_000; // 3 minutes

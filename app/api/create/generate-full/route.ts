@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { getDraft, saveDraft, addToShowcase } from '@/lib/custom-characters.server';
-import { deductCredit, addCredits } from '@/lib/user-data.server';
+import { deductCredits, addCredits } from '@/lib/user-data.server';
 import { generateFull } from '@/lib/generation.server';
 import { createCustomWorkshop } from '@/lib/custom-workshop.server';
+import { CREDIT_COSTS } from '@/lib/credit-costs';
 
 export const maxDuration = 300;
 
@@ -45,9 +46,9 @@ export async function POST(req: NextRequest) {
     // Only deduct credit if not already in progress (status='generating' means credit was already taken)
     if (draft.status !== 'generating') {
       try {
-        await deductCredit(userId);
+        await deductCredits(userId, CREDIT_COSTS.character, 'spend-character');
       } catch {
-        return NextResponse.json({ error: 'No credits available. Purchase credits first.' }, { status: 402 });
+        return NextResponse.json({ error: `Need ${CREDIT_COSTS.character} credits. Top up or upgrade your plan.` }, { status: 402 });
       }
       // Mark as generating
       await saveDraft(userId, { ...draft, status: 'generating', paidAt: new Date().toISOString() });
@@ -164,7 +165,7 @@ export async function POST(req: NextRequest) {
         const draft = await getDraft(userId, draftId);
         if (draft && draft.status === 'generating') {
           await saveDraft(userId, { ...draft, status: 'preview' });
-          await addCredits(userId, 1, 0, `refund-${draftId}-${Date.now()}`);
+          await addCredits(userId, CREDIT_COSTS.character, 0, `refund-${draftId}-${Date.now()}`);
         }
       }
     } catch {}

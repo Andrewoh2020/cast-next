@@ -18,7 +18,6 @@ export default function CustomCharacterReceipt({
   profileDownloadUrl,
   referenceSheetDownloadUrl,
   accountUrl,
-  baseUrl = 'https://www.castability.ai',
 }: Props) {
   return (
     <Html>

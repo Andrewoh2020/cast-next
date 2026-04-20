@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { CustomCharacterDraft } from '@/lib/custom-characters.server';
 import { thumbUrl } from '@/lib/talent';
+import { CREDIT_COSTS } from '@/lib/credit-costs';
 
 interface Props {
   draft: CustomCharacterDraft;
@@ -14,6 +16,8 @@ interface Props {
 
 export default function PaymentStep({ draft, credits, onComplete, onBack }: Props) {
   const [error, setError] = useState('');
+  const characterCost = CREDIT_COSTS.character;
+  const hasEnough = credits >= characterCost;
 
   const handleUseCredit = () => {
     // Go straight to download step — generation happens there
@@ -94,33 +98,44 @@ export default function PaymentStep({ draft, credits, onComplete, onBack }: Prop
 
           {/* Payment options */}
           <div className="space-y-3">
-            {credits > 0 ? (
+            {hasEnough ? (
               <button
                 onClick={handleUseCredit}
                 className="w-full bg-indigo-500 text-white font-bold py-4 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200"
               >
-                Generate Character ({credits} remaining)
+                Generate Character ({characterCost} credits · {credits.toLocaleString()} available)
               </button>
             ) : (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => handleBuyCredits(0)}
-                  className="flex-1 bg-indigo-500 text-white font-bold py-4 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200"
+              <>
+                <p className="text-sm text-gray-500 text-center">
+                  This character costs <span className="font-bold text-black">{characterCost} credits</span>. You have {credits.toLocaleString()}.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleBuyCredits(0)}
+                    className="flex-1 bg-indigo-500 text-white font-bold py-4 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200"
+                  >
+                    <span className="text-sm">Boost — 500 credits</span>
+                    <span className="block text-lg mt-0.5">$25</span>
+                  </button>
+                  <button
+                    onClick={() => handleBuyCredits(1)}
+                    className="flex-1 bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-all hover:-translate-y-0.5 hover:shadow-lg relative"
+                  >
+                    <span className="absolute -top-2 right-3 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      BEST VALUE
+                    </span>
+                    <span className="text-sm">Power — 1,500 credits</span>
+                    <span className="block text-lg mt-0.5">$60</span>
+                  </button>
+                </div>
+                <Link
+                  href="/pricing"
+                  className="block text-center text-sm font-bold text-indigo-600 hover:text-indigo-700 py-2"
                 >
-                  <span className="text-sm">Buy 1 Character</span>
-                  <span className="block text-lg mt-0.5">$10</span>
-                </button>
-                <button
-                  onClick={() => handleBuyCredits(1)}
-                  className="flex-1 bg-black text-white font-bold py-4 rounded-xl hover:bg-gray-800 transition-all hover:-translate-y-0.5 hover:shadow-lg relative"
-                >
-                  <span className="absolute -top-2 right-3 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    SAVE 29%
-                  </span>
-                  <span className="text-sm">Buy 7 Characters</span>
-                  <span className="block text-lg mt-0.5">$50</span>
-                </button>
-              </div>
+                  Or subscribe for monthly credits →
+                </Link>
+              </>
             )}
 
             <button

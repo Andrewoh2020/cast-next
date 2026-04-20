@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -90,12 +91,12 @@ export default function AboutPage() {
         {/* CTA */}
         <div className="text-center">
           <p className="text-gray-400 text-sm mb-4">Ready to cast your next production?</p>
-          <a
+          <Link
             href="/"
             className="inline-block bg-black text-white font-bold px-10 py-4 rounded-xl hover:bg-gray-800 transition-colors"
           >
             Browse the Roster
-          </a>
+          </Link>
           <p className="text-xs text-gray-400 mt-5">
             Questions?{' '}
             <a href="mailto:admin@ability.new" className="text-indigo-500 hover:underline">

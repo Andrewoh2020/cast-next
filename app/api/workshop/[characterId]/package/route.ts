@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { get } from '@vercel/blob';
 import { readCharacters } from '@/lib/characters.server';
 import { readWorkshop } from '@/lib/workshop.server';
 import archiver from 'archiver';
@@ -11,12 +12,21 @@ function parseCharacterId(raw: string): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
-
+// Internal blob URLs (/api/media?p=<encoded-path>) are read directly from
+// Vercel Blob — going over HTTP back to ourselves was the source of a prod
+// bug where NEXT_PUBLIC_BASE_URL missed in production and every image fetch
+// failed silently, shipping ZIPs that contained only the README.
 async function fetchBuffer(url: string): Promise<Buffer> {
-  const full = url.startsWith('http') ? url : `${BASE}${url}${url.includes('?') ? '&' : '?'}w=2000`;
-  const res = await fetch(full);
-  if (!res.ok) throw new Error(`Fetch ${full}: ${res.status}`);
+  const mediaMatch = url.match(/[?&]p=([^&]+)/);
+  if (mediaMatch) {
+    const blobPath = decodeURIComponent(mediaMatch[1]);
+    const result = await get(blobPath, { access: 'private' });
+    if (!result?.stream) throw new Error(`Blob not found: ${blobPath}`);
+    return Buffer.from(await new Response(result.stream).arrayBuffer());
+  }
+  if (!url.startsWith('http')) throw new Error(`Unsupported URL: ${url}`);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Fetch ${url}: ${res.status}`);
   return Buffer.from(await res.arrayBuffer());
 }
 
@@ -45,34 +55,37 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ cha
     archive.on('error', reject);
   });
 
-  // Profile
-  try {
-    const buf = await fetchBuffer(character.img);
-    archive.append(buf, { name: `${slug}-profile.jpg` });
-  } catch {}
+  // Track whether any image actually made it into the archive. If every
+  // fetch fails the ZIP would otherwise ship with only the README, which is
+  // exactly the silent-failure mode we just fixed.
+  let imagesAdded = 0;
+  const tryAppend = async (url: string, name: string, label: string) => {
+    try {
+      const buf = await fetchBuffer(url);
+      archive.append(buf, { name });
+      imagesAdded++;
+    } catch (err) {
+      console.error(`[workshop/package] ${label} fetch failed: ${err instanceof Error ? err.message : String(err)} (url=${url})`);
+    }
+  };
 
-  // Reference sheet
+  await tryAppend(character.img, `${slug}-profile.jpg`, 'profile');
   if (character.referenceSheetUrl) {
-    try {
-      const buf = await fetchBuffer(character.referenceSheetUrl);
-      archive.append(buf, { name: `${slug}-reference-sheet.jpg` });
-    } catch {}
+    await tryAppend(character.referenceSheetUrl, `${slug}-reference-sheet.jpg`, 'reference-sheet');
   }
-
-  // Outfits
   for (let i = 0; i < workshop.outfits.length; i++) {
-    try {
-      const buf = await fetchBuffer(workshop.outfits[i].imageUrl);
-      archive.append(buf, { name: `wardrobe/${slug}-outfit-${i + 1}.jpg` });
-    } catch {}
+    await tryAppend(workshop.outfits[i].imageUrl, `wardrobe/${slug}-outfit-${i + 1}.jpg`, `outfit-${i + 1}`);
+  }
+  for (let i = 0; i < workshop.shots.length; i++) {
+    await tryAppend(workshop.shots[i].imageUrl, `scenes/${slug}-scene-${i + 1}.jpg`, `scene-${i + 1}`);
   }
 
-  // Scenes
-  for (let i = 0; i < workshop.shots.length; i++) {
-    try {
-      const buf = await fetchBuffer(workshop.shots[i].imageUrl);
-      archive.append(buf, { name: `scenes/${slug}-scene-${i + 1}.jpg` });
-    } catch {}
+  if (imagesAdded === 0) {
+    console.error(`[workshop/package] all image fetches failed for character ${characterId} user ${userId} — refusing to ship README-only ZIP`);
+    return NextResponse.json(
+      { error: 'Could not assemble your package. Please try again shortly, or contact admin@castability.ai if this persists.' },
+      { status: 502 },
+    );
   }
 
   // README

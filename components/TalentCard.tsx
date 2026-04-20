@@ -11,10 +11,13 @@ interface Props {
   onToggleFavorite?: (talent: Talent) => void;
 }
 
-export default function TalentCard({ talent, onClick, index = 0, isFavorited = false, onToggleFavorite }: Props) {
+export default function TalentCard({ talent, onClick, isFavorited = false, onToggleFavorite }: Props) {
 
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0, glareX: 50, glareY: 50, active: false });
+  // Capture "now" once at mount so the "Added Xd ago" pill is stable across
+  // re-renders (Date.now() during render is impure).
+  const [renderTime] = useState(() => Date.now());
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
@@ -91,10 +94,10 @@ export default function TalentCard({ talent, onClick, index = 0, isFavorited = f
       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
         <p className="text-white font-bold text-base tracking-tight leading-tight mb-1">{talent.name}</p>
         <div className="flex items-center justify-between">
-          {talent.createdAt && Date.now() - new Date(talent.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000 ? (
+          {talent.createdAt && renderTime - new Date(talent.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000 ? (
             <span className="flex items-center gap-1.5 text-white/70 text-xs">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              Added {Math.max(0, Math.floor((Date.now() - new Date(talent.createdAt).getTime()) / (24 * 60 * 60 * 1000)))}d ago
+              Added {Math.max(0, Math.floor((renderTime - new Date(talent.createdAt).getTime()) / (24 * 60 * 60 * 1000)))}d ago
             </span>
           ) : (
             <span />

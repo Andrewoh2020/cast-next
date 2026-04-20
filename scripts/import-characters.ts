@@ -140,7 +140,7 @@ async function generateVibe(prompt: string, name: string): Promise<string> {
 
     const text = message.content[0].type === 'text' ? message.content[0].text.trim() : '';
     if (text) return text;
-  } catch (err) {
+  } catch {
     console.warn(`    ⚠ Claude API failed for ${name}, falling back to prompt excerpt`);
   }
 

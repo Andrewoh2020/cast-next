@@ -43,6 +43,7 @@ export default function MockWorkshop() {
   const [showDownload, setShowDownload] = useState(false);
 
   // Mode change clears transient inputs but keeps prompt (user may be iterating)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setReferenceFile(null); }, [mode]);
 
   // Keyboard shortcuts
@@ -315,7 +316,7 @@ export default function MockWorkshop() {
                 'Top up to generate'
               ) : (
                 <>
-                  Generate <span className="text-white/80">· 1 credit</span>
+                  Generate <span className="text-white/80">· 5 credits</span>
                 </>
               )}
             </button>
@@ -346,9 +347,6 @@ function CreditsChip({ credits }: { credits: number }) {
 function CanvasArea({ img, label, stage, stageText, isRefSheet }: { img: string; label: string; stage: Stage; stageText: string; isRefSheet?: boolean }) {
   // Reference sheet is a wide 8-panel grid; portraits and generated variants are 3:4.
   // Adapt the canvas aspect + fit mode so the whole image is always visible.
-  const containerClass = isRefSheet
-    ? 'relative w-full max-w-5xl rounded-3xl overflow-hidden bg-white/5 shadow-2xl shadow-indigo-900/30 ring-1 ring-white/10'
-    : 'relative w-full max-w-[520px] aspect-[3/4] rounded-3xl overflow-hidden bg-white/5 shadow-2xl shadow-indigo-900/30 ring-1 ring-white/10';
   const imgClass = isRefSheet
     ? 'w-full h-auto object-contain'
     : 'w-full h-full object-cover object-top';

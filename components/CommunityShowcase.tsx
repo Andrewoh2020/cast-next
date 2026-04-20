@@ -72,6 +72,7 @@ export default function CommunityShowcase() {
                     <p className="text-white text-xs font-bold truncate mb-1.5">{entry.name}</p>
                     <div className="flex items-center gap-1.5">
                       {entry.creatorImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={entry.creatorImageUrl}
                           alt={displayName}

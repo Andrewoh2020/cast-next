@@ -5,6 +5,8 @@ import { readVisibleCharacters } from '@/lib/characters.server';
 import { getUserDrafts } from '@/lib/custom-characters.server';
 import { listCustomWorkshops } from '@/lib/custom-workshop.server';
 import AccountClient from '@/components/AccountClient';
+import BillingSuccessPoller from '@/components/BillingSuccessPoller';
+import { Suspense } from 'react';
 
 export default async function AccountPage() {
   const { userId } = await auth();
@@ -30,6 +32,12 @@ export default async function AccountPage() {
             {user?.firstName ? `Hey, ${user.firstName}.` : 'My Account'}
           </h1>
         </div>
+        <Suspense fallback={null}>
+          <BillingSuccessPoller
+            initialTier={userData.subscription?.tier ?? 'free'}
+            initialCredits={credits}
+          />
+        </Suspense>
         <AccountClient
           initialFavorites={favoriteCharacters}
           initialPurchases={userData.purchases}

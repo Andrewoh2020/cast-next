@@ -73,6 +73,10 @@ export default function CompleteStep({ draft, generating, generationError, onRet
     const match = nextAttempts.find((a) => a.url === draft.referenceSheetUrl);
     setSelectedId(match?.id ?? nextAttempts[nextAttempts.length - 1]?.id ?? null);
     setRegenCount(draft.refSheetRegenerations ?? 0);
+    // Intentionally narrow deps — re-running on every draft mutation would
+    // reset selection during normal interaction. The four watched fields
+    // cover the cases that actually require resync.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft.id, draft.referenceSheetUrl, draft.refSheetRegenerations, draft.referenceSheetAttempts]);
 
   // Animated progress bar for ref sheet generation — climbs to 95% over ~180s

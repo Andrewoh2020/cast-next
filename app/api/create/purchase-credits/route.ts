@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import Stripe from 'stripe';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { getStripe, getOrCreateCustomer, priceMap } from '@/lib/stripe.server';
+import { getUserData, applySubscriptionStateChange } from '@/lib/user-data.server';
 
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!);
-}
+export const runtime = 'nodejs';
 
-const CREDIT_PACKAGES = [
-  { credits: 1, amount: 1000, label: '1 Character' },         // $10
-  { credits: 7, amount: 5000, label: '7 Characters Bundle' }, // $50
-];
+// In-app top-up entry-point used by /create flow. Maps packageIndex (0 = Boost,
+// 1 = Power) onto Stripe Price IDs. The webhook is the sole source of truth
+// for credit fulfillment — the success_url just signals the client to poll.
+const PACKAGE_PRICE_ENVS = ['STRIPE_PRICE_TOPUP_BOOST', 'STRIPE_PRICE_TOPUP_POWER'];
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -17,38 +16,47 @@ export async function POST(req: NextRequest) {
 
   try {
     const { packageIndex, draftId, returnUrl } = await req.json();
-    const pkg = CREDIT_PACKAGES[packageIndex];
-    if (!pkg) return NextResponse.json({ error: 'Invalid package' }, { status: 400 });
+    const priceEnv = PACKAGE_PRICE_ENVS[packageIndex];
+    if (!priceEnv) return NextResponse.json({ error: 'Invalid package' }, { status: 400 });
+    const priceId = process.env[priceEnv];
+    if (!priceId) return NextResponse.json({ error: `${priceEnv} not configured` }, { status: 500 });
+
+    const map = priceMap();
+    const entry = map[priceId];
+    if (!entry?.topupCredits) return NextResponse.json({ error: 'Price not registered as a top-up pack' }, { status: 500 });
+
+    const data = await getUserData(userId);
+    const user = await currentUser();
+    const email = user?.emailAddresses[0]?.emailAddress;
+    const customer = await getOrCreateCustomer({
+      userId,
+      email,
+      existingCustomerId: data.subscription?.stripeCustomerId,
+    });
+    if (data.subscription?.stripeCustomerId !== customer.id) {
+      await applySubscriptionStateChange(userId, { stripeCustomerId: customer.id });
+    }
 
     const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_BASE_URL || 'https://www.castability.ai';
 
     const session = await getStripe().checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [{
-        price_data: {
-          currency: 'usd',
-          unit_amount: pkg.amount,
-          product_data: {
-            name: `Cast — ${pkg.label}`,
-            description: `Generate ${pkg.credits} custom AI character${pkg.credits > 1 ? 's' : ''} with hi-res profile + reference sheet`,
-          },
-        },
-        quantity: 1,
-      }],
-      metadata: {
-        type: 'credits',
-        userId,
-        credits: String(pkg.credits),
-        amount: String(pkg.amount),
-        draftId: draftId || '',
-      },
+      customer: customer.id,
+      client_reference_id: userId,
+      line_items: [{ price: priceId, quantity: 1 }],
       success_url: returnUrl
         ? `${origin}${returnUrl}${returnUrl.includes('?') ? '&' : '?'}credits=purchased&session_id={CHECKOUT_SESSION_ID}`
         : `${origin}/create?credits=purchased&session_id={CHECKOUT_SESSION_ID}${draftId ? `&draft=${draftId}` : ''}`,
       cancel_url: returnUrl
         ? `${origin}${returnUrl}`
         : `${origin}/create${draftId ? `?draft=${draftId}` : ''}`,
+      metadata: {
+        userId,
+        kind: 'topup',
+        priceId,
+        topupCredits: String(entry.topupCredits),
+        draftId: draftId || '',
+      },
     });
 
     return NextResponse.json({ url: session.url });
