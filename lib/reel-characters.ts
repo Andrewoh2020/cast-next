@@ -5,7 +5,6 @@ interface CharacterJson {
   name: string;
   slug?: string;
   img?: string;
-  referenceSheetUrl?: string;
 }
 
 // Drop per-character clips into `/public/reel-clips/` and register them
@@ -27,7 +26,7 @@ const VIDEO_MAP: Record<string, VideoEntry> = {
 
 export function pickReelCharacters(): ReelCharacter[] {
   const all = (charactersRaw as CharacterJson[]).filter(
-    (c) => c.img && c.referenceSheetUrl && c.slug,
+    (c) => c.img && c.slug,
   );
   const picks: ReelCharacter[] = [];
   for (const [slug, entry] of Object.entries(VIDEO_MAP)) {
@@ -36,7 +35,6 @@ export function pickReelCharacters(): ReelCharacter[] {
     picks.push({
       name: c.name,
       img: c.img!,
-      referenceSheetUrl: c.referenceSheetUrl,
       videoSrc: entry.src,
       videoLoop: entry.loop,
     });

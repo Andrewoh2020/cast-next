@@ -24,11 +24,8 @@ function getReducedMotionServerSnapshot() {
 export interface ReelCharacter {
   name: string;
   img: string;
-  referenceSheetUrl?: string;
-  /** Optional path to a per-character video clip (e.g. `/reel-clips/akira-tanaka.mp4`).
-   *  When provided, Stage 3 plays this clip instead of falling back to a
-   *  Ken Burns pan across the reference sheet. */
-  videoSrc?: string;
+  /** Path to the per-character video clip (e.g. `/reel-clips/akira-tanaka.mp4`). */
+  videoSrc: string;
   /** Whether the video clip should loop (default true). Set false for short
    *  one-shot clips — the reel advances to the next character as soon as the
    *  clip ends, rather than looping awkwardly to fill the 8s window. */
@@ -78,7 +75,6 @@ export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
 
   if (characters.length === 0) return null;
   const current = characters[idx];
-  const previewFallbackSrc = current.referenceSheetUrl ?? current.img;
 
   return (
     <div className="relative w-full max-w-6xl mx-auto px-6">
@@ -144,34 +140,24 @@ export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
         <Connector direction="right" />
         <Connector direction="down" />
 
-        {/* ── Stage 3: Video output — per-character clip when available,
-            otherwise a Ken Burns pan across the reference sheet as a stand-in.
-            Widescreen frame reads as "cinematic output." ──────────────────── */}
+        {/* ── Stage 3: Video output — per-character clip playing in a widescreen
+            frame that reads as "cinematic output." ──────────────────────────── */}
         <div key={`v-${idx}`} className="reel-stage reel-stage-video shrink-0 md:w-72 flex flex-col items-center">
           <div className="relative w-64 md:w-72 aspect-video rounded-2xl overflow-hidden ring-1 ring-black/10 shadow-xl shadow-pink-500/10 bg-black">
-            {current.videoSrc ? (
-              <video
-                key={current.videoSrc}
-                className="absolute inset-0 w-full h-full object-cover"
-                autoPlay
-                muted
-                loop={current.videoLoop !== false}
-                playsInline
-                preload="auto"
-                poster={`${current.img}${current.img.includes('?') ? '&' : '?'}w=1200`}
-                aria-label={`${current.name} video preview`}
-                onEnded={current.videoLoop === false ? () => setIdx((i) => (i + 1) % characters.length) : undefined}
-              >
-                <source src={current.videoSrc} type="video/mp4" />
-              </video>
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={`${previewFallbackSrc}${previewFallbackSrc.includes('?') ? '&' : '?'}w=1200`}
-                alt={`${current.name} preview`}
-                className="absolute inset-0 w-full h-full object-cover reel-video-pan"
-              />
-            )}
+            <video
+              key={current.videoSrc}
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop={current.videoLoop !== false}
+              playsInline
+              preload="auto"
+              poster={`${current.img}${current.img.includes('?') ? '&' : '?'}w=1200`}
+              aria-label={`${current.name} video preview`}
+              onEnded={current.videoLoop === false ? () => setIdx((i) => (i + 1) % characters.length) : undefined}
+            >
+              <source src={current.videoSrc} type="video/mp4" />
+            </video>
             {/* LIVE indicator so the frame reads as "playing" at a glance */}
             <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/55 backdrop-blur-sm rounded-full px-2 py-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-red-400 motion-safe:animate-pulse" aria-hidden="true" />
@@ -224,30 +210,15 @@ export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
           to   { width: 100%; }
         }
 
-        /* Ken Burns across the reference sheet — pans left→right with a
-           slight zoom so the frame reads as a live video preview of the
-           specific character in the Stage 1 portrait card. */
-        .reel-video-pan {
-          animation: reel-video-pan 7s ease-in-out 2.0s infinite alternate both;
-          object-position: 0% 35%;
-          transform: scale(1.12);
-        }
-        @keyframes reel-video-pan {
-          from { object-position: 0%   35%; transform: scale(1.12); }
-          to   { object-position: 100% 35%; transform: scale(1.06); }
-        }
-
         @media (prefers-reduced-motion: reduce) {
           .reel-stage-portrait,
           .reel-stage-video,
           .reel-gate,
-          .reel-timeline,
-          .reel-video-pan {
+          .reel-timeline {
             animation: none !important;
           }
           .reel-gate { opacity: 1; transform: none; }
           .reel-timeline { width: 40%; }
-          .reel-video-pan { object-position: 50% 35%; transform: scale(1); }
         }
       `}</style>
     </div>
