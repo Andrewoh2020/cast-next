@@ -109,10 +109,10 @@ export default function CharacterPageClient({ character }: Props) {
         href={`/workshop/${character.slug}`}
         className="block w-full bg-indigo-500 text-white font-bold text-center py-4 rounded-xl hover:bg-indigo-600 transition-colors text-sm"
       >
-        Open in Workshop
+        Open in Character Studio
       </Link>
       <p className="text-[10px] text-center text-gray-500 mt-2">
-        All tiers include full Workshop access
+        All tiers include full Character Studio access
       </p>
     </div>
   );

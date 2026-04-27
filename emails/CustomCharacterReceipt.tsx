@@ -158,10 +158,10 @@ export default function CustomCharacterReceipt({
               What&apos;s Included
             </Text>
             {[
-              'Hi-resolution profile photo (4K, no watermark)',
+              'Hi-resolution profile photo (4K)',
               '8-panel character reference sheet',
               'Full ownership of the character',
-              'Commercial license for any production',
+              'Commercial license — rights persist after cancellation',
             ].map((item) => (
               <Row key={item} style={{ marginBottom: 8 }}>
                 <Column style={{ width: 24 }}>

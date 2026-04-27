@@ -31,7 +31,7 @@ export default function WorkshopRedirect({ slug }: { slug: string }) {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
           <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
         </svg>
-        Continue to Workshop
+        Continue to Character Studio
       </Link>
       <p className="text-xs text-gray-400 text-center">
         Redirecting in {seconds}s…

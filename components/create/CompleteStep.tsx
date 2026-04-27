@@ -58,10 +58,10 @@ export default function CompleteStep({ draft, generating, generationError, onRet
         body: JSON.stringify({ draftId: draft.id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to open Workshop');
+      if (!res.ok) throw new Error(data.error || 'Failed to open Character Studio');
       window.location.href = `/workshop/custom/${data.workshopId}`;
     } catch (err) {
-      setWorkshopError(err instanceof Error ? err.message : 'Failed to open Workshop');
+      setWorkshopError(err instanceof Error ? err.message : 'Failed to open Character Studio');
       setSendingToWorkshop(false);
     }
   };
@@ -257,7 +257,7 @@ export default function CompleteStep({ draft, generating, generationError, onRet
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
           </svg>
-          <p className="text-xs font-black uppercase tracking-widest text-indigo-600">Next step — Workshop</p>
+          <p className="text-xs font-black uppercase tracking-widest text-indigo-600">Next step — Character Studio</p>
         </div>
         <h3 className="text-base font-black text-black mb-1">Unlock {draft.name}&apos;s full potential</h3>
         <p className="text-xs text-gray-600 leading-relaxed mb-4">
@@ -269,9 +269,9 @@ export default function CompleteStep({ draft, generating, generationError, onRet
           className="w-full bg-indigo-500 text-white font-bold py-3 rounded-xl hover:bg-indigo-600 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-60 disabled:hover:translate-y-0 flex items-center justify-center gap-2"
         >
           {sendingToWorkshop ? (
-            <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Opening Workshop...</>
+            <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Opening Studio...</>
           ) : (
-            <>Open in Workshop
+            <>Open in Character Studio
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />

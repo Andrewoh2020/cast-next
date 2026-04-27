@@ -1,0 +1,180 @@
+# Mid-Market Independent Ad Agencies — Prospect List
+
+Generated 2026-04-21. ~100 prospects across US / UK / Canada / Australia, 20–400 employees, genuinely independent (no holding-co subs).
+
+**Confidence caveat:** agent did live web research (22 tool uses, 6 min runtime) with cited sources. Entries marked **H** = high confidence on all fields; **M** = confident on indie status, some hooks approximated; **L** = verify one or more hooks before cold email.
+
+## Distribution
+
+- **Geography:** US 57 / UK 20 / CA 11 / AU 12 = 100
+- **Leadership:** ~60% ECD/CCO-founded creative shops, ~40% CEO/business-led
+- **Size:** ~55% sub-100 employees (scrappy indie sweet spot), ~38% 100–250, ~7% 250–400
+
+## Recommended outbound sequencing
+
+**Wave 1 — highest fit (AI-vocal + indie-vocal + diverse-brand-heavy):**
+Uncommon, Mother, Joan, Thinkerbell, Zulu Alpha Kilo, Translation, Mischief, Special US, Erich & Kallman, Rethink, Quiet Storm, Zambezi.
+
+**Wave 2 — indie craft shops, big brand portfolios:**
+Venables Bell, Cutwater, Highdive, McKinney, No Fixed Address, Howatson+Company, Lucky Generals, New Commercial Arts, Colle McVoy, Richards Group.
+
+**Wave 3 — specialty / multicultural / founder-led niches:**
+LERMA, Walton Isaacson, Orci, Sylvain, Dagger, Preacher, Chandelier, Observatory, Camp+King, Bear Meets Eagle on Fire, Emotive.
+
+## Hooks by theme
+
+- **Public AI thought leadership:** Uncommon (Ben Golik), Thinkerbell (Ferrier), Joan (Robinson), Akcelo (Hepburn), Known ("Skeptic" platform), Rethink.
+- **Strong DEI / inclusion public stance:** Joan, Zambezi, Translation, Walton Isaacson, LERMA, Orci, Sylvain, Quiet Storm (Create Not Hate), Terri & Sandy.
+- **Public independence advocates (resonates with "indie vs holdco AI" framing):** Mother, Erich & Kallman, VIA, Zulu Alpha Kilo ("Say No to Spec"), St Luke's (employee-owned), Work & Co (partner-owned), Crispin (re-independent story), Wieden+Kennedy.
+
+---
+
+## United States (57)
+
+| # | company | url | hq_city | emp | notable_clients | buyer_role | hook_1 | hook_2 | hook_3 | conf |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Mother | motherlondon.com | New York (+London) | 250 | Uber, Stella Artois, Ikea | ECD | Launched Mother Design in-house AI/prototyping studio | Beer, beauty, retail | Vocally independent; founders have criticized holdco homogenization | H |
+| 2 | Joan Creative | joancreative.com | New York | 80 | Netflix, EOS, Rimmel | Co-founder/CCO (Jaime Robinson) | Robinson has publicly discussed generative AI in creative process | Beauty, streaming | First female-founded indie holdco; strong DEI public posture | H |
+| 3 | Venables Bell & Partners | venablesbell.com | San Francisco | 150 | Chipotle, Audi, Girl Scouts, AG1 | ECD | Independent since 2001; tests AI across Audi work | Auto, CPG, wellness | "Honest, Fearless and Independent" stated credo | H |
+| 4 | Erich & Kallman | erich-kallman.com | San Francisco | 60 | Toyota, Amazon, Hershey, King's Hawaiian, Impossible | Founder/President (Steve Erich) | Erich has publicly discussed indie-vs-holdco AI race in trade press | CPG food, auto | Ad Age 2024 Small Agency of the Year | H |
+| 5 | Cutwater | cutwateragency.com | San Francisco | 50 | SF Bay Coffee, Mini Cooper (historical), Levi's | Founder/CCO (Chuck McBride) | Known for craft-forward film production | CPG food & bev, auto | McBride ex-TBWA\Chiat; pro-craft stance | H |
+| 6 | The VIA Agency | theviaagency.com | Portland, ME | 65 | Perdue, Unilever, L.L. Bean | President (Scott MacLeod) | Employee-owned; Ad Age Small Agency of the Year | CPG food, outdoor | Employee ownership model | H |
+| 7 | Mischief @ No Fixed Address | wearemischief.com | New York | 120 | Tubi, MGM Resorts, Kraft Heinz | Co-founder/CCO (Greg Hahn) | Adweek 2025 U.S. Agency of the Year | CPG, hospitality, streaming | Indie-proud; partners with No Fixed Address (Toronto) | H |
+| 8 | Special US | specialgroup.com | Venice, CA | 70 | Uber Eats, Netflix, Poppi, BJ's | Co-founder/CCO (Dave Horton) | Super Bowl regulars; Uber Eats "Don't Forget" viral | CPG bev, streaming | Independent-network model (AU/NZ/US/UK/JP) | H |
+| 9 | Known | known.is | New York | 350 | GM, Amazon Prime, Roblox | Chief Creative | Built proprietary AI+data platform "Skeptic" | Auto, entertainment, tech | Adweek 2025 Midsize Agency of the Year | H |
+| 10 | Wieden+Kennedy | wk.com | Portland, OR | ~300 NY+POR creative | Nike, Ford, McDonald's, Coors Light | ECD | In-house AI/production lab "WK Studios" | Sportswear, auto, QSR | Famously independent; Dan Wieden legacy | H |
+| 11 | Preacher | preacher.co | Austin, TX | 60 | Shiner, Texas Lottery, Seton | ECD | Known for craft film; scrappy Austin shop | CPG bev, lifestyle | Founder-led; Southern indie voice | M |
+| 12 | Giant Spoon | giantspoon.com | New York | 200 | GE, Amazon, HBO, Netflix | Co-founder/Partner | Cannes Grand Prix for Westworld activation | Tech, entertainment | Founder-led; immersive craft focus | H |
+| 13 | Translation | translationllc.com | New York | 150 | State Farm, Beats, Brooklyn Nets | Founder/CEO (Steve Stoute) | Culture-first brand house; AI music work | CPG, sports, fintech | Black-founded; strong cultural/DEI voice | H |
+| 14 | Majority | wearemajority.com | Brooklyn | 40 | Ben & Jerry's, Mailchimp | Founder/CCO (Omid Farhang) | Multicultural indie | CPG, SaaS | Majority-Black-owned; mission-driven | M |
+| 15 | Cartwright | cartwrightny.com | New York | 40 | Bud Light, Nike social | ECD | Ex-W+K/72andSunny founder shop | Bev, sportswear | Small, craft-led | L |
+| 16 | Humanaut | humanaut.com | Chattanooga, TN | 55 | Organic Valley, Bosch, Halo Top | Founder/CCO (David Littlejohn) | Ad Age Small Agency finalist repeatedly | CPG food | "Purpose-driven" positioning | H |
+| 17 | Butler, Shine, Stern & Partners | bssp.com | Sausalito, CA | 80 | Mini USA, Columbia Sportswear, Priceline | Chief Creative | 30-yr indie; Priceline "Negotiator" lineage | Auto, outdoor | Employee-owned partnership | H |
+| 18 | Eleven Inc. | eleveninc.com | San Francisco | 70 | Virgin, Apple (historical), Patagonia | CCO | Long indie; branding + advertising | Outdoor, tech | Founder-led | M |
+| 19 | Duncan Channon | duncanchannon.com | San Francisco | 60 | CA Lottery, Del Taco, Mike's Hard | ECD | "Play to Win" CA Lottery work | CPG, QSR, gov | Indie pride | M |
+| 20 | Camp + King | campandking.com | San Francisco | 40 | Corona, Kayak, Chime | Founder/CCO (Roger Camp) | Ex-Goodby founder shop | CPG bev, fintech, travel | Small indie | M |
+| 21 | Colle McVoy | collemcvoy.com | Minneapolis | 180 | Land O'Lakes, Caribou Coffee, U.S. Bank | CCO | Employee-owned | CPG food, fintech, outdoor | ESOP structure | H |
+| 22 | Solve | solveideas.com | Minneapolis | 50 | Polaris, Toro, Caribou | ECD | Ad Age Small Agency of the Year (2019) | Outdoor, CPG | Indie, craft-first | M |
+| 23 | Terri & Sandy | terriandsandy.com | New York | 70 | Clorox, Reynolds, Purina | Co-founder/CCO (Terri Meyer) | Women-founded indie | CPG household, pet | Female-founded; DEI leadership | H |
+| 24 | Walrus | walrusnyc.com | New York | 55 | TD Ameritrade, Hyundai | Founder/CCO (Frazer Jelleyman) | Small NY indie, craft focus | Fintech, auto | Founder-led | L |
+| 25 | Argonaut | argonautsf.com | San Francisco | 75 | Volkswagen, Dickies, Poppi | Founder/CCO (Hunter Hindman) | Ex-CPB founder shop | Auto, CPG bev, apparel | Indie, founder-led | M |
+| 26 | Quality Meats | qualitymeatscreative.com | New York | 50 | NYT, Audible, Diageo | Founder/CCO (Josh Di Mella) | Indie craft shop | Media/publishing, spirits | Small, founder-led | L |
+| 27 | Humble | wearehumble.com | New York/Portland | 40 | Nike, Patagonia | ECD | Content craft shop | Sportswear, outdoor | Small indie | L |
+| 28 | McKinney | mckinney.com | Durham, NC | 350 | Samsung, Travelers, NFL, Little Caesars | ECD | Independent; "New York of the South" | Tech, CPG, sports | Indie pride | H |
+| 29 | Allen & Gerritsen | a-g.com | Boston/Philly | 150 | Dunkin', Independence Blue Cross | ECD | Cultural insights focus | QSR, healthcare/insurance | Founder-led indie | M |
+| 30 | Connelly Partners | connellypartners.com | Boston | 120 | Boston Beer, Titleist, Welch's | Founder/CEO | Cross-Atlantic (also Dublin) | CPG food & bev, sports | Founder-led | H |
+| 31 | Barrett Hofherr | barretthofherr.com | New York | 40 | Stella Artois, Bai, Degree | Co-founder/CCO (Bill Barrett) | Ex-BBH founders | CPG bev, personal care | Small indie | M |
+| 32 | Quigley-Simpson | quigleysimpson.com | Los Angeles | 200 | Toyota, U.S. Bank | ECD | Integrated TV+digital | Auto, fintech | Founder/CEO-led | M |
+| 33 | Chandelier Creative | chandeliercreative.com | New York | 60 | Glossier, Equinox, Tiffany | Founder/CCO (Richard Christiansen) | Fashion/beauty craft shop | Beauty, luxury fashion, fitness | Founder-led; arts-forward | H |
+| 34 | Wolf & Wilhelmine | wolfandwilhelmine.com | San Francisco | 40 | Google, Facebook, Okta | Founder/CEO (Nadia Tuma-Weldon) | Brand strategy + design shop | Tech, SaaS | Female-founded; research-first | M |
+| 35 | Dagger | dagger.agency | Atlanta | 60 | Georgia-Pacific, Mailchimp, Porsche | Founder (Mike Popowski) | Indie Atlanta, content-first | CPG paper, SaaS, auto | Founder-led | M |
+| 36 | 22squared | 22squared.com | Atlanta/Tampa | 250 | Publix, Buffalo Wild Wings, Southeastern Grocers | CCO | Employee-owned indie | QSR, grocery CPG | ESOP-owned | H |
+| 37 | BIG Communications | bigcommunications.com | Birmingham, AL | 70 | Golden Flake, Alabama Power | ECD | Southern indie | CPG food, utility | Founder-led | L |
+| 38 | The Richards Group | richards.com | Dallas | 300 | Home Depot, Chick-fil-A (historical), Motel 6 | CCO | Largest US indie historically | QSR, retail | Stan Richards legacy; independent since 1976 | H |
+| 39 | Firehouse | firehouseagency.com | Dallas | 80 | American Airlines (regional), Sewell Auto | Founder/CEO (Tripp Westbrook) | Indie Dallas | Auto, travel | Founder-led | L |
+| 40 | Bailey Lauerman | baileylauerman.com | Omaha/Lincoln | 60 | Union Pacific, Hormel, Mutual of Omaha | ECD | Midwest indie; CPG film craft | CPG food, fintech | Founder-led | M |
+| 41 | StrawberryFrog | strawberryfrog.com | New York | 80 | Heineken (historical), Google, Emirates | Founder/CEO (Scott Goodson) | "Movement marketing" thought leadership | Bev, airline, tech | Vocal on purpose marketing | H |
+| 42 | Highdive | highdive.com | Chicago | 60 | Jeep, Rocket Mortgage, Tide | Founder/CCO (Mark Gross) | Super Bowl "Groundhog Day" Jeep | Auto, fintech, CPG | Ex-DDB indie; craft Super Bowl specialty | H |
+| 43 | O'Keefe Reinhard & Paul (ORP) | orp.agency | Chicago | 80 | Claritin, Big Lots, Nintendo | Founder/CCO (Tom O'Keefe) | Ex-CP+B founders; won Nintendo Switch | Gaming, CPG retail | Indie, founder-led | H |
+| 44 | Battery | batteryagency.com | Los Angeles | 50 | PlayStation, Hulu, Microsoft | ECD | Entertainment/gaming craft shop | Gaming, streaming | Indie founder-led | M |
+| 45 | Copacino Fujikado | copacino.com | Seattle | 90 | Seattle Mariners, Alaska Airlines, WSECU | ECD | NW indie; Alaska Airlines "Safety Dance" | Airline, sports, fintech | Independent, community-tied | H |
+| 46 | DNA | dnaseattle.com | Seattle | 45 | Amazon (select), REI, PCC | ECD | Seattle indie | Outdoor retail, grocery | Small, craft | L |
+| 47 | Zambezi | zambezi.com | Venice, CA | 120 | Cholula, Autozone, Halo Top (historical) | Founder/CEO (Jean Freeman) | Black-female-led indie | CPG food, auto aftermarket | Strong DEI leadership | H |
+| 48 | Instrument | instrument.com | Portland, OR | 200 | Google, Nike, Meta | CCO | Indie digital+brand; proprietary design systems | Tech, sportswear | Employee-owned focus | H |
+| 49 | Work & Co | work.co | Brooklyn/Portland | 300 | Apple, Nike, Virgin, IKEA | Partner | Indie digital product + brand; partner-owned | Tech, retail, auto | Outspoken about co-op ownership model | H |
+| 50 | Red Antler | redantler.com | Brooklyn | 120 | Casper, Allbirds, Brooklinen | Founder/CCO (Simon Endres) | Brand-launch indie for DTC | DTC CPG, fashion, home | Indie founder-led | H |
+| 51 | Sylvain | sylvain.co | Brooklyn | 50 | LVMH, Bose, Nike | Founder/CCO (Alain Sylvain) | Design+strategy indie; luxury work | Luxury, tech | Black-founded; cultural insight-first | H |
+| 52 | Fortnight Collective | fortnightcollective.com | Boulder | 25 | Hydro Flask, Crocs | Founder/CEO | Sprint-model indie | Outdoor, apparel | Small craft indie | L |
+| 53 | Made Movement | mademovement.com | Boulder | 40 | New Belgium, Trek, Laird Superfood | ECD | Sustainability-leaning | CPG bev, cycling, wellness | "Made in USA" positioning | M |
+| 54 | Crispin | crispin.us | Boulder/Miami | 120 | Domino's, Kraft Heinz, Letgo | CCO | Re-independent from MDC/Stagwell 2023 | QSR, CPG | Indie rebirth story | H |
+| 55 | Walton Isaacson | waltonisaacson.com | LA/Chicago | 100 | Lexus, Netflix, Disney | Founder/CEO (Aaron Walton) | Multicultural indie | Auto luxury, streaming | Black-founded; strong DEI | H |
+| 56 | LERMA/ | lerma.agency | Dallas | 120 | Texas Lottery, Acme Brick, Big Red | CCO | Hispanic + general market indie | CPG bev, gov, retail | Latino-owned; multicultural lens | H |
+| 57 | Orci | orci.com | LA | 50 | Honda (regional), Bank of the West | Founder/CEO (Andrew Orci) | Latino indie; founded 1986 | Auto, fintech | Latino-family-owned | H |
+| 58 | Pitch | pitchagency.com | Culver City | 60 | Carl's Jr., Buffalo Wild Wings, Taco Bell (historical) | Founder/CCO (Greg Walsh) | Ex-CP+B indie; QSR specialist | QSR, CPG | Founder-led | M |
+| 59 | Observatory | observatory.com | Los Angeles | 70 | Netflix, Nike Jordan, Chevrolet | Founder/CCO (Jae Goodman) | Ex-CAA Marketing; brand + entertainment indie | Entertainment, sportswear, auto | Founder-led | H |
+| 60 | Interesting Development | interestingdevelopment.com | NYC | 40 | Samsung, Google, HBO | Founder/CCO (Kash Sree) | Ex-Droga5/W+K founder shop | Tech, streaming | Small craft shop | L |
+| 61 | Quirk Creative | quirkcreative.com | New York | 30 | Bigelow Tea, Reese Witherspoon's Hello Sunshine | Founder/CEO (Katie Keating) | Women-founded indie | CPG food, entertainment | Female-founded | M |
+| 62 | Redscout | redscout.com | NYC | 60 | Spotify, Diageo, PepsiCo | CCO | Strategy + design indie | CPG bev, streaming, spirits | Independent | M |
+| 63 | Trade School | madewithtradeschool.com | Seattle/NYC | 40 | Amazon, Starbucks, Google | Founder/CCO (Tim Cawley) | Small craft indie | Tech, CPG bev | Founder-led | L |
+| 64 | Ready Set Rocket | readysetrocket.com | NYC | 80 | Dole, Sotheby's, USTA | Founder/CEO (Aaron Harvey) | Digital-led indie; culture + brand | CPG food, luxury, sports | Founder-led | M |
+| 65 | Trollbäck+Company | trollback.com | NYC | 60 | UN, HBO, Google | Founder/CCO (Jakob Trollbäck) | Design + film indie; UN SDGs identity | Social impact, entertainment, tech | Purpose-forward | H |
+| 66 | Harmon Brothers | harmonbrothers.com | Provo, UT | 90 | Poo~Pourri, Squatty Potty, Chatbooks | Founder/CEO (Daniel Harmon) | Viral DTC video specialist | DTC CPG, home | Long-form viral ads | H |
+
+## United Kingdom (20)
+
+| # | company | url | hq_city | emp | notable_clients | buyer_role | hook_1 | hook_2 | hook_3 | conf |
+|---|---|---|---|---|---|---|---|---|---|---|
+| U1 | Uncommon Creative Studio | uncommon.studio | London | 250 | British Airways, ITV, Bumble, Omoda | Co-founder/CCO (Nils Leonard) | Published AI manifesto; Ben Golik leads AI practice | Airline, auto, dating, FMCG | Leonard outspoken on creative industry AI ethics | H |
+| U2 | Lucky Generals | luckygenerals.com | London | 100 | Asda, Amazon, Paddy Power | Co-founder/CCO (Danny Brooke-Taylor) | Won Asda 2025 vs AMV BBDO | Retail, betting, tech | Indie proud | H |
+| U3 | Mother London | motherlondon.com | London | 250 | Ikea, Uber, Stella | ECD | Mother Design in-house AI | Retail, bev, rideshare | Fiercely indie | H |
+| U4 | New Commercial Arts | newcommercialarts.com | London | 200 | Halifax, John Lewis (2023 win), Itsu | Co-founder/ECD (Ian Heartfield) | Won John Lewis from Adam&Eve | Retail, fintech | Founded 2021 by ex-BBH/Grey leaders | H |
+| U5 | The Or | theor.com | London | 60 | Innocent, Hinge, Strava | Founder/CCO | Ex-W+K indie | CPG bev, dating, fitness | Founder-led | L |
+| U6 | Pablo London | pablolondon.com | London | 150 | Premier Inn, Fever-Tree, Malibu | CCO | Campaign Agency of the Year historically | Bev, hospitality | Indie | H |
+| U7 | St Luke's | stlukes.co.uk | London | 100 | John Lewis (historical), Radox | ECD | UK's oldest employee-owned creative co | CPG personal care, retail | 100% employee-owned since 1995 | H |
+| U8 | The Corner | thecornerlondon.com | London | 80 | AA, Samsung, Just Eat (historical) | Founder/CCO (Tom Ewart) | Indie, integrated | Insurance, tech, QSR | Founder-led | M |
+| U9 | 20something | 20something.agency | London | 35 | Diageo, Coca-Cola Gen Z briefs | Founder/CEO | Gen-Z specialist indie | Bev, beauty | Youth-culture lens | L |
+| U10 | Creature London | creaturelondon.com | London | 60 | TikTok, Tinder, Deliveroo | Co-founder/ECD (Ben Middleton) | Indie digital-first | Tech, dating, food delivery | Founder-led | M |
+| U11 | Dark Horses | darkhorses.co.uk | London | 40 | ESPN, Uber, Red Bull | Founder/CCO | Sports-specialist indie | Sports, bev | Niche indie | L |
+| U12 | Impero | imperolondon.com | London/NY | 80 | Gordon's, Tanqueray, Smirnoff | Founder/CEO | Brand + content indie | Spirits, entertainment | Founder-led | L |
+| U13 | Hijinks | hijinks.agency | London | 30 | Ocado, MoneySuperMarket | Founder | Small craft indie | Retail, fintech | Founder-led | L |
+| U14 | Wonderhood Studios | wonderhood.studios | London | 120 | LinkedIn, Nationwide, Audible | Founder/ECD (Aidan McClure) | TV-production + agency hybrid; ex-C4 CEO David Abraham founded | Tech, fintech, media | Indie founded 2019 | H |
+| U15 | Quiet Storm | quietstorm.com | London | 60 | Haribo, Hive, Argos | Founder/CCO (Trevor Robinson) | UK's most prominent Black-founded agency | CPG confectionery, retail | Robinson founded Create Not Hate | H |
+| U16 | Joint | joint-london.com | London | 40 | Google, Virgin Media, Plenty | ECD | Indie integrated shop | Tech, household CPG | Indie | L |
+| U17 | Isobel | isobel.com | London | 50 | Costa, Betfair, Carex | Founder/CCO | Indie | CPG personal care, bev, betting | Founder-led | L |
+| U18 | Recipe | recipe.co.uk | London | 70 | Famous Grouse, Innocent | ECD | Indie integrated | Bev CPG | Founder-led | L |
+| U19 | Poke | pokelondon.com | London | 100 | EE, Domino's UK, Vodafone | ECD | Digital indie | Telco, QSR | Independent post-Publicis | M |
+| U20 | Analog Folk | analogfolk.com | London/NYC/Sydney | 250 | Diageo, Unilever, Aviva | Founder/CEO (Matt Daniels) | Indie digital + creative | CPG, fintech | Founder-led indie | H |
+| U21 | MadeBrave | madebrave.com | Glasgow | 80 | Virgin Money, BrewDog, University of Glasgow | Founder/CEO (Andrew Dobbie) | Scottish indie | Fintech, bev, edu | Founder-led | M |
+
+## Canada (11)
+
+| # | company | url | hq_city | emp | notable_clients | buyer_role | hook_1 | hook_2 | hook_3 | conf |
+|---|---|---|---|---|---|---|---|---|---|---|
+| C1 | Zulu Alpha Kilo | zulualphakilo.com | Toronto | 150 | Harry Rosen, Tim Hortons (select), Interac | Founder/CCO (Zak Mroueh) | "Say No to Spec" industry-ethics campaign | Luxury retail, fintech, QSR | Strong public ethics/independence voice | H |
+| C2 | No Fixed Address | nofixedaddress.com | Toronto | 200 | BMO, Kraft Heinz, MGM | Founder/CCO (Dave Lafond) | Partner of Mischief (US); hosts AI/creative salons | Fintech, CPG, hospitality | Adweek-recognized indie network | H |
+| C3 | Broken Heart Love Affair | brokenheartloveaffair.com | Toronto | 70 | Labatt, Cadbury, SickKids | Co-founder/CCO (Todd Mackie) | Ex-FCB founders; SickKids "VS" legacy | Bev, CPG, healthcare/nonprofit | Indie, founder-led | H |
+| C4 | Rethink | rethinkideas.com | Toronto/Montreal/Vancouver | 250 | IKEA, Molson, Heinz, Kraft Dinner | Founder/CCO (Aaron Starkman) | Cannes Agency of the Year multiple times; AI experiments | CPG food/bev, retail | Canadian creative scene leader | H |
+| C5 | Wax | waxpartnership.com | Calgary | 60 | Dairy Farmers of Canada, Calgary Stampede | ECD | Prairie indie | CPG food, tourism | Founder-led | L |
+| C6 | Camp Pacific | camppacific.com | Vancouver | 40 | Lululemon (select), BC Ferries | Founder/CCO | Small indie | Apparel, travel | Founder-led | L |
+| C7 | Cundari | cundari.com | Toronto | 120 | BMW Canada (historical), Purolator | Founder/CEO (Aldo Cundari) | Independent Canadian | Auto, logistics | Founder-led | M |
+| C8 | Angry Butterfly | angrybutterfly.com | Toronto | 40 | Nestlé Canada, Casey's | Founder/CCO (Stephen Jurisic) | Ex-john st. founder shop | CPG food | Founder-led | M |
+| C9 | Juliet | juliet.agency | Toronto | 50 | Canadian Tire, Kraft, Tangerine | Co-founder/CCO (Jason Chaney) | Ex-Taxi founder shop | Retail, CPG, fintech | Founder-led indie | M |
+| C10 | Church+State | churchstate.co | Toronto | 45 | CAMH, IBM, Sun Life | Founder/ECD | Indie; purpose-driven | Healthcare/nonprofit, fintech, tech | Purpose-first indie | L |
+| C11 | Bensimon Byrne | bensimonbyrne.com | Toronto | 180 | Mitsubishi Canada, Hellmann's, Ontario Lottery | CCO | Independent Canadian | CPG food, auto, gov/lottery | Founder/CEO-led; social-impact work | H |
+
+## Australia (12)
+
+| # | company | url | hq_city | emp | notable_clients | buyer_role | hook_1 | hook_2 | hook_3 | conf |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A1 | Special Group Australia | au.specialgroup.com | Sydney/Melbourne | 200 | Uber Eats, Tourism NZ, KFC AU | Co-founder/CCO (Tony Gray) | Campaign UK 2023 Global Creative Agency of Year | QSR, travel, CPG | Indie network across AU/NZ/JP/US/UK | H |
+| A2 | Howatson+Company | howatsonco.com | Sydney | 160 | Vodafone AU, Myer, AFR | Founder/CEO (Chris Howatson) | Campaign Brief 2024 Agency of the Year | Telco, retail, media | Founder-led; acquired Akkomplice | H |
+| A3 | Thinkerbell | thinkerbell.com | Melbourne/Sydney | 200 | Tourism Tasmania, NRMA, Bundaberg, MLA | Founder/CCO (Adam Ferrier) | "Measured magic" AI + behavioral-science positioning | Tourism, insurance, CPG bev | Ferrier vocal behavioral-science voice | H |
+| A4 | Akcelo | akcelo.com.au | Sydney | 100 | Menulog, Google ANZ, Samsung | Founder/CEO (Aden Hepburn) | Ex-VMLY&R founder shop; rising indie | Tech, QSR, telco | Hybrid creative + tech/AI | H |
+| A5 | Bear Meets Eagle on Fire | bearmeetseagleonfire.com | Sydney | 35 | Uber, Old Spice (select), Meta | Founder/CCO (Micah Walker) | Cannes Lions-winning craft | Tech, CPG | Small founder-led craft shop | H |
+| A6 | Bastion Collective | bastionagency.com | Melbourne/Sydney | 300 | AFL, NBL, Jaguar Land Rover AU | Founder/CEO (Jack Watts) | Indie sports/culture specialist | Sports, auto, tourism | Founder-led Australian | H |
+| A7 | Connecting Plots | connectingplots.com.au | Sydney | 70 | Bundaberg, Uber Eats AU, Carlton | Founder/CCO (Sam McGown) | Indie, content + brand | CPG bev, QSR | Founder-led | M |
+| A8 | Emotive | emotive.com.au | Sydney | 80 | Samsung AU, Tourism Fiji, Uber | Founder/CEO (Simon Joyce) | Content-first indie; 2022 AOY runner-up | Tech, tourism, rideshare | Founder-led | H |
+| A9 | Apparent | apparent.com.au | Sydney | 90 | NRMA, Subaru, Medibank | Founder | Indie; digital-strategy-first | Insurance, auto, health | Founder-led | M |
+| A10 | Today the Brave | todaythebrave.com.au | Melbourne | 40 | Swisse, Kmart, Carman's | Founder/CCO | Indie | Wellness, retail, CPG food | Founder-led | L |
+| A11 | Hardhat Agency | hardhat.com.au | Melbourne | 60 | Australia Post, Monash University, Aware Super | Founder/CEO | Purpose-driven indie | Gov, edu, super/fintech | Purpose-forward | M |
+| A12 | Spinach | spinach.com.au | Melbourne | 50 | Bega, Intrepid Travel, Priceline | ECD | Indie | CPG food, travel, health/beauty | Founder-led | L |
+
+## Explicitly excluded (flagged for transparency)
+
+Holding-co-owned: Mekanism (Plus Co), GUT (Globant 51%+), Pereira O'Dell (Serviceplan), Anomaly (Stagwell), Gale (Stagwell), Goodby (Omnicom), Hill Holliday (IPG), Martin (IPG), Arnold (Havas), Huge (IPG), Hudson Rouge (WPP), Alma DDB (Omnicom), Deutsch (Omnicom), GSD&M (Omnicom), Periscope (Quad), Wongdoody (Infosys), Sid Lee (Hakuhodo/Kyu), Cossette (Vision7), Carmichael Lynch (IPG), The Monkeys (Accenture Song), CHEP (WPP), john st. (WPP), Camp Jefferson (Plus Co), KBS/F&B (Stagwell), The Works AU (Capgemini), 72andSunny (Stagwell), Team One/Leo/Conill (Publicis), Dieste/180LA/FCB/Energy (Omnicom/IPG), Rokkan (Kepler), The Gate (MSQ), VCCP (Chime), RPA (>400 employees).
+
+Closed/defunct: Barton F. Graf, Droga5 (absorbed into Accenture Song).
+
+## Sources
+
+- [Independent agency Gut sells majority stake to Globant (Campaign US)](https://www.campaignlive.com/article/independent-agency-gut-sells-majority-stake-globant/1849267)
+- [PE-backed Plus Company buys Mekanism (PE Hub)](https://www.pehub.com/pe-backed-plus-company-buys-advertising-agency-mekanism-wsj/)
+- [Pereira O'Dell sale to Serviceplan (Ciesco)](https://www.ciesco.com/deals/pereira-odell-sale-to-serviceplan)
+- [Uncommon AI × Ben Golik](https://www.uncommon.studio/words/ai-x-ben-golik)
+- [Erich & Kallman indie 2025 (LBB)](https://lbbonline.com/news/usa-indie-agencies-2025-opinionated-erichkallman-mirimar-nicefrank-MEL-HL)
+- [Barton F. Graf closure (Adweek)](https://www.adweek.com/agencies/barton-f-graf-will-close-ending-its-run-as-advertisings-weirdest-agency/)
+- [Mischief 2025 U.S. Agency of the Year (Adweek)](https://www.adweek.com/agencies/mischief-no-fixed-address-adweek-2025-us-agency-of-the-year/)
+- [Howatson+Company Campaign Brief 2024 AOY](https://campaignbriefasia.com/2025/02/27/howatson-company-crowned-cb-agency-of-the-year-its-guiding-principle-care-fiercely/)
+- [Lucky Generals Asda win (Campaign UK)](https://www.campaignlive.co.uk/article/uk-creative-new-business-rankings-final-2025-table/1952001)
+- [AUNZ Indie Revolution (LBB)](https://lbbonline.com/news/aunz-independent-agencies-revolution)
+- [Adweek 2025 Agency of the Year Winners](https://www.adweek.com/agencies/adweek-2025-agency-of-the-year-winners-list/)

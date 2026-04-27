@@ -31,10 +31,10 @@ export default async function PricingPage() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
           <p className="text-xs font-black uppercase tracking-widest text-indigo-500 mb-3">Pricing</p>
-          <h1 className="text-5xl font-black tracking-tighter text-black mb-4">Pick the plan that fits your shoot</h1>
+          <h1 className="text-5xl font-black tracking-tighter text-black mb-4">One subscription. Every character. Every tool.</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Start free with daily credits, scale up when you ship. Every plan covers characters, outfits, and scenes —
-            with voice and video coming soon.
+            Cast, dress, and stage your characters; export to any AI video tool. Commercial rights persist after cancellation.
+            Every character is 100% synthetic — no SAG-AFTRA exposure, no likeness risk.
           </p>
         </div>
 

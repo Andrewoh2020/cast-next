@@ -400,7 +400,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
               onClick={() => setShowSwitcher(!showSwitcher)}
               aria-expanded={showSwitcher}
               aria-haspopup="menu"
-              aria-label={`Switch workshop (current: ${character.name})`}
+              aria-label={`Switch studio (current: ${character.name})`}
               className="flex items-center gap-2 min-w-0 px-2 py-1 -ml-2 rounded-lg hover:bg-gray-50 transition-colors"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -409,7 +409,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="text-gray-400 shrink-0" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
             </button>
           ) : (
-            <span className="text-sm text-gray-400">Workshop</span>
+            <span className="text-sm text-gray-400">Character Studio</span>
           )}
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -434,7 +434,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
         <>
         <div className="fixed inset-0 z-20" onClick={() => setShowSwitcher(false)} />
         <div className="absolute top-14 left-24 z-30 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl p-2">
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-3 pt-2 pb-1">Your workshops</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-3 pt-2 pb-1">Your studios</p>
           {workshops.map((w) => (
             <Link key={w.id} href={w.href} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-left">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -448,7 +448,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
           <div className="border-t border-gray-100 mt-1 pt-1">
             <Link href="/workshop" className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-left text-sm font-semibold text-indigo-600">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-              New workshop
+              New studio
             </Link>
           </div>
         </div>
@@ -464,7 +464,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
               <div className="p-3 pb-2 shrink-0">
                 <div className="flex items-center justify-between mb-0.5">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 leading-tight">Library</p>
-                  <Link href="/workshop" title="New workshop" aria-label="Start a new workshop" className="w-7 h-7 rounded-md bg-gray-100 hover:bg-indigo-100 hover:text-indigo-600 text-gray-500 flex items-center justify-center transition-colors">
+                  <Link href="/workshop" title="New studio" aria-label="Start a new studio" className="w-7 h-7 rounded-md bg-gray-100 hover:bg-indigo-100 hover:text-indigo-600 text-gray-500 flex items-center justify-center transition-colors">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                   </Link>
                 </div>

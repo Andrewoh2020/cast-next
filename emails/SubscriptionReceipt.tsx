@@ -75,10 +75,10 @@ export default function SubscriptionReceipt({
       subheadline = `${fromName ? `You're switching from ${fromName} to ${tierName}.` : `You're switching to ${tierName}.`} No charge today — your current allowance stays in place${renewalDate ? ` until ${renewalDate}` : ''}, then your new ${monthlyCredits.toLocaleString()}-credit/mo allowance takes over.`;
       break;
     case 'cancel-scheduled':
-      subheadline = `Your ${tierName} plan stays active${renewalDate ? ` until ${renewalDate}` : ' through the end of this billing cycle'}. After that, you'll drop to Free with daily drip credits. You can change your mind anytime by picking any paid plan.`;
+      subheadline = `Your ${tierName} plan stays active${renewalDate ? ` until ${renewalDate}` : ' through the end of this billing cycle'}. After that, you'll drop to Free, which gives you 10 credits per day (capped at 25 in your balance). Any work you've already produced under your paid plan stays yours to use commercially. Pick any paid plan anytime to reactivate.`;
       break;
     case 'cancel-final':
-      subheadline = `Your ${fromName ?? tierName} subscription has ended. You're now on Free — 10 credits per day, capped at 25. Come back anytime by picking a paid plan.`;
+      subheadline = `Your ${fromName ?? tierName} subscription has ended. You're now on Free — 10 credits per day, capped at 25 in your balance. Work you produced while subscribed remains yours to use commercially. Come back anytime by picking a paid plan.`;
       break;
   }
 
@@ -125,6 +125,32 @@ export default function SubscriptionReceipt({
               {subheadline}
             </Text>
           </Section>
+
+          {tier === 'pro' && kind === 'new' && (
+            <Section style={{
+              backgroundColor: '#fef3c7',
+              borderRadius: 16,
+              padding: '24px 32px',
+              border: '1px solid #fde68a',
+              marginBottom: 20,
+            }}>
+              <Text style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', color: '#b45309', margin: '0 0 8px' }}>
+                From the founder
+              </Text>
+              <Text style={{ fontSize: 16, fontWeight: 700, color: '#1f2937', margin: '0 0 10px', lineHeight: '1.4' }}>
+                I&apos;ll be in touch personally within 3 business days.
+              </Text>
+              <Text style={{ fontSize: 13, color: '#4b5563', margin: '0 0 10px', lineHeight: '1.65' }}>
+                Pro subscribers get direct access to me. I&apos;ll reach out at the email you used for this purchase to make sure Cast is actually working for your use case — whether that&apos;s a specific client pitch, a tricky character, or a handoff to a particular AI video tool.
+              </Text>
+              <Text style={{ fontSize: 13, color: '#4b5563', margin: '0 0 10px', lineHeight: '1.65' }}>
+                In the meantime, hit reply to this email with anything that&apos;s blocking you and I&apos;ll respond same-day.
+              </Text>
+              <Text style={{ fontSize: 13, color: '#1f2937', margin: '12px 0 0', fontWeight: 600 }}>
+                — Andrew, founder of Cast
+              </Text>
+            </Section>
+          )}
 
           <Section style={{
             backgroundColor: '#fff',

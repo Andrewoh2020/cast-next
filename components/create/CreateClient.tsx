@@ -402,7 +402,7 @@ export default function CreateClient() {
                 { key: 'preview', label: 'Preview' },
                 { key: 'payment', label: 'Payment' },
                 { key: 'complete', label: 'Download' },
-                { key: 'workshop', label: 'Workshop' },
+                { key: 'workshop', label: 'Studio' },
               ] as const).map((entry, i, arr) => {
                 const isWorkshop = entry.key === 'workshop';
                 const stepOrder: Step[] = ['describe', 'preview', 'payment', 'complete'];

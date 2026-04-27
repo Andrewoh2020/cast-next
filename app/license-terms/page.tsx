@@ -11,7 +11,7 @@ export default function LicenseTermsPage() {
       <div className="max-w-3xl mx-auto px-6">
         <p className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-3">Legal</p>
         <h1 className="text-4xl font-black tracking-tighter text-black mb-2">License Terms</h1>
-        <p className="text-gray-400 text-sm mb-12">Last updated: March 2026</p>
+        <p className="text-gray-400 text-sm mb-12">Last updated: April 2026</p>
 
         <div className="prose prose-gray max-w-none space-y-10">
 
@@ -40,22 +40,39 @@ export default function LicenseTermsPage() {
 
           <section>
             <h2 className="text-xl font-black text-black mb-3">4. License Types</h2>
+            <p className="text-gray-600 leading-relaxed mb-5">
+              Cast offers two licensing paths. Most users obtain rights through a <strong className="text-black">Subscription License</strong> (the primary path). A legacy <strong className="text-black">Per-Character License</strong> path is available for one-off purchases and for claiming Exclusive Rights to a specific character.
+            </p>
             <div className="space-y-5">
+
+              <div className="bg-indigo-50 rounded-2xl border border-indigo-100 p-6">
+                <h3 className="font-bold text-black mb-1">Subscription License — Starter / Studio / Pro</h3>
+                <p className="text-sm text-gray-600 leading-relaxed mb-2">
+                  While you hold an active paid subscription (Starter, Studio, or Pro), you may use any character from the Cast roster — and any character you custom-generate using your credits — in unlimited commercial productions (advertisements, short films, social content, digital media). No per-character fees, no per-production caps. <strong className="text-black">No attribution required on any paid tier.</strong>
+                </p>
+                <p className="text-sm text-gray-600 leading-relaxed mb-2">
+                  <strong className="text-black">Rights persist after cancellation.</strong> If you cancel your subscription, you retain the commercial rights to any productions you created, published, or committed to use while your subscription was active. You lose access to generate new work or download additional assets; prior work remains lawfully yours to use, distribute, and monetize indefinitely.
+                </p>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Non-transferable. Not sublicensable. Characters remain available to other subscribers unless an Exclusive Rights license is separately purchased under the Per-Character path below. Tiers differ in monthly credit allocation, roster access, and support, not in rights granted.
+                </p>
+              </div>
+
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-bold text-black mb-1">Free (Attribution)</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">You may use the character in any production at no cost, provided you credit Cast visibly in your production — in the video description, end credits, or as on-screen text (e.g. &ldquo;AI characters provided by Cast&rdquo;). Valid for <strong className="text-black">12 months from the date of download</strong>.</p>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-bold text-black mb-1">Single Project License — USD $50</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">A one-time license granting you the right to use the character in a single production (one video, film, advertisement, or campaign). The character may continue to be licensed by other creators. No attribution required. Valid for <strong className="text-black">12 months from the date of purchase</strong>, within which you must complete and publish your production.</p>
+                <h3 className="font-bold text-black mb-1">Per-Character Single Project License — USD $50 (legacy path)</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">A one-time license granting you the right to use the character in a single production (one video, film, advertisement, or campaign). The character may continue to be licensed by other creators. No attribution required. Valid for <strong className="text-black">12 months from the date of purchase</strong>, within which you must complete and publish your production. Available on request for buyers who prefer a one-off purchase instead of a subscription.</p>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-bold text-black mb-1">Studio License — USD $250</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">A license granting you the right to use the character across <strong className="text-black">unlimited productions</strong> within the license period. The character may continue to be licensed by other creators. No attribution required. Valid for <strong className="text-black">12 months from the date of purchase</strong>.</p>
+                <h3 className="font-bold text-black mb-1">Per-Character Studio License — USD $250 (legacy path)</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">A license granting you the right to use the character across <strong className="text-black">unlimited productions</strong> within the license period. The character may continue to be licensed by other creators. No attribution required. Valid for <strong className="text-black">12 months from the date of purchase</strong>. Available on request; most users will find a Studio or Pro subscription cheaper and broader.</p>
               </div>
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-bold text-black mb-1">Exclusive Rights — USD $1,000</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">You obtain exclusive worldwide rights to the character. The character is permanently removed from the Cast marketplace and will not be licensed to any other party from the date of purchase. No attribution required. Rights are perpetual and transferable as part of a business acquisition or assignment. Prior to completing your purchase, you will be shown the number of active Single Project licenses that exist for the character. Those existing licenses remain valid until their respective 12-month terms expire.</p>
+                <h3 className="font-bold text-black mb-1">Exclusive Rights — USD $1,000 (add-on)</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">Available as an upsell to active Studio or Pro subscribers. You obtain exclusive worldwide rights to a specific character: the character is permanently removed from the Cast marketplace and will not be licensed to any other party from the date of purchase. No attribution required. Rights are perpetual and transferable as part of a business acquisition or assignment. Prior to completing your purchase, you will be shown the number of active Per-Character Single Project licenses that exist for the character; those existing licenses remain valid until their respective 12-month terms expire. Note that the Exclusive Rights fee covers exclusivity only — ongoing generation of the character in new scenes, outfits, or reference variants continues to consume your subscription credits.</p>
               </div>
             </div>
           </section>
@@ -75,9 +92,15 @@ export default function LicenseTermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-black text-black mb-3">6. Ownership &amp; Intellectual Property</h2>
+            <h2 className="text-xl font-black text-black mb-3">6. Ownership, Intellectual Property &amp; Synthetic-Only Guarantee</h2>
+            <p className="text-gray-600 leading-relaxed mb-3">
+              <strong className="text-black">100% synthetic.</strong> All characters on the Cast roster are fully AI-generated. No real person&apos;s likeness is used, trained on, or replicated. Cast does not train on the faces, voices, or biometric data of real individuals, including public figures, actors, or performers. Buyers and their legal teams may rely on this guarantee when evaluating SAG-AFTRA exposure, right-of-publicity risk, and deepfake-related compliance obligations (including but not limited to the New York &ldquo;Fashion Workers Act&rdquo; consent requirements for digital replicas, Tennessee ELVIS Act, and California AB 2602/1836).
+            </p>
+            <p className="text-gray-600 leading-relaxed mb-3">
+              Ability AI Technologies Private Limited retains all intellectual property rights over character assets unless an Exclusive Rights license has been purchased, in which case those rights transfer fully to the buyer upon confirmed payment.
+            </p>
             <p className="text-gray-600 leading-relaxed">
-              All characters on Cast are either fully AI-generated or used with explicit permission from any individual whose likeness was used. Ability AI Technologies Private Limited retains all intellectual property rights over character assets unless an Exclusive Rights license has been purchased, in which case those rights transfer fully to the buyer upon confirmed payment.
+              Upon request, Cast will provide a per-character provenance summary documenting the generation pipeline (models used, absence of real-person training data, and timestamped generation metadata). This summary is intended to support legal review and is provided in good faith; it does not constitute legal advice.
             </p>
           </section>
 

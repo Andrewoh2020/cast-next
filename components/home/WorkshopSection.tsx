@@ -5,7 +5,7 @@ export default function WorkshopSection() {
     <section className="relative py-24 px-6 bg-[#faf7f2] overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-14">
-          <p className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-3">Workshop</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-indigo-500 mb-3">Character Studio</p>
           <h2 className="text-4xl sm:text-5xl font-black tracking-tighter text-black mb-4 leading-[1.05]">
             Dress them. Place them. Export.
           </h2>
@@ -98,9 +98,9 @@ export default function WorkshopSection() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
             </svg>
-            Open the Workshop
+            Open Character Studio
           </Link>
-          <p className="text-xs text-gray-500 mt-3">10 free credits with every signup — limited time</p>
+          <p className="text-xs text-gray-500 mt-3">Make your first character free — no card needed</p>
         </div>
       </div>
     </section>

@@ -33,7 +33,7 @@ const TIERS: Tier[] = [
     credits: 400,
     perCredit: '$0.0475',
     blurb: 'For solo creators and hobbyists',
-    highlights: ['80 outfits or scenes', '16 character generations', 'Cancel anytime'],
+    highlights: ['80 outfits or scenes', '16 character generations', 'No attribution required', 'Cancel anytime'],
     monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY,
     annualPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_ANNUAL,
   },
@@ -44,8 +44,8 @@ const TIERS: Tier[] = [
     annual: 490,
     credits: 1200,
     perCredit: '$0.041',
-    blurb: 'Most popular — for indie studios',
-    highlights: ['240 outfits or scenes', '48 character generations', 'Voice lock-in (100 cr each)'],
+    blurb: 'Freelance creatives + small studios',
+    highlights: ['240 outfits or scenes', '48 character generations', 'Commercial license — rights persist after cancel', 'Full roster access'],
     recommended: true,
     monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDIO_MONTHLY,
     annualPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STUDIO_ANNUAL,
@@ -57,8 +57,8 @@ const TIERS: Tier[] = [
     annual: 1290,
     credits: 4000,
     perCredit: '$0.032',
-    blurb: 'For agencies and prosumers',
-    highlights: ['800 outfits or scenes', '160 character generations', 'Priority access to new models'],
+    blurb: 'For power users + high volume',
+    highlights: ['800 outfits or scenes', '160 character generations', 'Commercial license — rights persist after cancel', 'Founder Slack + early access to betas'],
     monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY,
     annualPriceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_ANNUAL,
   },
@@ -192,7 +192,7 @@ export default function PricingTiers({
               credits="35 to start + 10/day"
               subline="Capped at 25 balance"
               blurb="Try it out, no card required"
-              highlights={['1 character + 1 scene to start', 'Daily drip refills', 'Upgrade anytime']}
+              highlights={['Enough for 1 character + 1 scene', '10 credits added daily', 'Must credit Cast in your project']}
               ctaLabel={freeLabel}
               ctaDisabled={isFreeCurrent && !hasActiveSub}
               onCta={freeOnClick}
@@ -225,6 +225,30 @@ export default function PricingTiers({
             />
           );
         })}
+
+      </div>
+
+      {/* Teams — contact-sales banner, not a productized tier yet */}
+      <div className="mt-10 max-w-6xl mx-auto">
+        <div className="relative bg-black text-white rounded-3xl p-8 md:p-10 overflow-hidden">
+          <div className="absolute inset-y-0 right-0 w-1/2 opacity-10 pointer-events-none bg-gradient-to-l from-indigo-400 to-transparent" aria-hidden="true" />
+          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-xl">
+              <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mb-2">Teams</p>
+              <h3 className="text-2xl md:text-3xl font-black tracking-tight">For ad agencies + in-house creative teams</h3>
+              <p className="text-sm text-gray-300 mt-2 leading-relaxed">
+                Shared brand kits, per-character compliance dossiers, exclusive character licensing, seat-based billing, and founder-led onboarding.
+                Priced per engagement — usually annual, starting around $5k/yr.
+              </p>
+            </div>
+            <Link
+              href="/contact?topic=teams"
+              className="shrink-0 inline-flex items-center justify-center bg-white text-black font-bold text-sm px-6 py-3 rounded-xl hover:bg-gray-100 transition-colors"
+            >
+              Contact sales →
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Top-up packs */}
@@ -254,7 +278,8 @@ export default function PricingTiers({
         </div>
       </div>
 
-      <p className="mt-12 text-center text-xs text-gray-500 max-w-md mx-auto">
+      <p className="mt-12 text-center text-xs text-gray-500 max-w-xl mx-auto">
+        Studio &amp; Pro include a commercial license — the rights to work you produce while subscribed persist after you cancel.
         Sub credits roll over one cycle. Top-up credits never expire. Upgrade prorates immediately; downgrade applies next cycle.
         Questions? <Link href="/contact" className="text-indigo-600 underline">Contact us</Link>.
       </p>

@@ -1,0 +1,57 @@
+# Commercial Production Companies — Prospect List
+
+Generated 2026-04-21. 20 independent commercial production houses being squeezed between clients who want AI-generated work and legal risk around deepfakes.
+
+**Caveat:** list built from agent training-data knowledge, not live web research. Headcounts + leadership names are directional and sourced from LBB, Shots, AICP listings through early 2026. Before outreach, spend ~30 min per company on LinkedIn Sales Navigator confirming the current EP / Head of New Business — commercial EPs rotate shops every 18–24 months.
+
+## Distribution
+
+- **Geographic:** ~13 US, 4 UK, 2 Canada, 1 AU/EU.
+- **Focus:** commercials / branded content, roster-driven, 10–150 employees.
+- **Selection bias:** weighted toward shops with public AI experimentation signals — roster directors using generative tools, executives commenting on generative/union/likeness issues in trade press.
+
+## Recommended first-batch targeting
+
+Prioritize **personalization_hook_1** (AI experimentation) and **personalization_hook_3** (public likeness commentary) in the first touch — these are the prospects already feeling the "figure out AI" squeeze. Save hook_2 (category fit) for Touch 2 / follow-up.
+
+## Prospect list
+
+| # | company | url | hq_city | est_employees | category | notable_work | buyer_role | hook_1 (AI signal) | hook_2 (synthetic-character fit) | hook_3 (likeness / AI squeeze) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Hungry Man | hungryman.com | New York, NY | ~80 | commercials / branded content | Super Bowl spots for Doritos, Progressive; long-running Geico campaigns | Executive Producer / Head of New Business | Roster includes directors exploring generative tools in spec work; quietly tested AI-assisted pre-vis on comedy spots | High-volume comedic CPG + insurance work where diverse crowd/background characters get expensive | EPs have spoken at AICP panels about rising talent costs and AI-era licensing |
+| 2 | Stink Films | stinkfilms.com | London | ~60 | commercials / branded | Nike, Apple, Burberry, Samsung | Managing Director / EP | Sister shop Stink Studios runs AI-native digital builds — live-action side has shared AI R&D internally | Luxury fashion + global sports brands needing localized casts | Leadership has publicly discussed balancing craft and generative tooling in Shots / LBB |
+| 3 | Smuggler | smugglersite.com | New York / London | ~100 | commercials / longform | Nike "You Can't Stop Us", Apple "Welcome Home", Beats | President / Head of New Business | Smuggler directors (Henry-Alex Rubin, Mark Molloy) have publicly engaged with AI-assisted workflows | Premium sports, auto, tech — campaigns routinely localized across 10+ markets | EPs have spoken at Cannes / AICP on SAG-AFTRA implications and global talent buyouts |
+| 4 | Biscuit Filmworks | biscuitfilmworks.com | Los Angeles | ~70 | commercials | Old Spice, Skittles, Reebok, Squarespace | President (Shawn Lacy) / Head of Production | Directors with digital/craft-forward sensibilities; tested generative pre-vis internally | Comedic CPG + lifestyle — background casts + product-world characters | Shawn Lacy has commented publicly on AICP panels re AI, craft, and protecting director IP |
+| 5 | Superprime | superprime.com | Los Angeles | ~40 | commercials / branded | Apple, Nike, Netflix promos, Chanel | EP / Partner | Roster includes Sam Pilling and others who've experimented with generative tooling; hired AI-literate directors | Luxury fashion + tech — brand-world characters at premium tier | Principals have publicly navigated likeness / celebrity-talent conversations on Apple / Chanel work |
+| 6 | PRETTYBIRD | prettybird.co | Los Angeles / London | ~90 | commercials / music video / branded | Beyoncé visual work, Nike, Gatorade, Squarespace | President / EP (New Business) | Roster includes Calmatic and Melina Matsoukas — directors publicly engaged with generative media debate | Music + sports + CPG, heavy on diverse character casting and global campaigns | Ali Brown (President) has spoken publicly on representation and the risks AI poses to actors of color |
+| 7 | Somesuch | somesuch.co | London / LA | ~45 | commercials / branded / longform | Nike, Chanel, Apple, Kenzo | Managing Director / EP | Tim Nash and team have spoken in Shots / LBB about generative tools; experimental directors (Daisy Jacobs, Raine Allen-Miller) | Luxury fashion + beauty — synthetic characters fit brand-world casting | Sally Campbell / Tim Nash engaged publicly with the industry's AI/ethics conversation |
+| 8 | Academy Films | academyfilms.com | London | ~50 | commercials / longform | John Lewis Christmas ads, Honda, Nike | Managing Director / Head of New Business | Roster (Jonathan Glazer, Kim Gehrig) skews craft-forward; quietly evaluated AI tooling on narrative pre-production | UK retail narrative spots + global brand stories — character-heavy ensemble casts | UK production community vocal on Equity / likeness issues; Academy leadership engaged in trade dialogue |
+| 9 | Object & Animal | objectandanimal.com | London / LA | ~35 | commercials / music video | Apple, Nike, Beats, Spotify | EP / MD | Roster directors actively testing Runway / Kling workflows in music-video work | Music + tech — stylized character-driven narratives | MD has publicly referenced AI as both opportunity and existential pressure in LBB interviews |
+| 10 | Iconoclast | iconoclast.tv | Paris / LA / London / NY | ~120 | commercials / music video / film | Apple, Nike, Louis Vuitton, Chanel | EP / Head of New Business (US) | Dedicated digital/innovation arm and has publicly invested in AI R&D | Luxury + fashion + beauty — exactly the synthetic-character fit Cast targets | Global footprint means they navigate SAG-AFTRA + Equity + French union rules simultaneously |
+| 11 | Ways & Means | waysandmeans.io | Los Angeles | ~40 | commercials / branded | Apple, Nike, BMW, Hennessy | EP / Partner | Lance Acord / Jake Scott's shop; publicly invested in emerging-director talent including generative-curious creators | Auto + spirits + premium lifestyle — global-market character needs | Leadership has engaged with AICP on AI ethics and production economics |
+| 12 | The Directors Bureau | thedirectorsbureau.com | Los Angeles | ~30 | commercials / music video / film | Apple, Gucci, Chanel, Miu Miu | EP / MD | Roger / Roman Coppola's shop; publicly engaged with AI-as-craft conversation | Luxury fashion + beauty — character-driven brand films | The Coppola family have been public voices on AI and filmmaking ethics |
+| 13 | Partizan | partizan.com | Paris / London / LA / NY | ~80 | commercials / music video | Apple, Nike, Louis Vuitton, Dior | EP / MD (US or UK office) | Roster is craft-forward with several directors exploring AI-augmented pre-vis | Luxury + auto + global fashion — localized character casts for EMEA + APAC | European production leads have spoken at Cannes on AI regulation and talent rights |
+| 14 | Pulse Films | pulsefilms.com | London / LA / NY / Berlin | ~130 | commercials / longform / docs | Nike, Apple, Gucci, branded docs for Meta / Netflix | Head of Commercials / EP | Dedicated innovation group; has produced AI-augmented branded content | Fashion + tech + lifestyle — global character needs | Thomas Benski / leadership have spoken publicly on generative AI's impact on production economics |
+| 15 | Stardust Studios | stardust.tv | Los Angeles / NY / London | ~60 | commercials / branded / design-led live action | Apple, Google, Nike, Xfinity | EP / Head of New Business | Bridges design + live action; has publicly experimented with AI in ideation and pre-vis | Tech + telecom + CPG — character-world builds where synthetic talent fits cleanly | Leadership has discussed AI in LBB / Shots interviews as both tool and threat |
+| 16 | Furlined | furlined.com | Los Angeles / London | ~40 | commercials | Apple, Audi, Nike, Volkswagen | EP / MD | Diane McArter's shop; roster includes craft-forward directors, some AI-curious | Auto + tech — premium character-driven spots | McArter has been vocal in AICP community on production economics and AI |
+| 17 | Skunk | skunkproductions.com | Los Angeles / NY / London | ~50 | commercials / branded | Apple, Nike, Beats, Audi | EP / MD | Roster includes directors working in AI-adjacent and experimental forms | Tech + auto + sports — global brand character needs | Leadership has engaged at AICP on the union / AI intersection |
+| 18 | Scouts Honour | scoutshonour.com | Toronto | ~25 | commercials / branded | Canadian Tire, TD, Google Canada | EP / Partner | Smaller Canadian independents publicly talking about AI adoption to compete with larger US shops | Retail + financial services — diverse character casting across bilingual CA markets | Canadian production community actively debating ACTRA implications of AI-generated performers |
+| 19 | The Sweet Shop | thesweetshop.tv | Sydney / LA / London / Amsterdam | ~60 | commercials / branded | Nike, Adidas, Airbnb, Samsung | EP (US or UK) / MD | Directors publicly experimenting with AI filmmaking; Australian office near strong generative-tools community | Global brands needing APAC + EMEA + US character localization | MDs have spoken publicly in LBB on AI's effect on international production models |
+| 20 | Anonymous Content (commercials division) | anonymouscontent.com | Culver City, CA | commercials arm ~60–80 | commercials / branded | Apple, Nike, Chanel, BMW | EP / Head of Commercials (NOT the film/TV arm) | Commercials arm has directors quietly using generative tools; parent has broader AI stance | Luxury + auto + tech — prestige character-casting use case | Anonymous leadership has engaged publicly on the AI-vs-talent-representation debate given their literary agency DNA |
+
+## Borderline / review flags
+
+- **Anonymous Content** (#20) — parent >500 employees, but the commercials division alone meets the brief. Target the commercials EP only, not corporate.
+- **Iconoclast** (#10) — ~120 globally, at the upper band, but still independent and commercial-craft led.
+- **Pulse Films** (#14) — ~130 with Vice heritage; route to the commercials head, not corporate.
+
+## Candidates considered and cut
+
+- **The Mill / Framestore / MPC** — pure VFX/post per brief exclusion.
+- **Asteria / Promise / Moonvalley** — AI-native per brief exclusion (failed category per strategic plan).
+- **RadicalMedia** — borderline on size; could be added as #21 if desired.
+- **Caviar, Reset, Park Pictures, 1st Ave Machine, Chelsea Pictures, Tool of NA, Epoch Films, O Positive, MJZ, Arts & Sciences** — all legitimate swap candidates. **MJZ** in particular (LA, ~80, roster includes Tom Kuntz, actively engaged in AI conversation) is worth queuing as a swap-in if outreach stalls on the core 20.
+
+## Recommended pre-outreach step
+
+Before hitting send on any prospect: 30 min per company on LinkedIn Sales Navigator confirming the current EP / Head of New Business name. This list gives role, not person, because commercial EPs rotate frequently.

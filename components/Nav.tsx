@@ -76,7 +76,7 @@ export default function Nav() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
             </svg>
-            Workshop
+            Character Studio
           </Link>
           <Link href="/launches" className={`text-sm font-medium transition-colors ${transparent ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-black'}`}>
             Recent Launches
@@ -139,7 +139,7 @@ export default function Nav() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
             </svg>
-            Workshop
+            Character Studio
           </Link>
           <Link href="/launches" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gray-700 border-b border-gray-100">
             Recent Launches

@@ -124,7 +124,7 @@ export default function AccountClient({
             : t === 'purchases' ? initialPurchases.length
             : t === 'characters' ? customCharacters.length
             : favorites.length;
-          const label = t === 'characters' ? 'Created Characters' : t === 'workshops' ? 'Workshops' : t;
+          const label = t === 'characters' ? 'Created Characters' : t === 'workshops' ? 'Studios' : t;
           const active = tab === t;
           return (
             <button
@@ -154,7 +154,7 @@ export default function AccountClient({
                 <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
               </svg>
             </div>
-            <p className="font-bold text-black text-lg mb-2">Your workshop is empty</p>
+            <p className="font-bold text-black text-lg mb-2">Your studio is empty</p>
             <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto">
               Upload a character photo, license a Cast actor, or build one from scratch — then dress them, place them in scenes, and export.
             </p>
@@ -162,14 +162,14 @@ export default function AccountClient({
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
                 <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8Z" />
               </svg>
-              Open Workshop
+              Open Character Studio
             </Link>
           </div>
         ) : (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-gray-500">{allWorkshops.length} workshops · click any to open</p>
-              <Link href="/workshop" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">+ New workshop</Link>
+              <p className="text-sm text-gray-500">{allWorkshops.length} studios · click any to open</p>
+              <Link href="/workshop" className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">+ New studio</Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {allWorkshops.map((w) => (
@@ -267,7 +267,7 @@ export default function AccountClient({
                     href={`/workshop/${p.characterSlug}`}
                     className="text-xs font-bold text-white bg-indigo-500 hover:bg-indigo-600 px-3 py-2 rounded-lg transition-colors min-w-[100px] text-center"
                   >
-                    Open Workshop
+                    Open Studio
                   </Link>
                   {(() => {
                     const files: { url: string; filename: string }[] = [];
