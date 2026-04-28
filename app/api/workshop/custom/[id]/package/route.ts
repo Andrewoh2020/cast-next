@@ -86,17 +86,17 @@ ${workshop.referenceSheetUrl ? `- ${slug}-reference-sheet.jpg — 4K 8-panel ref
 
 ## How to use
 
-### Kling 3.0 Pro
+### Kling
 1. Open Kling → Image to Video
 2. Upload any image from this package as the starting frame
 3. Describe the action in your prompt
 
-### Runway Gen-4
-1. Open Runway → Image to Video
+### Higgsfield
+1. Open Higgsfield → Image to Video
 2. Upload any image from this package
 
-### Veo 3.1
-1. Open Veo → Image to Video
+### Artlist
+1. Open Artlist → AI Video → Image to Video
 2. Upload the source or any variant image
 
 ## License

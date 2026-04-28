@@ -128,7 +128,7 @@ export type HeroVariant = 'marquee' | 'export-reel';
 
 interface HeroB2Props {
   /** Bottom half of the hero. `marquee` (default) = character procession;
-   *  `export-reel` = narrative strip showing Cast → Kling/Runway/Veo → video. */
+   *  `export-reel` = narrative strip showing Cast → Kling/Higgsfield/Artlist → video. */
   variant?: HeroVariant;
   /** Characters to rotate through when variant === 'export-reel'. Ignored
    *  for the marquee variant. */

@@ -261,7 +261,7 @@ export default function CompleteStep({ draft, generating, generationError, onRet
         </div>
         <h3 className="text-base font-black text-black mb-1">Unlock {draft.name}&apos;s full potential</h3>
         <p className="text-xs text-gray-600 leading-relaxed mb-4">
-          Dress them in new outfits, place them in any scene, and export a package ready for Kling, Runway, or Veo.
+          Dress them in new outfits, place them in any scene, and export a package ready for Kling, Higgsfield, or Artlist.
         </p>
         <button
           onClick={sendToWorkshop}

@@ -14,7 +14,7 @@ import sharp from 'sharp';
 import path from 'path';
 
 const SOURCE = path.join(process.cwd(), 'public', 'og-cast-v2.png');
-const OUT = path.join(process.cwd(), 'public', 'og-cast-v3.png');
+const OUT = path.join(process.cwd(), 'public', 'og-cast-v4.png');
 const W = 1200;
 const H = 630;
 
@@ -51,7 +51,7 @@ const overlay = `
   <text x="60" y="455" font-family="Helvetica, Arial, sans-serif" font-size="78" font-weight="900" fill="white" letter-spacing="-3">casting agency.</text>
 
   <!-- Tagline -->
-  <text x="60" y="510" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="white" fill-opacity="0.9">Synthetic actors. License-clear. For Kling, Runway, Veo, Sora.</text>
+  <text x="60" y="510" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="white" fill-opacity="0.9">Synthetic actors. License-clear. For Kling, Higgsfield, Artlist.</text>
 
   <!-- Bottom-left domain -->
   <text x="60" y="585" font-family="Helvetica, Arial, sans-serif" font-size="20" fill="white" fill-opacity="0.7" letter-spacing="0.5">castability.ai</text>

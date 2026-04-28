@@ -37,7 +37,7 @@ export default function DirectabilityStrip() {
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Every Cast character ships with a 4K reference sheet — the same actor in every angle you&apos;d need to cut a scene.
-            Drop any panel into Kling, Runway, or Veo and the character stays consistent.
+            Drop any panel into Kling, Higgsfield, or Artlist and the character stays consistent.
           </p>
         </div>
 

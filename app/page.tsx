@@ -31,7 +31,7 @@ export default function Home() {
             The AI Character Casting Agency for Video Production
           </h2>
           <p className="text-gray-600 leading-relaxed mb-8">
-            Cast is the world&apos;s first AI character casting agency — purpose-built for filmmakers, ad agencies, and content creators who need photorealistic AI characters for commercial video production. Every AI character on Cast comes with a 4K 8-panel reference sheet that locks visual identity across AI video tools like <a href="https://klingai.com" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">Kling</a>, <a href="https://runwayml.com" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">Runway</a>, and <a href="https://deepmind.google/technologies/veo" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">Veo</a>. No more gambling with AI generators hoping the same character appears twice.
+            Cast is the world&apos;s first AI character casting agency — purpose-built for filmmakers, ad agencies, and content creators who need photorealistic AI characters for commercial video production. Every AI character on Cast comes with a 4K 8-panel reference sheet that locks visual identity across AI video tools like <a href="https://klingai.com" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">Kling</a>, <a href="https://higgsfield.ai" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">Higgsfield</a>, and <a href="https://artlist.io" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline">Artlist</a>. No more gambling with AI generators hoping the same character appears twice.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -77,7 +77,7 @@ export default function Home() {
               <div className="w-10 h-10 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-sm font-black shrink-0">3</div>
               <div>
                 <h3 className="font-bold text-black mb-1">Use in AI Video Production</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">Download your AI character&apos;s profile photo and 4K reference sheet. Crop the angle you need, upload as a starting frame in Kling, Runway, or Veo, and your character stays consistent across every shot.</p>
+                <p className="text-sm text-gray-500 leading-relaxed">Download your AI character&apos;s profile photo and 4K reference sheet. Crop the angle you need, upload as a starting frame in Kling, Higgsfield, or Artlist, and your character stays consistent across every shot.</p>
               </div>
             </div>
           </div>

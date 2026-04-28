@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'How It Works — Cast',
-  description: 'Learn how to browse, license, and create AI characters on Cast. From finding the right actor to using your reference sheet in Runway, Kling, Sora, and Veo.',
+  description: 'Learn how to browse, license, and create AI characters on Cast. From finding the right actor to using your reference sheet in Kling, Higgsfield, and Artlist.',
 };
 
 const steps = [
@@ -35,7 +35,7 @@ const faqs = [
     a: 'A reference sheet is an 8-panel image showing your character from 4 full-body angles (front, left, right, back) and 4 close-up angles. It locks the character\'s visual identity so AI video tools can reproduce them consistently across different shots.',
   },
   {
-    q: 'How do I use the reference sheet in Runway or Kling?',
+    q: 'How do I use the reference sheet in Kling or Higgsfield?',
     a: 'Crop the angle you need from the reference sheet (e.g. the front-facing full-body shot), then upload it as the starting frame / image input in your AI video tool. The tool will animate from that exact frame, preserving the character\'s appearance.',
   },
   {
@@ -83,8 +83,8 @@ export default function HowItWorksPage() {
                 <p className="text-sm text-gray-500 leading-relaxed">
                   Drop any panel from the reference sheet into{' '}
                   <a href="https://klingai.com" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline font-medium">Kling</a>,{' '}
-                  <a href="https://runwayml.com" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline font-medium">Runway</a>, or{' '}
-                  <a href="https://deepmind.google/technologies/veo" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline font-medium">Veo</a>{' '}
+                  <a href="https://higgsfield.ai" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline font-medium">Higgsfield</a>, or{' '}
+                  <a href="https://artlist.io" target="_blank" rel="noopener noreferrer" className="text-indigo-500 hover:underline font-medium">Artlist</a>{' '}
                   as your starting frame. The character stays visually consistent across every shot — same face, same wardrobe, every angle.
                 </p>
               ) : (

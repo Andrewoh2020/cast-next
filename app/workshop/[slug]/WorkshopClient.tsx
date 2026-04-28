@@ -994,13 +994,13 @@ function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop
       <div className="relative bg-white rounded-3xl p-8 w-full max-w-md border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-black text-xs font-medium">Esc</button>
         <h2 className="text-xl font-black tracking-tight mb-1 text-black">Your package</h2>
-        <p className="text-xs text-gray-500 mb-5">Ready for Kling, Runway, and Veo.</p>
+        <p className="text-xs text-gray-500 mb-5">Ready for Kling, Higgsfield, and Artlist.</p>
         <div className="space-y-1.5">
           <PkgRow label="Profile photo" />
           <PkgRow label="4K 8-panel reference sheet" />
           <PkgRow label={`${o} outfit${o === 1 ? '' : 's'}`} muted={o === 0} />
           <PkgRow label={`${s} scene${s === 1 ? '' : 's'}`} muted={s === 0} />
-          <PkgRow label="Kling / Runway / Veo guide (README)" />
+          <PkgRow label="Kling / Higgsfield / Artlist guide (README)" />
         </div>
         {downloadError && (
           <div role="alert" className="mt-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">

@@ -10,7 +10,7 @@ export default function WorkshopSection() {
             Dress them. Place them. Export.
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Change your character&apos;s outfit, place them in any scene, and export a complete package ready for Kling, Runway, or Veo.
+            Change your character&apos;s outfit, place them in any scene, and export a complete package ready for Kling, Higgsfield, or Artlist.
           </p>
         </div>
 

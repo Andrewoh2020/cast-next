@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import Image from 'next/image';
 
 // Hydration-safe subscription to the reduced-motion media query. Server
 // snapshot returns false so SSR matches the initial client render; once
@@ -38,25 +37,12 @@ interface Props {
   intervalMs?: number;
 }
 
-// AI video tools Cast characters get handed off to. Uses the official
-// brand marks dropped in `/public/logos/` — square icon at 36×36 plus the
-// wordmark text on `lg+` breakpoints. If the brand supplies a newer logo,
-// drop-in replace the file at the same path.
-interface Tool {
-  name: string;
-  iconSrc: string;
-  /** Render size in px. Kling and Runway icons fill their canvases densely;
-   *  Veo's swirl has more padding — scale the dense ones smaller so all three
-   *  read as equal visual weight. Applied directly as Image width/height so
-   *  the browser layout matches the intended display (no className override
-   *  race that caused tool overlap in an earlier version). */
-  size: number;
-}
-
-const TOOLS: Tool[] = [
-  { name: 'Kling',  iconSrc: '/logos/kling.png',    size: 28 },
-  { name: 'Runway', iconSrc: '/logos/runway-r.png', size: 28 },
-  { name: 'Veo',    iconSrc: '/logos/veo.png',      size: 36 },
+// AI video tools Cast characters get handed off to. Rendered as wordmark
+// pills — clean and works without sourcing brand PNGs for every tool.
+const TOOLS: { name: string }[] = [
+  { name: 'Kling' },
+  { name: 'Higgsfield' },
+  { name: 'Artlist' },
 ];
 
 export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
@@ -114,22 +100,14 @@ export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
           <p className="text-[11px] text-gray-500 max-w-[18rem] text-center mb-2 leading-snug">
             Works with Seedance 2.0, Kling 3.0 Pro, and more
           </p>
-          <div className="flex items-center gap-4 md:gap-5">
+          <div className="flex items-center gap-2 md:gap-2.5">
             {TOOLS.map((tool, i) => (
               <div
                 key={tool.name}
-                className="reel-gate flex items-center gap-1.5 shrink-0"
+                className="reel-gate shrink-0 px-3 py-1.5 rounded-full bg-white border border-gray-200 shadow-sm"
                 style={{ animationDelay: `${0.9 + i * 0.35}s` }}
               >
-                <Image
-                  src={tool.iconSrc}
-                  alt={tool.name}
-                  width={tool.size}
-                  height={tool.size}
-                  className="object-contain shrink-0"
-                  priority
-                />
-                <span className="hidden lg:inline text-sm font-black text-gray-800 tracking-tight">
+                <span className="text-xs md:text-sm font-black text-gray-800 tracking-tight">
                   {tool.name}
                 </span>
               </div>
@@ -188,7 +166,7 @@ export default function ExportReel({ characters, intervalMs = 8000 }: Props) {
           to   { opacity: 1; transform: translateY(0)    scale(1);    }
         }
 
-        /* Tool gates — each badge lights up in sequence (Kling → Runway → Veo) */
+        /* Tool gates — each badge lights up in sequence (Kling → Higgsfield → Artlist) */
         .reel-gate {
           opacity: 0.35;
           transform: scale(0.94);
