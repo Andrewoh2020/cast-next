@@ -19,14 +19,23 @@ export interface WorkshopTool {
   /** Numbered steps shown both in-modal and inside the ZIP README. Keep
    *  short — these are the same instructions in both surfaces. */
   steps: string[];
+  /** Optional path to a logo file under /public/logos/. When the file is
+   *  present, the SendToVideoFooter renders <img>; when absent, it falls
+   *  back to a brand-colored text-mark card. */
+  logo?: string;
+  /** Brand accent color (hex). Used for the left edge of the card and the
+   *  fallback text-mark when no logo file exists. */
+  accent: string;
 }
 
 export const WORKSHOP_TOOLS: WorkshopTool[] = [
   {
     slug: 'kling',
     name: 'Kling',
-    tagline: 'Image-to-video, strong subject binding',
+    tagline: 'Image to Video',
     url: 'https://app.klingai.com/global/image-to-video/frame-mode',
+    logo: '/logos/kling.png',
+    accent: '#0066FF',
     steps: [
       'Open Kling and pick Image-to-Video.',
       'Upload the profile photo (or paste the URL we just copied) as the starting frame.',
@@ -37,8 +46,10 @@ export const WORKSHOP_TOOLS: WorkshopTool[] = [
   {
     slug: 'higgsfield',
     name: 'Higgsfield',
-    tagline: 'Cinematic motion, fast iterations',
+    tagline: 'Cinematic AI motion',
     url: 'https://higgsfield.ai/create',
+    logo: '/logos/higgsfield.png',
+    accent: '#000000',
     steps: [
       'Open Higgsfield and pick Image-to-Video.',
       'Upload the profile photo (or paste the URL we just copied).',
@@ -49,8 +60,10 @@ export const WORKSHOP_TOOLS: WorkshopTool[] = [
   {
     slug: 'artlist',
     name: 'Artlist',
-    tagline: 'Brand-friendly, royalty-clear',
+    tagline: 'Brand-safe AI video',
     url: 'https://artlist.io/ai/video-generator',
+    logo: '/logos/artlist.png',
+    accent: '#FF4F00',
     steps: [
       'Open Artlist and pick AI Video → Image-to-Video.',
       'Upload the profile photo (or paste the URL we just copied).',
