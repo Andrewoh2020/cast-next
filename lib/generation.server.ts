@@ -39,6 +39,39 @@ Consistent identity across all 8 panels. CRITICAL: The subject must wear the EXA
 export const PROFILE_PROMPT = (description: string) =>
   `Medium shot portrait of ${description}, cropped at the knees, head-to-knees framing only. Body turned slightly toward camera, relaxed natural pose. Plain seamless warm-gray studio backdrop, no environment, no props. Photorealistic DSLR, 85mm lens, soft diffused studio lighting, sharp skin detail, no retouching. Do NOT show full body, do NOT show feet or ankles.`;
 
+/**
+ * Prompts for the upload-conversion flow — same output style as the native
+ * generation prompts above, but rely on the reference image for identity
+ * instead of a text description. The user uploads a photo of an existing
+ * character (their influencer, talent, mascot) and these prompts re-render
+ * it in Cast's clean studio style with consistent framing.
+ */
+export const PROFILE_FROM_UPLOAD_PROMPT =
+  `Recreate this person as a professional studio portrait. Keep their face, skin tone, hair, body type, age, and proportions IDENTICAL to the reference image — this must clearly be the same person, no facial changes, no rejuvenation, no reshaping. Medium shot framing, cropped at the knees, head-to-knees only. Plain seamless warm-gray studio backdrop, no environment, no props. Body turned slightly toward camera, relaxed natural pose, neutral confident expression. Photorealistic DSLR, 85mm lens, soft diffused studio lighting, sharp skin detail, no retouching, no airbrushing. Do NOT show feet or ankles. The subject's wardrobe should be a clean, neutral, studio-appropriate look — keep wardrobe close in spirit to the reference but tidied for a casting profile.`;
+
+export const REFERENCE_SHEET_FROM_UPLOAD_PROMPT =
+  `Create a professional 8-panel character reference sheet of the person in the reference image. Keep the person's face, skin tone, hair, body type, age, and proportions IDENTICAL to the reference — this must clearly be the same person across all 8 panels. Clean neutral light gray seamless paper backdrop, consistent across all panels. Photorealistic DSLR photography, Canon SL3 with 17-85mm lens, fine skin texture, no airbrushing, no CGI retouch.
+
+ABSOLUTELY NO TEXT OR NUMBERS anywhere in the image. Do NOT render panel numbers (no "1", "2", "3", "4", "5", "6", "7", "8"), panel labels, captions, watermarks, signatures, legends, titles, or any written characters of any language or script. The image must contain only photographic imagery of the subject — zero typography, zero numerals, zero letters. This rule overrides any implied labeling.
+
+CRITICAL RULE: Every panel must show a STRICTLY DIFFERENT camera angle. No two panels may share the same angle or orientation. Do not repeat any view. The 4 close-up panels must each show a clearly distinct direction — front, right 3/4, left 3/4, and back of head.
+
+Arrange as follows:
+
+TOP ROW — 4 FULL-BODY standing shots showing the ENTIRE body from head to feet including shoes. Every panel MUST show the full figure — head, torso, legs, and feet all visible. Do NOT crop at the waist or knees. Relaxed A-pose:
+Panel 1: FRONT VIEW — subject faces the camera directly.
+Panel 2: LEFT SIDE — subject's nose points to the RIGHT edge of the image. We see their LEFT ear and LEFT shoulder. Their body faces →→→ RIGHT.
+Panel 3: RIGHT SIDE — subject's nose points to the LEFT edge of the image. We see their RIGHT ear and RIGHT shoulder. Their body faces ←←← LEFT. CRITICAL: Panel 3 must be the MIRROR OPPOSITE of Panel 2. If Panel 2 faces right, Panel 3 MUST face left. They cannot both face the same direction.
+Panel 4: BACK VIEW — subject's back faces the camera. Back of head, back of clothing visible. No face visible.
+
+RIGHT SIDE — 4 tight close-up portrait shots arranged in a 2x2 grid, shoulders and head only. All 4 must show a completely different camera angle:
+Panel 5 (top-left): Camera directly in front — subject looks straight into lens, face perfectly centered and symmetrical. Full front view.
+Panel 6 (top-right): Camera angled 45 degrees to subject's RIGHT — subject's RIGHT cheek and ear are prominent, left cheek partially visible. Clear 3/4 right view. Face must be noticeably turned RIGHT compared to Panel 5.
+Panel 7 (bottom-left): Camera angled 45 degrees to subject's LEFT — subject's LEFT cheek and ear are prominent, right cheek partially visible. Clear 3/4 left view. Face must be noticeably turned LEFT, OPPOSITE direction to Panel 6.
+Panel 8 (bottom-right): Camera positioned directly BEHIND the subject's head — back of skull and back of neck fully visible, zero front-facing features, hair visible from behind. Complete rear view of the head.
+
+Consistent identity across all 8 panels. The subject should wear the same wardrobe across all panels — match the reference's wardrobe precisely. Consistent lighting across all panels: soft diffused studio light, even fill, no harsh shadows. Uniform spacing between panels. Consistent head height across top row, consistent face scale across bottom row. Crisp print-ready output. No visible panel borders, no dividing lines, no grid lines, no white lines, no black lines between panels. Panels are separated only by the background color — no drawn separators of any kind.`;
+
 // ── Helpers ──────────────────────────────────────────────────────────────
 
 /** Fetch an image from private blob storage (via /api/media?p=...) or a remote URL and return the raw buffer. */
@@ -630,6 +663,58 @@ export async function generateFull(
 
 /** Alias for admin flow — generates both profile and reference sheet from scratch. */
 export const generateBoth = generateFull;
+
+/**
+ * Convert an uploaded character photo into Cast's standard package: a clean
+ * studio profile photo and a 4K 8-panel reference sheet, both rendered via
+ * image-to-image with the upload as identity reference. Used by the
+ * upload-conversion flow on POST /api/workshop/custom.
+ */
+export async function generateFromUpload(
+  uploadImageUrl: string,
+  slug: string,
+  meta: GenerateMeta,
+  blobPrefix: string,
+): Promise<{ profile: GenerateResult; refSheet: GenerateResult; profileThumbUrl: string; refSheetThumbUrl: string }> {
+  // The fal.ai/kie.ai APIs need a public URL — push the upload through fal's CDN.
+  const { buffer } = await fetchImageBuffer(uploadImageUrl);
+  const publicUploadUrl = await uploadToFalCdn(buffer);
+
+  // Profile photo (3:4, 4K) — i2i, identity locked to upload.
+  const profile = await generateAndUpload(
+    PROFILE_FROM_UPLOAD_PROMPT,
+    '3:4',
+    '4K',
+    slug,
+    'profile',
+    meta,
+    [publicUploadUrl],
+    blobPrefix,
+  );
+
+  // Push the new profile to fal CDN so the ref sheet i2i can use it as the
+  // canonical identity reference (matches the native flow).
+  const publicProfileUrl = await uploadToFalCdn(profile.rawBuffer);
+
+  // 8-panel reference sheet (21:9, 4K) — i2i with the new profile as reference.
+  const refSheet = await generateAndUpload(
+    REFERENCE_SHEET_FROM_UPLOAD_PROMPT,
+    '21:9',
+    '4K',
+    slug,
+    'refsheet',
+    meta,
+    [publicProfileUrl],
+    blobPrefix,
+  );
+
+  const [profileThumbUrl, refSheetThumbUrl] = await Promise.all([
+    generateThumbnail(profile.rawBuffer, slug, 'profile', blobPrefix),
+    generateThumbnail(refSheet.rawBuffer, slug, 'refsheet', blobPrefix),
+  ]);
+
+  return { profile, refSheet, profileThumbUrl, refSheetThumbUrl };
+}
 
 // ── Aspect ratio detection ──────────────────────────────────────────────
 

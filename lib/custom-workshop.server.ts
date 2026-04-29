@@ -321,3 +321,23 @@ export async function updateCustomWorkshopRefSheet(userId: string, id: string, r
   if (!meta) return;
   await writeJson(metaKey(userId, id), { ...meta, referenceSheetUrl });
 }
+
+/** Replace the source image URL (used after upload-conversion when the raw
+ *  upload is replaced by a Cast-styled studio profile photo). Updates both the
+ *  meta blob and the index entry so the studio sidebar shows the new image. */
+export async function updateCustomWorkshopAssets(
+  userId: string,
+  id: string,
+  patch: { sourceImageUrl?: string; referenceSheetUrl?: string },
+): Promise<void> {
+  const meta = await readJson<CustomWorkshopMeta | null>(metaKey(userId, id), null);
+  if (!meta) return;
+  const next: CustomWorkshopMeta = { ...meta, ...patch };
+  await writeJson(metaKey(userId, id), next);
+  if (patch.sourceImageUrl) {
+    // Also refresh the index entry so the sidebar thumbnail updates.
+    const summaries = await readJson<CustomWorkshopSummary[]>(indexKey(userId), []);
+    const updated = summaries.map((s) => (s.id === id ? { ...s, sourceImageUrl: patch.sourceImageUrl! } : s));
+    await writeJson(indexKey(userId), updated);
+  }
+}

@@ -91,6 +91,9 @@ export interface UserData {
   drip?: DripState;
   ledger?: CreditLedgerEntry[];
   schemaVersion?: number;
+  /** True after the user has consumed their one free upload-to-character
+   *  conversion. Subsequent uploads cost the regular character credit. */
+  hasUsedFreeUpload?: boolean;
 }
 
 function userKey(userId: string, file: string) {
@@ -216,6 +219,20 @@ export async function toggleFavorite(userId: string, characterId: number): Promi
     : [...data.favorites, characterId];
   await writeUserBlob(userKey(userId, 'data.json'), { ...data, favorites: next });
   return next;
+}
+
+/** Read-only check: does the user still have their free upload conversion?
+ *  Use peek + consume separately so a precheck doesn't burn the freebie. */
+export async function peekFreeUpload(userId: string): Promise<boolean> {
+  const data = await getUserData(userId);
+  return !data.hasUsedFreeUpload;
+}
+
+/** Mark the free upload as consumed. Idempotent — re-calling is a no-op. */
+export async function consumeFreeUpload(userId: string): Promise<void> {
+  const data = await getUserData(userId);
+  if (data.hasUsedFreeUpload) return;
+  await writeUserBlob(userKey(userId, 'data.json'), { ...data, hasUsedFreeUpload: true });
 }
 
 export async function addCredits(userId: string, credits: number, amount: number, sessionId: string): Promise<number> {

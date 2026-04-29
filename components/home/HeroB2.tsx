@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useUser } from '@clerk/nextjs';
 import LivingMarquee from './LivingMarquee';
 import ExportReel, { type ReelCharacter } from './ExportReel';
 
@@ -146,9 +147,14 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
   const [cursorOn, setCursorOn] = useState(true);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
+  const [uploadError, setUploadError] = useState<string>('');
   const router = useRouter();
+  const { isSignedIn } = useUser();
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   // Track per-chip click count so each click cycles to the next prompt variant
   const chipClickCountRef = useRef<Record<string, number>>({});
 
@@ -197,6 +203,55 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
     e.preventDefault();
     const q = query.trim();
     if (q) router.push(`/create?prompt=${encodeURIComponent(q)}`);
+  };
+
+  const handleUploadClick = () => {
+    setUploadError('');
+    if (!isSignedIn) {
+      router.push('/sign-in?redirect_url=' + encodeURIComponent('/workshop'));
+      return;
+    }
+    fileInputRef.current?.click();
+  };
+
+  const handleUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setUploading(true);
+    setUploadStatus('Uploading your character…');
+
+    // Cycle a few status messages so the ~2-min wait feels like progress
+    const messages = [
+      'Uploading your character…',
+      'Cleaning up the photo…',
+      'Generating studio profile…',
+      'Building 4K reference sheet…',
+      'Almost there…',
+    ];
+    let msgIdx = 0;
+    const msgInterval = setInterval(() => {
+      msgIdx = Math.min(msgIdx + 1, messages.length - 1);
+      setUploadStatus(messages[msgIdx]);
+    }, 25_000);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', file.name.replace(/\.[^.]+$/, '').slice(0, 60) || 'My character');
+      const res = await fetch('/api/workshop/custom', { method: 'POST', body: formData });
+      const data = (await res.json()) as { workshop?: { id: string }; error?: string };
+      if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+      if (!data.workshop?.id) throw new Error('Upload succeeded but no workshop returned');
+      router.push(`/workshop/custom/${data.workshop.id}`);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Upload failed');
+      setUploading(false);
+    } finally {
+      clearInterval(msgInterval);
+      // Clear input so re-uploading the same file works
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -252,9 +307,41 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
           </button>
         </form>
 
-        <p className="text-xs text-gray-500 mb-3">
-          Already have a character? <Link href="/workshop" className="font-semibold text-indigo-600 hover:text-indigo-700 underline-offset-2 hover:underline">Make them AI-video-ready in Character Studio — dress, scene, and export →</Link>
-        </p>
+        <div className="mb-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleUploadChange}
+            className="hidden"
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            onClick={handleUploadClick}
+            disabled={uploading}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 disabled:opacity-60 disabled:cursor-wait transition-colors"
+          >
+            {uploading ? (
+              <>
+                <span className="w-3.5 h-3.5 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" aria-hidden="true" />
+                <span>{uploadStatus}</span>
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span>Already have a character? <span className="underline underline-offset-2">Upload a photo</span> — first conversion free</span>
+              </>
+            )}
+          </button>
+          {uploadError && (
+            <p role="alert" className="mt-2 text-xs text-red-600">{uploadError}</p>
+          )}
+        </div>
 
         <div className="flex flex-wrap justify-center gap-2.5 sm:gap-2 max-w-xl mx-auto">
           <span className="text-xs text-gray-500 font-medium self-center mr-1">Cast a:</span>
