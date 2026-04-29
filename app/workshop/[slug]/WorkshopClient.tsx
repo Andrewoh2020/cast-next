@@ -566,20 +566,21 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             </div>
 
             {/* Canvas */}
-            <div className="flex-1 flex items-start justify-center p-4 md:p-8 min-w-0 overflow-y-auto">
-              <div className="relative w-full">
+            <div className="flex-1 flex flex-col items-center justify-start p-4 md:p-8 min-w-0 overflow-y-auto">
+              <div className="w-full">
                 <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} isWide={isUploadedSource} />
-                {isRefSheet && isCustomStudio && (
+              </div>
+              {isRefSheet && isCustomStudio && (
+                <div className="w-full mt-3 flex items-center justify-end">
                   <button
                     onClick={() => setShowRefSheet(true)}
-                    title="View full size · regenerate"
-                    className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/95 hover:bg-white text-black text-xs font-bold px-3 py-2 rounded-lg shadow-lg backdrop-blur transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-indigo-600 font-medium transition-colors"
                   >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></svg>
-                    Regenerate
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></svg>
+                    Regenerate reference sheet
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
             {/* Tool panel */}
