@@ -150,6 +150,9 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<string>('');
   const [uploadError, setUploadError] = useState<string>('');
+  const [uploadPreview, setUploadPreview] = useState<string>('');
+  const [uploadStartedAt, setUploadStartedAt] = useState<number | null>(null);
+  const [now, setNow] = useState<number>(Date.now());
   const router = useRouter();
   const { isSignedIn } = useUser();
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -199,6 +202,15 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
     return () => clearInterval(interval);
   }, [query, reduceMotion]);
 
+  // Tick a clock once per second while uploading so the elapsed timer +
+  // progress bar update smoothly. No-op when idle.
+  useEffect(() => {
+    if (!uploading) return;
+    setNow(Date.now());
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [uploading]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const q = query.trim();
@@ -219,21 +231,28 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
     if (!file) return;
     setUploadError('');
     setUploading(true);
-    setUploadStatus('Uploading your character…');
+    setUploadStartedAt(Date.now());
+    setUploadStatus('Uploading your photo…');
 
-    // Cycle a few status messages so the ~2-min wait feels like progress
-    const messages = [
-      'Uploading your character…',
-      'Cleaning up the photo…',
-      'Generating studio profile…',
-      'Building 4K reference sheet…',
-      'Almost there…',
+    // Stash a local preview so the overlay can show what's being processed
+    const previewUrl = URL.createObjectURL(file);
+    setUploadPreview(previewUrl);
+
+    // Cycle status copy so the wait reads as forward motion. Each stage maps
+    // roughly to where the server is in the pipeline.
+    const stages: { at: number; label: string }[] = [
+      { at: 0,    label: 'Uploading your photo…' },
+      { at: 8,    label: 'Locking the character’s identity…' },
+      { at: 25,   label: 'Generating studio profile photo…' },
+      { at: 80,   label: 'Building 4K 8-panel reference sheet…' },
+      { at: 140,  label: 'Almost there — finishing up…' },
     ];
-    let msgIdx = 0;
-    const msgInterval = setInterval(() => {
-      msgIdx = Math.min(msgIdx + 1, messages.length - 1);
-      setUploadStatus(messages[msgIdx]);
-    }, 25_000);
+    const startedAt = Date.now();
+    const stageInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      const stage = stages.filter((s) => s.at <= elapsed).pop();
+      if (stage) setUploadStatus(stage.label);
+    }, 1000);
 
     try {
       const formData = new FormData();
@@ -247,15 +266,93 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Upload failed');
       setUploading(false);
+      setUploadStartedAt(null);
+      URL.revokeObjectURL(previewUrl);
+      setUploadPreview('');
     } finally {
-      clearInterval(msgInterval);
-      // Clear input so re-uploading the same file works
+      clearInterval(stageInterval);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
+  // ── Upload progress overlay calculations ──────────────────────────────
+  // Conversion runs 2 i2i generations on Fal at 4K — typical end-to-end is
+  // 90–150s. We cap the visible progress bar at 95% until the request
+  // actually returns, so a slow generation never shows "100%" before the
+  // workshop is ready. The bar fills against an estimate; the timer beneath
+  // it shows the true elapsed time.
+  const UPLOAD_ETA_SECONDS = 150;
+  const elapsedMs = uploadStartedAt ? Math.max(0, now - uploadStartedAt) : 0;
+  const elapsedSec = Math.floor(elapsedMs / 1000);
+  const percent = Math.min(95, (elapsedSec / UPLOAD_ETA_SECONDS) * 100);
+  const remaining = Math.max(0, UPLOAD_ETA_SECONDS - elapsedSec);
+  const fmt = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+
   return (
     <section className="relative bg-white overflow-hidden">
+      {/* ── Upload progress overlay ────────────────────────────────────── */}
+      {uploading && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="upload-overlay-title"
+          className="fixed inset-0 z-50 bg-white/85 backdrop-blur-md flex items-center justify-center px-6"
+        >
+          <div className="w-full max-w-md bg-white rounded-3xl border border-gray-100 shadow-2xl p-7 sm:p-8">
+            <div className="flex items-start gap-4 mb-5">
+              {uploadPreview && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={uploadPreview}
+                  alt="Your upload"
+                  className="w-16 h-20 object-cover rounded-xl ring-1 ring-black/5 shrink-0"
+                />
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mb-1">
+                  Building your character
+                </p>
+                <h2 id="upload-overlay-title" className="text-lg font-black tracking-tight text-black leading-tight mb-1">
+                  Cleaning up your photo + generating a 4K reference sheet
+                </h2>
+                <p className="text-xs text-gray-500 leading-snug">
+                  Takes about <span className="font-semibold text-gray-700">2&ndash;3 minutes</span>.
+                  Don&apos;t close this tab — we&apos;ll drop you in the studio when it&apos;s ready.
+                </p>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="mb-2">
+              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-[width] duration-1000 ease-linear"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between mt-2 text-[11px] font-medium text-gray-500">
+                <span>{Math.round(percent)}%</span>
+                <span>
+                  {fmt(elapsedSec)} elapsed{remaining > 0 ? ` · ~${fmt(remaining)} remaining` : ''}
+                </span>
+              </div>
+            </div>
+
+            {/* Stage label */}
+            <p className="text-sm font-semibold text-gray-800 mt-4 flex items-center gap-2">
+              <span className="w-3.5 h-3.5 border-2 border-indigo-200 border-t-indigo-500 rounded-full animate-spin" aria-hidden="true" />
+              <span>{uploadStatus}</span>
+            </p>
+
+            <p className="text-[10px] text-gray-400 mt-5 leading-relaxed">
+              Cast runs Fal&apos;s nano-banana-2 image-to-image at 4K. Both the
+              profile photo and the 8-panel reference sheet are generated from
+              your upload to lock identity.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Top text block */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 pt-32 pb-10 text-center">
         <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-full px-4 py-1.5 text-xs font-semibold text-gray-600 mb-5">
