@@ -47,7 +47,7 @@ type Asset = { kind: 'outfit' | 'scene'; data: OutfitVariant | SceneShot };
 export default function WorkshopClient({ character: initChar, initialWorkshop, initialCredits, apiBase: initApi, workshops = [], isRosterCharacter = false, hasLicense: initHasLicense = false }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [character] = useState<WorkshopCharacter | null>(initChar ?? null);
+  const [character, setCharacter] = useState<WorkshopCharacter | null>(initChar ?? null);
   const [apiBase] = useState(initApi ?? '');
   const [, setHasLicense] = useState(initHasLicense);
   const [showLicenseGate, setShowLicenseGate] = useState(isRosterCharacter && !initHasLicense && !!initChar);
@@ -101,6 +101,9 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const [showRefSheet, setShowRefSheet] = useState(false);
   const [showDownload, setShowDownload] = useState(false);
   const [showSwitcher, setShowSwitcher] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
+  const isCustomStudio = !!character?.isUploadedImage && apiBase.includes('/custom/');
   const [showBuyCredits, setShowBuyCredits] = useState(searchParams.get('buy') === '1');
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -216,6 +219,25 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
       }
     } catch {}
     setImproving(false);
+  };
+
+  const commitRename = async () => {
+    const next = nameDraft.trim();
+    setRenaming(false);
+    if (!character || !apiBase || !next || next === character.name) return;
+    const previous = character.name;
+    setCharacter({ ...character, name: next });
+    try {
+      const res = await fetch(apiBase, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: next }),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({})))?.error || 'Rename failed');
+    } catch (err) {
+      setCharacter({ ...character, name: previous });
+      setError(err instanceof Error ? err.message : 'Rename failed');
+    }
   };
 
   const uploadReference = async (file: File) => {
@@ -389,25 +411,57 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const isUploadedSource = !isProfileImg || !!character?.isUploadedImage;
 
   return (
-    <div className={`flex flex-col bg-[#faf7f2] text-gray-900 ${hasCharacter ? 'fixed inset-0 overflow-hidden' : 'min-h-screen'}`}>
+    <div className="flex flex-col bg-[#faf7f2] text-gray-900 fixed inset-0 overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-gray-100 bg-white shrink-0 z-20 relative">
         <div className="flex items-center gap-4 min-w-0">
           <Link href="/" className="text-xl font-black tracking-tight text-black shrink-0">Cast<span className="text-indigo-500">.</span></Link>
           <span className="text-gray-300 hidden sm:inline">·</span>
           {hasCharacter ? (
-            <button
-              onClick={() => setShowSwitcher(!showSwitcher)}
-              aria-expanded={showSwitcher}
-              aria-haspopup="menu"
-              aria-label={`Switch studio (current: ${character.name})`}
-              className="flex items-center gap-2 min-w-0 px-2 py-1 -ml-2 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${character.img}${character.img.includes('?') ? '&' : '?'}w=96`} alt="" className="w-6 h-6 rounded-full object-cover object-top shrink-0" />
-              <span className="text-sm font-semibold truncate text-black hidden sm:inline">{character.name}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="text-gray-400 shrink-0" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
-            </button>
+            renaming ? (
+              <div className="flex items-center gap-2 min-w-0 px-2 py-1 -ml-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`${character.img}${character.img.includes('?') ? '&' : '?'}w=96`} alt="" className="w-6 h-6 rounded-full object-cover object-top shrink-0" />
+                <input
+                  autoFocus
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  onBlur={commitRename}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); commitRename(); }
+                    if (e.key === 'Escape') { e.preventDefault(); setRenaming(false); }
+                  }}
+                  maxLength={80}
+                  aria-label="Studio name"
+                  className="text-sm font-semibold text-black bg-white border border-indigo-300 focus:border-indigo-500 outline-none rounded-md px-2 py-0.5 w-44 sm:w-56"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 min-w-0 -ml-2">
+                <button
+                  onClick={() => setShowSwitcher(!showSwitcher)}
+                  aria-expanded={showSwitcher}
+                  aria-haspopup="menu"
+                  aria-label={`Switch studio (current: ${character.name})`}
+                  className="flex items-center gap-2 min-w-0 px-2 py-1 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`${character.img}${character.img.includes('?') ? '&' : '?'}w=96`} alt="" className="w-6 h-6 rounded-full object-cover object-top shrink-0" />
+                  <span className="text-sm font-semibold truncate text-black hidden sm:inline">{character.name}</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="text-gray-400 shrink-0" aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
+                </button>
+                {isCustomStudio && (
+                  <button
+                    onClick={() => { setNameDraft(character.name); setRenaming(true); }}
+                    aria-label="Rename studio"
+                    title="Rename studio"
+                    className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden="true"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z" /></svg>
+                  </button>
+                )}
+              </div>
+            )
           ) : (
             <span className="text-sm text-gray-400">Character Studio</span>
           )}
@@ -513,7 +567,19 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
             {/* Canvas */}
             <div className="flex-1 flex items-start justify-center p-4 md:p-8 min-w-0 overflow-y-auto">
-              <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} isWide={isUploadedSource} />
+              <div className="relative w-full">
+                <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} isWide={isUploadedSource} />
+                {isRefSheet && isCustomStudio && (
+                  <button
+                    onClick={() => setShowRefSheet(true)}
+                    title="View full size · regenerate"
+                    className="absolute top-4 right-4 flex items-center gap-1.5 bg-white/95 hover:bg-white text-black text-xs font-bold px-3 py-2 rounded-lg shadow-lg backdrop-blur transition-colors"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></svg>
+                    Regenerate
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Tool panel */}
@@ -750,7 +816,25 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
       </div>
 
       {/* Modals */}
-      {showRefSheet && character?.referenceSheetUrl && <RefSheetModal url={character.referenceSheetUrl} onClose={() => setShowRefSheet(false)} />}
+      {showRefSheet && character?.referenceSheetUrl && (
+        <RefSheetModal
+          url={character.referenceSheetUrl}
+          onClose={() => setShowRefSheet(false)}
+          apiBase={isCustomStudio ? apiBase : null}
+          credits={credits}
+          regenCost={CREDIT_COSTS.refSheetRegen}
+          onRegenerated={(refUrl, sourceUrl) => {
+            setCharacter((prev) => prev ? {
+              ...prev,
+              referenceSheetUrl: refUrl,
+              ...(sourceUrl ? { img: sourceUrl } : {}),
+            } : prev);
+            // If the canvas was showing the old ref sheet, switch to the new one.
+            setCanvasImg((curr) => (curr === character.referenceSheetUrl ? refUrl : (sourceUrl && curr === character.img ? sourceUrl : curr)));
+            refreshCredits();
+          }}
+        />
+      )}
       {showDownload && <DownloadModal workshop={workshop} apiBase={apiBase} characterName={character?.name ?? 'cast'} onClose={() => setShowDownload(false)} />}
       {showBuyCredits && <BuyCreditsModal onClose={() => setShowBuyCredits(false)} />}
 
@@ -949,13 +1033,118 @@ function ThumbBtn({ img, label, active, onClick, onDelete }: { img: string; labe
   );
 }
 
-function RefSheetModal({ url, onClose }: { url: string; onClose: () => void }) {
+function RefSheetModal({ url, onClose, apiBase, credits, regenCost, onRegenerated }: {
+  url: string;
+  onClose: () => void;
+  /** When non-null, the user can regenerate (custom studios only). */
+  apiBase: string | null;
+  credits: number;
+  regenCost: number;
+  onRegenerated: (refSheetUrl: string, newSourceImageUrl?: string) => void;
+}) {
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenError, setRegenError] = useState<string | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!regenerating) return;
+    const t0 = Date.now();
+    const i = setInterval(() => setElapsed(Math.floor((Date.now() - t0) / 1000)), 1000);
+    return () => clearInterval(i);
+  }, [regenerating]);
+
+  const runRegen = async (file?: File) => {
+    if (!apiBase || regenerating) return;
+    if (credits < regenCost) {
+      setRegenError(`Need ${regenCost} credits — top up to regenerate.`);
+      return;
+    }
+    setRegenerating(true);
+    setRegenError(null);
+    setElapsed(0);
+    try {
+      const init: RequestInit = { method: 'POST' };
+      if (file) {
+        const fd = new FormData();
+        fd.append('file', file);
+        init.body = fd;
+      }
+      const res = await fetch(`${apiBase}/regen-refsheet`, init);
+      if (!res.ok) throw new Error((await res.json().catch(() => ({})))?.error || 'Regen failed');
+      const json = await res.json();
+      onRegenerated(json.referenceSheetUrl as string, json.sourceImageUrl as string | undefined);
+      onClose();
+    } catch (err) {
+      setRegenError(err instanceof Error ? err.message : 'Regen failed');
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
+  const onFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) await runRegen(f);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const elapsedLabel = `${Math.floor(elapsed / 60)}:${String(elapsed % 60).padStart(2, '0')}`;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8" onClick={onClose}>
-      <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 overflow-y-auto" onClick={onClose}>
+      <div className="relative max-w-5xl w-full my-8" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute -top-8 right-0 text-white/80 hover:text-white text-sm font-medium">Close · Esc</button>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`${url}${url.includes('?') ? '&' : '?'}w=2000`} alt="Reference sheet" className="w-full rounded-2xl shadow-2xl" />
+        {apiBase && (
+          <div className="mt-4 bg-white/95 backdrop-blur rounded-2xl p-4 sm:p-5 shadow-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-black">Not happy with the result?</p>
+                <p className="text-xs text-gray-500 mt-0.5">Regen runs a fresh seed from your existing photo — usually fixes duplicate poses or stiff angles.</p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={() => runRegen()}
+                  disabled={regenerating}
+                  className="bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:text-gray-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2"
+                >
+                  {regenerating ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      Regenerating · {elapsedLabel}
+                    </>
+                  ) : (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></svg>
+                      Regenerate ({regenCost} credits)
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            <div className="mt-3 flex items-center gap-2 text-xs">
+              <span className="text-gray-500">Or</span>
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={regenerating}
+                className="text-indigo-600 hover:text-indigo-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                upload a different photo
+              </button>
+              <span className="text-gray-400">— ({regenCost} credits, replaces your source)</span>
+            </div>
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onFilePicked} className="hidden" />
+            {regenError && (
+              <div role="alert" className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">{regenError}</div>
+            )}
+            {regenerating && (
+              <div className="mt-3 text-xs text-gray-500">
+                Generating new reference sheet — this takes 60–120 seconds at 4K. Don&apos;t close this window.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

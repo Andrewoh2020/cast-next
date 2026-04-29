@@ -716,6 +716,37 @@ export async function generateFromUpload(
   return { profile, refSheet, profileThumbUrl, refSheetThumbUrl };
 }
 
+/**
+ * Regenerate ONLY the 8-panel reference sheet from an existing source/profile
+ * image. Used when a user wants to retry the ref sheet without rebuilding the
+ * profile photo (e.g. duplicate poses came out of the lottery, or they uploaded
+ * a fresh photo specifically for the ref sheet). Costs one i2i call instead of
+ * two — half the work of a full character generation.
+ */
+export async function regenerateRefSheet(
+  sourceImageUrl: string,
+  slug: string,
+  meta: GenerateMeta,
+  blobPrefix: string,
+): Promise<{ refSheet: GenerateResult; refSheetThumbUrl: string }> {
+  const { buffer } = await fetchImageBuffer(sourceImageUrl);
+  const publicSourceUrl = await uploadToFalCdn(buffer);
+
+  const refSheet = await generateAndUpload(
+    REFERENCE_SHEET_FROM_UPLOAD_PROMPT,
+    '21:9',
+    '4K',
+    slug,
+    'refsheet',
+    meta,
+    [publicSourceUrl],
+    blobPrefix,
+  );
+
+  const refSheetThumbUrl = await generateThumbnail(refSheet.rawBuffer, slug, 'refsheet', blobPrefix);
+  return { refSheet, refSheetThumbUrl };
+}
+
 // ── Aspect ratio detection ──────────────────────────────────────────────
 
 const SUPPORTED_RATIOS: [string, number][] = [

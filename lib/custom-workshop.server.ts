@@ -315,6 +315,16 @@ export async function deleteCustomWorkshop(userId: string, id: string): Promise<
   await removeFromIndex(userId, id);
 }
 
+/** Rename a custom workshop. Updates both the meta blob and the index entry. */
+export async function renameCustomWorkshop(userId: string, id: string, name: string): Promise<void> {
+  const meta = await readJson<CustomWorkshopMeta | null>(metaKey(userId, id), null);
+  if (!meta) return;
+  await writeJson(metaKey(userId, id), { ...meta, name });
+  const summaries = await readJson<CustomWorkshopSummary[]>(indexKey(userId), []);
+  const updated = summaries.map((s) => (s.id === id ? { ...s, name } : s));
+  await writeJson(indexKey(userId), updated);
+}
+
 /** Update just the reference sheet URL on a workshop's meta. */
 export async function updateCustomWorkshopRefSheet(userId: string, id: string, referenceSheetUrl: string): Promise<void> {
   const meta = await readJson<CustomWorkshopMeta | null>(metaKey(userId, id), null);

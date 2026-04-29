@@ -2,6 +2,7 @@ export const CREDIT_COSTS = {
   outfit: 5,
   shot: 5,
   character: 25,
+  refSheetRegen: 10,
   voice: 100,
   videoShort: 200,
   videoLong: 500,
