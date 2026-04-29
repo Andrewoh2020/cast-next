@@ -35,7 +35,7 @@ export const WORKSHOP_TOOLS: WorkshopTool[] = [
     tagline: 'Image to Video',
     url: 'https://app.klingai.com/global/image-to-video/frame-mode',
     logo: '/logos/kling.png',
-    accent: '#0066FF',
+    accent: '#000000',
     steps: [
       'Open Kling and pick Image-to-Video.',
       'Upload the profile photo (or paste the URL we just copied) as the starting frame.',
@@ -49,7 +49,7 @@ export const WORKSHOP_TOOLS: WorkshopTool[] = [
     tagline: 'Cinematic AI motion',
     url: 'https://higgsfield.ai/create',
     logo: '/logos/higgsfield.png',
-    accent: '#000000',
+    accent: '#C5FF1A',
     steps: [
       'Open Higgsfield and pick Image-to-Video.',
       'Upload the profile photo (or paste the URL we just copied).',
@@ -62,8 +62,8 @@ export const WORKSHOP_TOOLS: WorkshopTool[] = [
     name: 'Artlist',
     tagline: 'Brand-safe AI video',
     url: 'https://artlist.io/ai/video-generator',
-    logo: '/logos/artlist.png',
-    accent: '#FF4F00',
+    logo: '/logos/artlist.jpg',
+    accent: '#F5D000',
     steps: [
       'Open Artlist and pick AI Video → Image-to-Video.',
       'Upload the profile photo (or paste the URL we just copied).',
