@@ -345,9 +345,9 @@ export default function HeroB2({ variant = 'marquee', reelCharacters = [] }: Her
             </p>
 
             <p className="text-[10px] text-gray-400 mt-5 leading-relaxed">
-              Cast runs Fal&apos;s nano-banana-2 image-to-image at 4K. Both the
-              profile photo and the 8-panel reference sheet are generated from
-              your upload to lock identity.
+              We&apos;re generating a clean studio profile photo plus a 4K 8-panel
+              reference sheet from your upload — both are used to lock identity
+              across every outfit and scene you create later.
             </p>
           </div>
         </div>
