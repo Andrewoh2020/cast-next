@@ -7,6 +7,8 @@ import type { WorkshopData, OutfitVariant, SceneShot } from '@/lib/workshop.serv
 import { CREDIT_COSTS } from '@/lib/credit-costs';
 import BuyCreditsModal from '@/components/BuyCreditsModal';
 import AspectRatioPicker, { type AspectRatio, ASPECT_RATIOS } from '@/components/AspectRatioPicker';
+import ToolHandoff from '@/components/workshop/ToolHandoff';
+import FirstSuccessBanner from '@/components/workshop/FirstSuccessBanner';
 
 export interface WorkshopCharacter {
   id: number | string;
@@ -104,6 +106,42 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
   const [renaming, setRenaming] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const isCustomStudio = !!character?.isUploadedImage && apiBase.includes('/custom/');
+  // First-success banner: fires when a custom character has its ref sheet
+  // (post-conversion) or a roster character is licensed. Dismissal persists
+  // per-character via sessionStorage so refreshes don't re-pop the banner.
+  const bannerKey = character ? `cast-banner-dismissed-${character.slug}` : '';
+  const isReadyForExport = !!character && (!!character.referenceSheetUrl || !character.isUploadedImage);
+  const [showFirstSuccess, setShowFirstSuccess] = useState(false);
+  useEffect(() => {
+    if (!isReadyForExport || !bannerKey) return;
+    if (typeof window === 'undefined') return;
+    if (sessionStorage.getItem(bannerKey) === '1') return;
+    setShowFirstSuccess(true);
+  }, [isReadyForExport, bannerKey]);
+  const dismissBanner = () => {
+    setShowFirstSuccess(false);
+    if (bannerKey && typeof window !== 'undefined') sessionStorage.setItem(bannerKey, '1');
+  };
+  // Auto-dismiss the banner once the user has clearly engaged: any outfit
+  // or shot exists. They've moved past the "what do I do next" moment.
+  const libraryCount = (workshop.outfits.length + workshop.shots.length);
+  useEffect(() => {
+    if (showFirstSuccess && libraryCount > 0) dismissBanner();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [libraryCount]);
+  // Brief pulse on the Export button the moment the library goes 0 → 1+
+  // (a freshly-generated asset is now part of the export package).
+  const [pulseExport, setPulseExport] = useState(false);
+  const prevLibraryCountRef = useRef(libraryCount);
+  useEffect(() => {
+    if (prevLibraryCountRef.current === 0 && libraryCount > 0) {
+      setPulseExport(true);
+      const t = setTimeout(() => setPulseExport(false), 2200);
+      prevLibraryCountRef.current = libraryCount;
+      return () => clearTimeout(t);
+    }
+    prevLibraryCountRef.current = libraryCount;
+  }, [libraryCount]);
   const [showBuyCredits, setShowBuyCredits] = useState(searchParams.get('buy') === '1');
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -469,12 +507,14 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
         <div className="flex items-center gap-3 shrink-0">
           {hasCharacter && (
             <>
-              <button onClick={() => setShowDownload(true)} className="hidden sm:flex items-center gap-1.5 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all">
+              <button onClick={() => setShowDownload(true)} className={`relative hidden sm:flex items-center gap-1.5 bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-all ${pulseExport ? 'ring-2 ring-indigo-300 ring-offset-2 animate-pulse' : ''}`}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
                 Export package
+                {showFirstSuccess && <span aria-hidden="true" className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-400 rounded-full ring-2 ring-white" />}
               </button>
-              <button onClick={() => setShowDownload(true)} aria-label="Export package" className="sm:hidden flex items-center justify-center w-11 h-11 bg-black text-white rounded-lg hover:bg-gray-800 transition-all">
+              <button onClick={() => setShowDownload(true)} aria-label="Export package" className={`relative sm:hidden flex items-center justify-center w-11 h-11 bg-black text-white rounded-lg hover:bg-gray-800 transition-all ${pulseExport ? 'ring-2 ring-indigo-300 ring-offset-2 animate-pulse' : ''}`}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                {showFirstSuccess && <span aria-hidden="true" className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-400 rounded-full ring-2 ring-white" />}
               </button>
             </>
           )}
@@ -567,6 +607,13 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
 
             {/* Canvas */}
             <div className="flex-1 flex flex-col items-center justify-start p-4 md:p-8 min-w-0 overflow-y-auto">
+              {showFirstSuccess && (
+                <FirstSuccessBanner
+                  onExport={() => { dismissBanner(); setShowDownload(true); }}
+                  onShowMeHow={() => { dismissBanner(); setShowDownload(true); }}
+                  onDismiss={dismissBanner}
+                />
+              )}
               <div className="w-full">
                 <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} isWide={isUploadedSource} />
               </div>
@@ -837,7 +884,7 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
           }}
         />
       )}
-      {showDownload && <DownloadModal workshop={workshop} apiBase={apiBase} characterName={character?.name ?? 'cast'} onClose={() => setShowDownload(false)} />}
+      {showDownload && <DownloadModal workshop={workshop} apiBase={apiBase} characterName={character?.name ?? 'cast'} profileImageUrl={character?.img} onClose={() => setShowDownload(false)} />}
       {showBuyCredits && <BuyCreditsModal onClose={() => setShowBuyCredits(false)} />}
 
 
@@ -1152,7 +1199,7 @@ function RefSheetModal({ url, onClose, apiBase, credits, regenCost, onRegenerate
   );
 }
 
-function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop: WorkshopData; apiBase: string; characterName: string; onClose: () => void }) {
+function DownloadModal({ workshop, apiBase, characterName, profileImageUrl, onClose }: { workshop: WorkshopData; apiBase: string; characterName: string; profileImageUrl?: string; onClose: () => void }) {
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const o = workshop.outfits.length, s = workshop.shots.length;
@@ -1181,37 +1228,43 @@ function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-8" onClick={onClose}>
-      <div className="relative bg-white rounded-3xl p-8 w-full max-w-md border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 sm:p-8 overflow-y-auto" onClick={onClose}>
+      <div className="relative bg-white rounded-3xl p-6 sm:p-7 w-full max-w-lg my-8 border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-black text-xs font-medium">Esc</button>
-        <h2 className="text-xl font-black tracking-tight mb-1 text-black">Your package</h2>
-        <p className="text-xs text-gray-500 mb-5">Ready for Kling, Higgsfield, and Artlist.</p>
-        <div className="space-y-1.5">
-          <PkgRow label="Profile photo" />
-          <PkgRow label="4K 8-panel reference sheet" />
-          <PkgRow label={`${o} outfit${o === 1 ? '' : 's'}`} muted={o === 0} />
-          <PkgRow label={`${s} scene${s === 1 ? '' : 's'}`} muted={s === 0} />
-          <PkgRow label="Kling / Higgsfield / Artlist guide (README)" />
-        </div>
-        {downloadError && (
-          <div role="alert" className="mt-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-            {downloadError}
+        <h2 className="text-xl font-black tracking-tight mb-1 text-black">Your character is ready</h2>
+        <p className="text-xs text-gray-500 mb-5">Open one of these tools to start generating video — the profile photo URL gets copied for you.</p>
+
+        <ToolHandoff profileImageUrl={profileImageUrl} />
+
+        <div className="mt-6 pt-5 border-t border-gray-100">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Or download the full package</p>
+          <div className="space-y-1.5 mb-3">
+            <PkgRow label="Profile photo" />
+            <PkgRow label="4K 8-panel reference sheet" />
+            <PkgRow label={`${o} outfit${o === 1 ? '' : 's'}`} muted={o === 0} />
+            <PkgRow label={`${s} scene${s === 1 ? '' : 's'}`} muted={s === 0} />
+            <PkgRow label="README with steps for each tool" />
           </div>
-        )}
-        <button
-          onClick={handleDownload}
-          disabled={downloading || !apiBase}
-          className="w-full mt-5 bg-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold text-sm px-5 py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
-        >
-          {downloading ? (
-            <><div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Building package…</>
-          ) : (
-            <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
-              Download package (Free)
-            </>
+          {downloadError && (
+            <div role="alert" className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              {downloadError}
+            </div>
           )}
-        </button>
+          <button
+            onClick={handleDownload}
+            disabled={downloading || !apiBase}
+            className="w-full mt-2 bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed text-gray-700 font-bold text-sm px-5 py-3 rounded-xl border border-gray-200 transition-colors flex items-center justify-center gap-2"
+          >
+            {downloading ? (
+              <><div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />Building package…</>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                Download .zip
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
