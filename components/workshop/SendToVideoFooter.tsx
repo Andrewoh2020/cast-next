@@ -59,10 +59,10 @@ export default function SendToVideoFooter({ profileImageUrl, onDownloadZip, outf
         <button
           onClick={onDownloadZip}
           className="text-[11px] text-gray-400 hover:text-indigo-600 font-medium transition-colors flex items-center gap-1"
-          title="Download the full package as a .zip"
+          title="Download the full character package as a .zip"
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
-          Download .zip ({outfitCount} outfits · {shotCount} scenes)
+          Download character package ({outfitCount} outfits · {shotCount} scenes)
         </button>
       </div>
 

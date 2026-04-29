@@ -509,13 +509,13 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
             <>
               <button
                 onClick={() => setShowDownload(true)}
-                title="Download all assets as .zip"
-                className={`hidden sm:flex items-center gap-1.5 bg-white text-gray-700 hover:text-black hover:border-gray-300 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-gray-200 transition-all ${pulseExport ? 'ring-2 ring-indigo-300 ring-offset-2 animate-pulse' : ''}`}
+                title="Download all character assets as a .zip"
+                className={`hidden sm:flex items-center gap-1.5 bg-white text-gray-700 hover:text-black hover:border-gray-300 text-xs font-bold px-3 py-1.5 rounded-lg border border-gray-200 transition-all ${pulseExport ? 'ring-2 ring-indigo-300 ring-offset-2 animate-pulse' : ''}`}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
-                .zip
+                Character package
               </button>
-              <button onClick={() => setShowDownload(true)} aria-label="Download .zip" className={`sm:hidden flex items-center justify-center w-10 h-10 bg-white text-gray-700 rounded-lg border border-gray-200 hover:border-gray-300 transition-all ${pulseExport ? 'ring-2 ring-indigo-300 ring-offset-2 animate-pulse' : ''}`}>
+              <button onClick={() => setShowDownload(true)} aria-label="Download character package" className={`sm:hidden flex items-center justify-center w-10 h-10 bg-white text-gray-700 rounded-lg border border-gray-200 hover:border-gray-300 transition-all ${pulseExport ? 'ring-2 ring-indigo-300 ring-offset-2 animate-pulse' : ''}`}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
               </button>
             </>
@@ -1237,8 +1237,8 @@ function DownloadModal({ workshop, apiBase, characterName, onClose }: { workshop
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-8" onClick={onClose}>
       <div className="relative bg-white rounded-3xl p-8 w-full max-w-md border border-gray-100 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-black text-xs font-medium">Esc</button>
-        <h2 className="text-xl font-black tracking-tight mb-1 text-black">Download .zip</h2>
-        <p className="text-xs text-gray-500 mb-5">All assets + a README with handoff steps for Kling, Higgsfield, and Artlist.</p>
+        <h2 className="text-xl font-black tracking-tight mb-1 text-black">Character package</h2>
+        <p className="text-xs text-gray-500 mb-5">All your character assets bundled as a .zip, with a README that walks through Kling, Higgsfield, and Artlist.</p>
         <div className="space-y-1.5">
           <PkgRow label="Profile photo" />
           <PkgRow label="4K 8-panel reference sheet" />
