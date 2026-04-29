@@ -676,37 +676,27 @@ export async function generateFromUpload(
   meta: GenerateMeta,
   blobPrefix: string,
 ): Promise<{ profile: GenerateResult; refSheet: GenerateResult; profileThumbUrl: string; refSheetThumbUrl: string }> {
-  // The fal.ai/kie.ai APIs need a public URL — push the upload through fal's CDN.
   const { buffer } = await fetchImageBuffer(uploadImageUrl);
   const publicUploadUrl = await uploadToFalCdn(buffer);
 
+  // Env flag: when set, route the upload-conversion flow through GPT Image 2
+  // instead of the Fal/Kie/Google chain. Used for A/B testing model quality.
+  const useOpenAI = process.env.OPENAI_UPLOAD_CONVERSION === '1';
+
   // Profile photo (3:4, 4K) — i2i, identity locked to upload.
-  const profile = await generateAndUpload(
-    PROFILE_FROM_UPLOAD_PROMPT,
-    '3:4',
-    '4K',
-    slug,
-    'profile',
-    meta,
-    [publicUploadUrl],
-    blobPrefix,
-  );
+  const profile = useOpenAI
+    ? await openaiEditAndUpload(PROFILE_FROM_UPLOAD_PROMPT, '3:4', slug, 'profile', meta, publicUploadUrl, blobPrefix)
+    : await generateAndUpload(PROFILE_FROM_UPLOAD_PROMPT, '3:4', '4K', slug, 'profile', meta, [publicUploadUrl], blobPrefix);
 
   // Push the new profile to fal CDN so the ref sheet i2i can use it as the
-  // canonical identity reference (matches the native flow).
+  // canonical identity reference. Also works for OpenAI — its edits endpoint
+  // pulls from the URL, doesn't care which CDN hosts it.
   const publicProfileUrl = await uploadToFalCdn(profile.rawBuffer);
 
   // 8-panel reference sheet (21:9, 4K) — i2i with the new profile as reference.
-  const refSheet = await generateAndUpload(
-    REFERENCE_SHEET_FROM_UPLOAD_PROMPT,
-    '21:9',
-    '4K',
-    slug,
-    'refsheet',
-    meta,
-    [publicProfileUrl],
-    blobPrefix,
-  );
+  const refSheet = useOpenAI
+    ? await openaiEditAndUpload(REFERENCE_SHEET_FROM_UPLOAD_PROMPT, '21:9', slug, 'refsheet', meta, publicProfileUrl, blobPrefix)
+    : await generateAndUpload(REFERENCE_SHEET_FROM_UPLOAD_PROMPT, '21:9', '4K', slug, 'refsheet', meta, [publicProfileUrl], blobPrefix);
 
   const [profileThumbUrl, refSheetThumbUrl] = await Promise.all([
     generateThumbnail(profile.rawBuffer, slug, 'profile', blobPrefix),
@@ -714,6 +704,143 @@ export async function generateFromUpload(
   ]);
 
   return { profile, refSheet, profileThumbUrl, refSheetThumbUrl };
+}
+
+// ── OpenAI GPT Image 2 (alternative i2i provider for upload-conversion testing) ─
+
+/** Map our internal aspect ratio strings to GPT Image 2 supported output sizes. */
+function gptImageSize(aspectRatio: string): string {
+  switch (aspectRatio) {
+    case '21:9':
+    case '16:9':
+    case '3:2':
+      return '1536x1024';
+    case '1:1':
+      return '1024x1024';
+    case '3:4':
+    case '2:3':
+    case '4:5':
+    default:
+      return '1024x1536';
+  }
+}
+
+/**
+ * Image-to-image via OpenAI's GPT Image 2 (POST /v1/images/edits).
+ * Used as an alternative to the Fal/Kie/Google chain when the
+ * OPENAI_UPLOAD_CONVERSION env flag is set, for upload-conversion testing.
+ *
+ * Accepts the same publicly-accessible reference URL that the rest of the
+ * pipeline uses, fetches it, and posts it as multipart form-data to OpenAI.
+ */
+async function openaiImageEdit(
+  prompt: string,
+  aspectRatio: string,
+  referenceImageUrl: string,
+): Promise<ArrayBuffer> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY not configured');
+
+  const refRes = await fetch(referenceImageUrl);
+  if (!refRes.ok) throw new Error(`Failed to fetch reference image: ${refRes.status}`);
+  const refBuffer = await refRes.arrayBuffer();
+  const contentType = refRes.headers.get('content-type') ?? 'image/jpeg';
+
+  const formData = new FormData();
+  formData.append('model', 'gpt-image-2');
+  formData.append('prompt', prompt);
+  formData.append('size', gptImageSize(aspectRatio));
+  formData.append('quality', 'high');
+  formData.append('n', '1');
+  formData.append('image', new Blob([refBuffer], { type: contentType }), 'reference.jpg');
+
+  const res = await fetch('https://api.openai.com/v1/images/edits', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}` },
+    body: formData,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`OpenAI edits ${res.status}: ${text.slice(0, 300)}`);
+  }
+  const data = (await res.json()) as { data: { b64_json?: string; url?: string }[] };
+  const item = data.data?.[0];
+  if (item?.b64_json) {
+    return Buffer.from(item.b64_json, 'base64').buffer as ArrayBuffer;
+  }
+  if (item?.url) {
+    const r = await fetch(item.url);
+    if (!r.ok) throw new Error(`Failed to fetch OpenAI result: ${r.status}`);
+    return await r.arrayBuffer();
+  }
+  throw new Error('OpenAI edits: no image data in response');
+}
+
+/**
+ * Drop-in replacement for `generateAndUpload` that uses GPT Image 2 instead
+ * of the Fal/Kie/Google chain. Same blob-upload + log-append shape so the
+ * caller doesn't need to know which engine ran. Used only when env flag
+ * OPENAI_UPLOAD_CONVERSION=1.
+ */
+async function openaiEditAndUpload(
+  prompt: string,
+  aspectRatio: string,
+  slug: string,
+  type: 'profile' | 'refsheet',
+  meta: GenerateMeta,
+  referenceImageUrl: string,
+  blobPrefix: string,
+): Promise<GenerateResult> {
+  const startedAt = Date.now();
+  let resultUrl: string | undefined;
+  try {
+    const buffer = await openaiImageEdit(prompt, aspectRatio, referenceImageUrl);
+    const filename = `${blobPrefix}/${slug}-${type}-${Date.now()}.jpg`;
+    const blob = await put(filename, Buffer.from(buffer), {
+      access: 'private',
+      contentType: 'image/jpeg',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    });
+    resultUrl = `/api/media?p=${encodeURIComponent(blob.pathname)}`;
+
+    await appendGenerationLog({
+      characterId: meta.characterId,
+      characterName: meta.characterName,
+      characterSlug: meta.characterSlug,
+      type,
+      cost: 0,
+      claudeCost: meta.claudeCost,
+      generatedAt: new Date().toISOString(),
+      durationMs: Date.now() - startedAt,
+      url: resultUrl,
+      failed: false,
+      provider: 'fal', // log-schema constraint — flag the actual model below
+      userId: meta.userId,
+      prompt,
+      model: 'openai/gpt-image-2',
+      referenceImageUrl,
+    });
+
+    return { url: resultUrl, rawBuffer: buffer, cost: 0, provider: 'fal' };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    await appendGenerationLog({
+      characterId: meta.characterId,
+      characterName: meta.characterName,
+      characterSlug: meta.characterSlug,
+      type,
+      cost: 0,
+      claudeCost: meta.claudeCost,
+      generatedAt: new Date().toISOString(),
+      url: resultUrl,
+      failed: true,
+      error: errorMessage,
+      provider: 'fal',
+      model: 'openai/gpt-image-2',
+    });
+    throw err;
+  }
 }
 
 /**
@@ -732,16 +859,10 @@ export async function regenerateRefSheet(
   const { buffer } = await fetchImageBuffer(sourceImageUrl);
   const publicSourceUrl = await uploadToFalCdn(buffer);
 
-  const refSheet = await generateAndUpload(
-    REFERENCE_SHEET_FROM_UPLOAD_PROMPT,
-    '21:9',
-    '4K',
-    slug,
-    'refsheet',
-    meta,
-    [publicSourceUrl],
-    blobPrefix,
-  );
+  const useOpenAI = process.env.OPENAI_UPLOAD_CONVERSION === '1';
+  const refSheet = useOpenAI
+    ? await openaiEditAndUpload(REFERENCE_SHEET_FROM_UPLOAD_PROMPT, '21:9', slug, 'refsheet', meta, publicSourceUrl, blobPrefix)
+    : await generateAndUpload(REFERENCE_SHEET_FROM_UPLOAD_PROMPT, '21:9', '4K', slug, 'refsheet', meta, [publicSourceUrl], blobPrefix);
 
   const refSheetThumbUrl = await generateThumbnail(refSheet.rawBuffer, slug, 'refsheet', blobPrefix);
   return { refSheet, refSheetThumbUrl };
