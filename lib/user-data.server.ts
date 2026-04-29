@@ -235,7 +235,22 @@ export async function consumeFreeUpload(userId: string): Promise<void> {
   await writeUserBlob(userKey(userId, 'data.json'), { ...data, hasUsedFreeUpload: true });
 }
 
-export async function addCredits(userId: string, credits: number, amount: number, sessionId: string): Promise<number> {
+/**
+ * Add credits to a user with full ledger trail. Every call is logged to
+ * `data.ledger` with the reason so credit history can be reconstructed.
+ *
+ * `reason` is required — there is no silent path. If you're tempted to skip it,
+ * reach for the right specialized function instead (`applyTopUp`, `applySubGrant`,
+ * `applyTierUpgrade`).
+ */
+export async function addCredits(
+  userId: string,
+  credits: number,
+  amount: number,
+  sessionId: string,
+  reason: LedgerReason,
+  meta?: Record<string, string | number>,
+): Promise<number> {
   const data = await getUserData(userId);
   if ((data.creditPurchases ?? []).some((p) => p.sessionId === sessionId)) return data.credits ?? 0;
   const updated: UserData = {
@@ -243,6 +258,7 @@ export async function addCredits(userId: string, credits: number, amount: number
     credits: (data.credits ?? 0) + credits,
     creditPurchases: [{ credits, amount, purchasedAt: new Date().toISOString(), sessionId }, ...(data.creditPurchases ?? [])],
   };
+  appendLedger(updated, { delta: credits, reason, meta: { sessionId, ...(meta ?? {}) } });
   await writeUserBlob(userKey(userId, 'data.json'), updated);
   return updated.credits;
 }
@@ -257,14 +273,14 @@ export async function getCredits(userId: string): Promise<number> {
  * credit (e.g. locking in a voice). If the user doesn't have enough credits,
  * throws before touching the balance.
  */
-export async function deductCredits(userId: string, n: number, reason?: LedgerReason): Promise<number> {
+export async function deductCredits(userId: string, n: number, reason: LedgerReason, meta?: Record<string, string | number>): Promise<number> {
   if (n <= 0) throw new Error('deductCredits(n>0) required');
   await ensureDripApplied(userId);
   const data = await getUserData(userId);
   const current = data.credits ?? 0;
   if (current < n) throw new Error(`Need ${n} credits, have ${current}`);
   const updated: UserData = { ...data, credits: current - n };
-  if (reason) appendLedger(updated, { delta: -n, reason });
+  appendLedger(updated, { delta: -n, reason, ...(meta ? { meta } : {}) });
   await writeUserBlob(userKey(userId, 'data.json'), updated);
   return updated.credits;
 }

@@ -80,7 +80,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
     const workshop = await addOutfit(userId, characterId, outfit);
     return NextResponse.json({ outfit, workshop });
   } catch (err) {
-    await addCredits(userId, CREDIT_COSTS.outfit, 0, `refund-outfit-${Date.now()}`).catch(() => {});
+    await addCredits(userId, CREDIT_COSTS.outfit, 0, `refund-outfit-${Date.now()}`, 'refund', { kind: 'outfit' }).catch(() => {});
     const raw = err instanceof Error ? err.message : 'Generation failed';
     console.error('[workshop/outfits] generation failed:', raw);
 

@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
         const draft = await getDraft(userId, draftId);
         if (draft && draft.status === 'generating') {
           await saveDraft(userId, { ...draft, status: 'preview' });
-          await addCredits(userId, CREDIT_COSTS.character, 0, `refund-${draftId}-${Date.now()}`);
+          await addCredits(userId, CREDIT_COSTS.character, 0, `refund-${draftId}-${Date.now()}`, 'refund', { kind: 'character', draftId });
         }
       }
     } catch {}

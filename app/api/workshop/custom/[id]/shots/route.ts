@@ -54,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const updated = await addCustomShot(userId, id, shot);
     return NextResponse.json({ shot, workshop: updated });
   } catch (err) {
-    await addCredits(userId, CREDIT_COSTS.shot, 0, `refund-custom-shot-${Date.now()}`).catch(() => {});
+    await addCredits(userId, CREDIT_COSTS.shot, 0, `refund-custom-shot-${Date.now()}`, 'refund', { kind: 'custom-shot' }).catch(() => {});
     const raw = err instanceof Error ? err.message : 'Generation failed';
     console.error('[workshop/custom/shots] failed:', raw);
     const isModeration = /policy|prohibited|filtered|safety|blocked|content.*violation|nsfw/i.test(raw);

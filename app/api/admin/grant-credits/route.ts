@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const user = users.data[0];
     const sessionId = `admin-grant-${Date.now()}`;
-    const newTotal = await addCredits(user.id, credits, 0, sessionId);
+    const newTotal = await addCredits(user.id, credits, 0, sessionId, 'admin-grant', { email });
 
     return NextResponse.json({
       ok: true,

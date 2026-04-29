@@ -63,7 +63,7 @@ async function main(): Promise<void> {
   }
 
   const sessionId = `admin-grant-${note.replace(/\s+/g, '-').slice(0, 40)}-${Date.now()}`;
-  const newTotal = await addCredits(user.id, credits, 0, sessionId);
+  const newTotal = await addCredits(user.id, credits, 0, sessionId, 'admin-grant', { note });
 
   console.log(`\n✅ Granted. New total: ${newTotal}`);
   console.log(`   Session tag: ${sessionId}\n`);

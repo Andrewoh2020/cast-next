@@ -76,7 +76,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cha
     const workshop = await addShot(userId, characterId, shot);
     return NextResponse.json({ shot, workshop });
   } catch (err) {
-    await addCredits(userId, CREDIT_COSTS.shot, 0, `refund-shot-${Date.now()}`).catch(() => {});
+    await addCredits(userId, CREDIT_COSTS.shot, 0, `refund-shot-${Date.now()}`, 'refund', { kind: 'shot' }).catch(() => {});
     const raw = err instanceof Error ? err.message : 'Generation failed';
     console.error('[workshop/shots] generation failed:', raw);
     const isModeration = /policy|prohibited|filtered|safety|blocked|content.*violation|nsfw/i.test(raw);
