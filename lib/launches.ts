@@ -11,6 +11,22 @@ export interface Launch {
  */
 export const launches: Launch[] = [
   {
+    date: '2026-04-29',
+    title: 'Send Your Character to Video — One-Click Handoff to Kling, Higgsfield, and Artlist',
+    summary:
+      'After creating a character, three branded tool cards now sit below the canvas — click any one and your profile URL is copied to the clipboard while the tool opens in a new tab. Studios are now renameable, reference sheets regenerable, and the upload conversion produces a more professional studio outfit every time.',
+    highlights: [
+      'New Send-to-video footer with branded Kling, Higgsfield, and Artlist cards below the canvas — click any tool to copy your profile URL and open the tool in a new tab, ready to paste',
+      '"Your character is ready" success banner appears the moment your upload conversion completes, pointing you down to the new handoff buttons',
+      'Rename your custom studios inline — pencil icon next to the studio name in the header, Enter to save, Esc to cancel',
+      'Regenerate the 8-panel reference sheet from inside the workshop (10 credits) — fixes duplicate poses or stiff angles without rebuilding the whole character, with an option to upload a different source photo if the original was off',
+      'Cleaner studio outfits on every upload — the auto-conversion now reliably swaps graphic tees, gym shorts, sleepwear, and casual home-wear for neutral casting-profile attire so your character is always sellable',
+      '"Character package" replaces "Export package" / ".zip" everywhere with a clearer description of what is inside — profile photo, 4K reference sheet, outfits, scenes, and a per-tool README',
+      'Studio sidebar scroll fix — every studio in your library is now reachable no matter how many you have created',
+      'Per-tool handoff steps now share a single source of truth, so the in-app guide and the README inside the downloaded package can never drift apart',
+    ],
+  },
+  {
     date: '2026-04-20',
     title: 'Subscriptions, Daily Free Credits, and Workshop Upgrades',
     summary:
