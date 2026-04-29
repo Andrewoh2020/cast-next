@@ -571,13 +571,14 @@ export default function WorkshopClient({ character: initChar, initialWorkshop, i
                 <CanvasArea img={canvasImg} label={canvasLabel} stage={stage} stageText={stageText} isRefSheet={isRefSheet} isWide={isUploadedSource} />
               </div>
               {isRefSheet && isCustomStudio && (
-                <div className="w-full mt-3 flex items-center justify-end">
+                <div className="w-full mt-4 flex items-center justify-end">
                   <button
                     onClick={() => setShowRefSheet(true)}
-                    className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-indigo-600 font-medium transition-colors"
+                    className="bg-white hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 text-gray-700 text-sm font-bold px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm transition-all flex items-center gap-2"
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden="true"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" /></svg>
                     Regenerate reference sheet
+                    <span className="text-gray-400 font-medium">· {CREDIT_COSTS.refSheetRegen} credits</span>
                   </button>
                 </div>
               )}
