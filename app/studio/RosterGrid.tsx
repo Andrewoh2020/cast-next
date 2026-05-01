@@ -82,8 +82,8 @@ export default function RosterGrid({ characters, initialSavedIds, entitlements }
   return (
     <>
       <ul
-        className="grid gap-1.5 sm:gap-2"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
+        className="grid gap-2 sm:gap-3"
+        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
       >
         {characters.map((c) => (
           <li key={c.id}>
@@ -116,8 +116,10 @@ function RosterCard({
   isPending: boolean;
   onToggleSave: () => void;
 }) {
+  const ageLabel = c.ageRange === '60s+' ? '60s & up' : c.ageRange;
+  const subtitle = c.ethnicity ? `${ageLabel} · ${c.ethnicity}` : ageLabel;
   return (
-    <div className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-gray-100">
+    <div className="group relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100">
       <Link href={`/studio/character/${c.id}`} className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -126,22 +128,20 @@ function RosterCard({
           loading="lazy"
           className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 via-black/15 to-transparent pointer-events-none" />
-        <p className="absolute bottom-2.5 left-3 right-12 text-white font-bold text-sm tracking-tight drop-shadow-sm truncate">
-          {c.name}
-        </p>
-        <span className="absolute top-2 left-2 inline-flex items-center text-[9px] font-bold uppercase tracking-widest text-white/85 bg-black/40 backdrop-blur-sm px-1.5 py-0.5 rounded">
-          By Cast
-        </span>
+        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none" />
+        <div className="absolute bottom-4 left-5 right-14 text-white drop-shadow-sm">
+          <p className="font-bold text-base sm:text-lg tracking-tight truncate">{c.name}</p>
+          <p className="text-xs sm:text-sm text-white/80 truncate">{subtitle}</p>
+        </div>
       </Link>
       <button
         onClick={onToggleSave}
         disabled={isPending}
         aria-pressed={isSaved}
         aria-label={isSaved ? `Remove ${c.name} from My Characters` : `Save ${c.name}`}
-        className={`absolute top-2 right-2 w-8 h-8 rounded-full backdrop-blur-sm flex items-center justify-center transition-all ${
+        className={`absolute top-3 right-3 w-9 h-9 rounded-full backdrop-blur-sm flex items-center justify-center transition-all ${
           isSaved
-            ? 'bg-white text-black shadow-sm'
+            ? 'bg-white text-black shadow-md'
             : 'bg-black/40 text-white hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100'
         } ${isPending ? 'opacity-60 cursor-wait' : ''}`}
       >

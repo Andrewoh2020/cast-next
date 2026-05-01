@@ -39,29 +39,34 @@ export default function MyCharactersTab({ characters, savedIds }: Props) {
 
   return (
     <ul
-      className="grid gap-1.5 sm:gap-2"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
+      className="grid gap-2 sm:gap-3"
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}
     >
-      {saved.map((c) => (
-        <li key={c.id}>
-          <Link
-            href={`/studio/character/${c.id}`}
-            className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-gray-100"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={thumbUrl(c.img, 800)}
-              alt={c.name}
-              loading="lazy"
-              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
-            />
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 via-black/15 to-transparent pointer-events-none" />
-            <p className="absolute bottom-2.5 left-3 right-3 text-white font-bold text-sm tracking-tight drop-shadow-sm truncate">
-              {c.name}
-            </p>
-          </Link>
-        </li>
-      ))}
+      {saved.map((c) => {
+        const ageLabel = c.ageRange === '60s+' ? '60s & up' : c.ageRange;
+        const subtitle = c.ethnicity ? `${ageLabel} · ${c.ethnicity}` : ageLabel;
+        return (
+          <li key={c.id}>
+            <Link
+              href={`/studio/character/${c.id}`}
+              className="group relative block aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={thumbUrl(c.img, 800)}
+                alt={c.name}
+                loading="lazy"
+                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+              />
+              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none" />
+              <div className="absolute bottom-4 left-5 right-5 text-white drop-shadow-sm">
+                <p className="font-bold text-base sm:text-lg tracking-tight truncate">{c.name}</p>
+                <p className="text-xs sm:text-sm text-white/80 truncate">{subtitle}</p>
+              </div>
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }

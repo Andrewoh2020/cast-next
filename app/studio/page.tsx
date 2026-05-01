@@ -48,7 +48,7 @@ export default async function StudioPage({ searchParams }: Props) {
   const characters = await readVisibleCharacters();
 
   return (
-    <main className="min-h-screen bg-[#faf7f2] flex">
+    <main className="min-h-screen bg-[#faf7f2] flex pt-16">
       <StudioSidebar />
       <div className="flex-1 min-w-0 relative">
         <div className="px-3 sm:px-4 pt-4 pb-32">

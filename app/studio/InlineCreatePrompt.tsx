@@ -6,12 +6,9 @@ import { useRouter } from 'next/navigation';
 /**
  * Floating chat input pinned at the bottom-center of the Studio canvas.
  * Mirrors Artlist Studio's "Describe your character's look and personality"
- * affordance — always visible, always actionable. On submit, deep-links into
- * the existing /create flow with the prompt prefilled. Keeps /create as the
- * single source of truth for character generation.
- *
- * Image attach is a placeholder for now; clicking it routes to /create which
- * has its own image-upload affordance, so we don't fragment the upload flow.
+ * affordance — translucent glass panel, always visible. On submit, deep-links
+ * into /create with the prompt prefilled. Clicking Upload routes to /create's
+ * existing image-upload flow so we don't fragment the upload pipeline.
  */
 export default function InlineCreatePrompt() {
   const router = useRouter();
@@ -24,34 +21,35 @@ export default function InlineCreatePrompt() {
     router.push(`/create?prompt=${encodeURIComponent(trimmed)}`);
   }
 
-  function attach() {
+  function uploadPhoto() {
     router.push('/create?upload=1');
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 px-4 sm:px-0">
+    <div className="pointer-events-none fixed inset-x-0 bottom-5 z-30 px-4 sm:px-0">
       <form
         onSubmit={submit}
-        className="pointer-events-auto mx-auto w-full max-w-xl bg-white/95 backdrop-blur-md border border-gray-200 rounded-full shadow-xl flex items-center gap-2 pl-3 pr-2 py-2"
+        className="pointer-events-auto mx-auto w-full max-w-xl bg-white/55 backdrop-blur-2xl border border-white/60 rounded-full shadow-2xl shadow-black/10 flex items-center gap-1.5 pl-1.5 pr-1.5 py-1.5"
       >
         <button
           type="button"
-          onClick={attach}
-          aria-label="Attach a reference image"
-          className="shrink-0 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-black flex items-center justify-center transition-colors"
+          onClick={uploadPhoto}
+          aria-label="Upload a photo of your character"
+          title="Upload a photo of your character"
+          className="shrink-0 inline-flex items-center gap-1.5 bg-white/70 hover:bg-white text-gray-800 hover:text-black font-bold text-xs pl-2.5 pr-3 py-2 rounded-full transition-colors border border-white/70"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="9" cy="9" r="2" />
-            <path d="M21 15l-5-5L5 21" />
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} aria-hidden>
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 11-8.48-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 11-2.83-2.83l8.49-8.48" />
           </svg>
+          Upload photo
         </button>
+        <span aria-hidden className="h-5 w-px bg-black/10" />
         <input
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe your character's look and personality"
           aria-label="Describe your character"
-          className="flex-1 bg-transparent text-sm text-black placeholder-gray-400 outline-none py-1.5"
+          className="flex-1 min-w-0 bg-transparent text-sm text-black placeholder-gray-500 outline-none py-1.5 pl-1"
           maxLength={400}
         />
         <button

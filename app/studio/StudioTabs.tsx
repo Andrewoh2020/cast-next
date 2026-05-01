@@ -20,7 +20,8 @@ export default function StudioTabs({ active }: Props) {
   return (
     <nav
       aria-label="Studio sections"
-      className="sticky top-4 z-30 mx-auto w-fit"
+      // top-20 (80px) clears the fixed h-16 (64px) site nav with a small gap.
+      className="sticky top-20 z-30 mx-auto w-fit"
     >
       <div className="flex items-center gap-0.5 bg-white/85 backdrop-blur-md border border-gray-200 rounded-full shadow-md px-1 py-1">
         {TABS.map((t) => {
