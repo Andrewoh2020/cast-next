@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const isAdminRoute = createRouteMatcher(['/admin/dashboard/:path*']);
 const isAccountRoute = createRouteMatcher(['/account/:path*', '/account']);
 const isCreateRoute = createRouteMatcher(['/create/:path*', '/create']);
+const isStudioRoute = createRouteMatcher(['/studio/:path*', '/studio']);
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   // Canonical host: redirect apex castability.ai to www.castability.ai
@@ -15,8 +16,8 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
     return NextResponse.redirect(url, 301);
   }
 
-  // Protect account and create routes with Clerk
-  if (isAccountRoute(req) || isCreateRoute(req)) {
+  // Protect account, create, and studio routes with Clerk
+  if (isAccountRoute(req) || isCreateRoute(req) || isStudioRoute(req)) {
     await auth.protect();
   }
 

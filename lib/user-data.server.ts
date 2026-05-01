@@ -94,6 +94,11 @@ export interface UserData {
   /** True after the user has consumed their one free upload-to-character
    *  conversion. Subsequent uploads cost the regular character credit. */
   hasUsedFreeUpload?: boolean;
+  /** Roster character IDs the user has saved to their personal Studio roster
+   *  ("My Characters"). Distinct from `favorites` (legacy heart-icon bookmarks
+   *  on the public landing roster) — saves are storage-tier-capped and are
+   *  what populate the Studio My Characters tab. */
+  savedRosterCharacterIds?: number[];
 }
 
 function userKey(userId: string, file: string) {

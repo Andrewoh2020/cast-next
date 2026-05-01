@@ -22,3 +22,16 @@ export const TIER_MONTHLY_CREDITS = {
 } as const;
 
 export type SubscriptionTier = keyof typeof TIER_MONTHLY_CREDITS;
+
+/**
+ * How many characters a user can save to "My Characters" — counts saved roster
+ * bookmarks, AI-described custom characters, and uploaded characters together.
+ * Free tier gets 2 so they can experience the save flow before being prompted
+ * to upgrade. Numbers will be revised against ad-test conversion data.
+ */
+export const TIER_STORAGE_LIMITS: Record<SubscriptionTier, number> = {
+  free: 2,
+  starter: 10,
+  studio: 50,
+  pro: 250,
+};
