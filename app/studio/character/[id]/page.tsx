@@ -40,9 +40,9 @@ export default async function CharacterDetailPage({ params }: Props) {
   if (!character) notFound();
 
   const isSaved = (userData.savedRosterCharacterIds ?? []).includes(characterId);
-  const heroSrc = ent.fullRes
-    ? thumbUrl(character.img, 1600)
-    : (character.imgThumbnail || thumbUrl(character.img, 800));
+  // Display quality is the same for everyone — matches the homepage roster.
+  // Subscription gates the 4K download / audio, not what you see on screen.
+  const heroSrc = thumbUrl(character.img, 1600);
 
   const exclusiveAvailable = !character.exclusiveDisabled;
   const exclusivePrice = character.prices.find((p) => p.name === 'Exclusive Rights');
@@ -78,11 +78,6 @@ export default async function CharacterDetailPage({ params }: Props) {
               alt={character.name}
               className="w-full h-full object-cover object-top"
             />
-            {!ent.subscribed && (
-              <div className="absolute bottom-0 left-0 right-0 px-4 py-2 bg-gradient-to-t from-black/65 to-transparent">
-                <p className="text-[11px] font-bold tracking-widest text-white/85 uppercase">Cast — preview · Subscribe for full resolution</p>
-              </div>
-            )}
             <span className="absolute top-3 left-3 inline-flex items-center text-[10px] font-bold uppercase tracking-widest text-black bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-sm">
               By Cast
             </span>

@@ -9,10 +9,10 @@ interface Props {
 }
 
 /**
- * My Characters tab — Week 1 surface only renders saved roster bookmarks.
- * Custom-described characters and uploaded characters merge in here in Week 2.
+ * Edge-to-edge card grid scoped to the user's saved roster. Week 2 will merge
+ * AI-described and uploaded custom characters into the same surface.
  */
-export default function MyCharactersTab({ characters, savedIds, entitlements }: Props) {
+export default function MyCharactersTab({ characters, savedIds }: Props) {
   const saved = characters.filter((c) => savedIds.includes(c.id));
 
   if (saved.length === 0) {
@@ -26,9 +26,6 @@ export default function MyCharactersTab({ characters, savedIds, entitlements }: 
         <h2 className="text-xl font-black tracking-tight text-black mb-1">No characters saved yet</h2>
         <p className="text-sm text-gray-500 max-w-sm mx-auto mb-5">
           Browse the roster and tap the + on any character to keep them here.
-          {entitlements.tier === 'free' && (
-            <> Free accounts can save up to {entitlements.storageLimit}.</>
-          )}
         </p>
         <Link
           href="/studio"
@@ -41,41 +38,30 @@ export default function MyCharactersTab({ characters, savedIds, entitlements }: 
   }
 
   return (
-    <div>
-      <p className="text-xs text-gray-500 mb-4">
-        {saved.length} saved · using {entitlements.savedCount} of {entitlements.storageLimit} slots
-      </p>
-      <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-        {saved.map((c) => (
-          <li key={c.id}>
-            <Link
-              href={`/studio/character/${c.id}`}
-              className="group relative block rounded-2xl bg-white overflow-hidden border border-gray-100 hover:border-gray-300 hover:shadow-lg transition-all"
-            >
-              <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.imgThumbnail || thumbUrl(c.img, 600)}
-                  alt={c.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
-                />
-                {!entitlements.subscribed && (
-                  <div className="absolute bottom-0 left-0 right-0 px-3 py-1 bg-gradient-to-t from-black/60 to-transparent">
-                    <p className="text-[10px] font-bold tracking-widest text-white/85 uppercase">Cast — preview</p>
-                  </div>
-                )}
-              </div>
-              <div className="px-3 py-2.5">
-                <p className="text-sm font-bold text-black truncate">{c.name}</p>
-                <p className="text-[11px] text-gray-500 truncate">
-                  {c.ageRange === '60s+' ? '60s & up' : c.ageRange} · {c.ethnicity ?? '—'}
-                </p>
-              </div>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul
+      className="grid gap-1.5 sm:gap-2"
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
+    >
+      {saved.map((c) => (
+        <li key={c.id}>
+          <Link
+            href={`/studio/character/${c.id}`}
+            className="group relative block aspect-[3/4] overflow-hidden rounded-xl bg-gray-100"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={thumbUrl(c.img, 800)}
+              alt={c.name}
+              loading="lazy"
+              className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 via-black/15 to-transparent pointer-events-none" />
+            <p className="absolute bottom-2.5 left-3 right-3 text-white font-bold text-sm tracking-tight drop-shadow-sm truncate">
+              {c.name}
+            </p>
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }

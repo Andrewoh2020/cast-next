@@ -1,26 +1,25 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { ensureDripApplied } from '@/lib/user-data.server';
 import { summarize } from '@/lib/entitlements.server';
 import { readVisibleCharacters } from '@/lib/characters.server';
+import StudioSidebar from './StudioSidebar';
 import StudioTabs, { type StudioTab } from './StudioTabs';
 import RosterGrid from './RosterGrid';
 import MyCharactersTab from './MyCharactersTab';
 import HistoryTab from './HistoryTab';
+import InlineCreatePrompt from './InlineCreatePrompt';
 
 /**
- * Studio — character hub. One round of polish on character creation,
- * roster, and management before paid-ad validation.
+ * Studio — character hub with an Artlist-inspired shell:
+ *  - Left vertical icon rail (Characters mode highlighted; placeholders for
+ *    future modes).
+ *  - Floating top-center tab pill (Explore / My Characters / History).
+ *  - Full-bleed, edge-to-edge tight card grid.
+ *  - Bottom-center floating chat that deep-links into /create.
  *
- * Three tabs:
- *  - Explore (roster) — default
- *  - My Characters (saved + custom + uploaded)
- *  - History (recent activity)
- *
- * Tab state is URL-driven via ?tab= so URLs are shareable. Free users see
- * watermarked, lower-resolution previews; subscribers get full-res + audio
- * downloads. Saved-character count is capped per subscription tier.
+ * Tab state lives in the ?tab= query param so URLs stay shareable. No filter
+ * row, no page header — the pill and the floating prompt are the chrome.
  */
 
 export const metadata = {
@@ -42,7 +41,6 @@ export default async function StudioPage({ searchParams }: Props) {
   const requested = (params.tab ?? 'explore') as StudioTab;
   const activeTab: StudioTab = VALID_TABS.includes(requested) ? requested : 'explore';
 
-  // Apply daily drip + signup bonus on visit (matches /account, /workshop pattern).
   const userData = await ensureDripApplied(userId);
   const ent = summarize(userData);
   const savedIds = userData.savedRosterCharacterIds ?? [];
@@ -50,51 +48,32 @@ export default async function StudioPage({ searchParams }: Props) {
   const characters = await readVisibleCharacters();
 
   return (
-    <main className="min-h-screen bg-[#faf7f2]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-24">
-        <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-black">Studio</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Browse characters, save your roster, and direct what comes next.
-            </p>
+    <main className="min-h-screen bg-[#faf7f2] flex">
+      <StudioSidebar />
+      <div className="flex-1 min-w-0 relative">
+        <div className="px-3 sm:px-4 pt-4 pb-32">
+          <StudioTabs active={activeTab} />
+          <div className="mt-4">
+            {activeTab === 'explore' && (
+              <RosterGrid
+                characters={characters}
+                initialSavedIds={savedIds}
+                entitlements={ent}
+              />
+            )}
+            {activeTab === 'saved' && (
+              <MyCharactersTab
+                characters={characters}
+                savedIds={savedIds}
+                entitlements={ent}
+              />
+            )}
+            {activeTab === 'history' && (
+              <HistoryTab />
+            )}
           </div>
-          {!ent.subscribed ? (
-            <Link
-              href="/account?upgrade=1"
-              className="self-start sm:self-auto inline-flex items-center gap-2 text-xs font-bold bg-black hover:bg-gray-800 text-white px-4 py-2.5 rounded-xl transition-colors"
-            >
-              Upgrade for full-resolution + audio
-              <span aria-hidden>→</span>
-            </Link>
-          ) : (
-            <span className="self-start sm:self-auto inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full">
-              {ent.tier} subscription
-            </span>
-          )}
-        </header>
-
-        <StudioTabs active={activeTab} savedCount={ent.savedCount} storageLimit={ent.storageLimit} />
-
-        <div className="mt-6">
-          {activeTab === 'explore' && (
-            <RosterGrid
-              characters={characters}
-              initialSavedIds={savedIds}
-              entitlements={ent}
-            />
-          )}
-          {activeTab === 'saved' && (
-            <MyCharactersTab
-              characters={characters}
-              savedIds={savedIds}
-              entitlements={ent}
-            />
-          )}
-          {activeTab === 'history' && (
-            <HistoryTab />
-          )}
         </div>
+        <InlineCreatePrompt />
       </div>
     </main>
   );
